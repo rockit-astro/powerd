@@ -1,0 +1,22 @@
+_power()
+{
+    local cur opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    prevprev="${COMP_WORDS[COMP_CWORD-2]}"
+    opts="status json switch"
+
+    if [[ ${prev} == "switch" ]] ; then
+        opts="telescope_12v telescope_80v vaisala telescope_mixed telescope_covers rack_mixed light nuc2"
+    fi
+
+    if [[ ${prevprev} == "switch" ]] ; then
+        opts="on off"
+    fi
+
+    COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+    return 0
+}
+
+complete -F _power power

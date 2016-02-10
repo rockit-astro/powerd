@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+#
+# This file is part of powerd.
+#
+# powerd is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# powerd is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with powerd.  If not, see <http://www.gnu.org/licenses/>.
+
+# pylint: disable=broad-except
+# pylint: disable=too-few-public-methods
+
+"""Frontend for interacting with the PDUs and UPSes via SNMP."""
+
+import datetime
+import subprocess
+import Pyro4
+
+PYRO_HOST = '192.168.0.102'
+PYRO_PORT = 9009
+PYRO_NAME = 'power_daemon'
+
+# Timeout in seconds for SNMP commands
+SNMP_TIMEOUT = 2
+
+class ParameterType:
+    """Defines the way that an OID parameter should be handled"""
+    Bool, Int, ReadOnlyInt = range(3)
+
+class ParameterOID:
+    """Object ID string used by the SNMP device"""
+    UPSStatus = '.1.3.6.1.4.1.318.1.1.1.2.1.1.0'
+    UPSBattery = '.1.3.6.1.4.1.318.1.1.1.2.2.1.0'
+    UPSLoad = '.1.3.6.1.4.1.318.1.1.1.4.2.3.0'
+    PDUChannel1 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.1'
+    PDUChannel2 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.2'
+    PDUChannel3 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.3'
+    PDUChannel4 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.4'
+    PDUChannel5 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.5'
+    PDUChannel6 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.6'
+    PDUChannel7 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.7'
+    PDUChannel8 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.8'
+
+class APCDeviceParameter:
+    """Data structure encapsulating a PDU/UPS parameter"""
+    def __init__(self, name, oid_type, oid):
+        self.name = name
+        self.oid_type = oid_type
+        self.oid = oid
+
+    def parse_snmp_output(self, output):
+        """Convert a snmp output string for this parameter into a python value"""
+        parts = output.split(' ')
+        if parts[-2] != 'INTEGER:':
+            raise Exception('attempting to parse a non-integer SNMP string: ' + output)
+
+        if self.oid_type == ParameterType.Bool:
+            return int(parts[-1]) == 1
+
+        return int(parts[-1])
+
+MAIN_PDU_IP = '192.168.0.111'
+MAIN_PDU_PORTS = [
+    APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
+    APCDeviceParameter('telescope_80v', ParameterType.Bool, ParameterOID.PDUChannel3),
+    APCDeviceParameter('vaisala', ParameterType.Bool, ParameterOID.PDUChannel4),
+    APCDeviceParameter('telescope_mixed', ParameterType.Bool, ParameterOID.PDUChannel5),
+    APCDeviceParameter('telescope_covers', ParameterType.Bool, ParameterOID.PDUChannel6),
+    APCDeviceParameter('rack_mixed', ParameterType.Bool, ParameterOID.PDUChannel7),
+    APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
+]
+
+SECOND_PDU_IP = '192.168.0.112'
+SECOND_PDU_PORTS = [
+    APCDeviceParameter('nuc2', ParameterType.Bool, ParameterOID.PDUChannel2),
+]
+
+#MAIN_UPS_IP = '192.168.0.115'
+#DOME_UPS_IP = '192.168.0.116'
+
+class APCDevice:
+    """Wrapper for querying an APC PDU or UPS via SNMP"""
+    def __init__(self, ip, parameters):
+        self._ip = ip
+        self.parameters = parameters
+        self.parameters_by_name = {p.name: p for p in parameters}
+
+    def status(self):
+        """Return a dictionary of parameter values for this device"""
+        # Query all OIDs at once for efficiency
+        oids = [p.oid for p in self.parameters]
+        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip] + oids
+        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
+        lines = output.strip().split('\n')
+
+        # Return a dictionary of values keyed by parameter name
+        return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
+
+    def get_parameter(self, parameter_name):
+        """Returns the value of a named parameter"""
+        if parameter_name not in self.parameters_by_name:
+            return False
+
+        parameter = self.parameters_by_name[parameter_name]
+        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.oid]
+        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
+        return parameter.parse_snmp_output(output)
+
+    def set_parameter(self, parameter_name, value):
+        """Sets the value of a named parameter"""
+        if parameter_name not in self.parameters_by_name:
+            return False
+
+        parameter = self.parameters_by_name[parameter_name]
+        if parameter.oid_type == ParameterType.ReadOnlyInt:
+            return False
+
+        try:
+            str_value = str(value)
+            if parameter.oid_type == ParameterType.Bool:
+                str_value = '1' if value else '2'
+
+            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, parameter.oid,
+                    'i', str_value]
+
+            output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
+            return parameter.parse_snmp_output(output) == value
+        except Exception as exception:
+            print('{} ERROR: failed to issue SNMP command: {}' \
+                  .format(datetime.datetime.utcnow(), str(exception)))
+            return False
+
+class PowerDaemon:
+    """Wraps a web request to the PDUs and UPSes"""
+    def __init__(self):
+        self._devices = [
+            APCDevice(MAIN_PDU_IP, MAIN_PDU_PORTS),
+            APCDevice(SECOND_PDU_IP, SECOND_PDU_PORTS)
+        ]
+
+        # Map of parameter name to device holding the parameter
+        self._device_by_parameter = {}
+        for device in self._devices:
+            for parameter in device.parameters:
+                self._device_by_parameter.update({parameter.name: device})
+
+    @Pyro4.expose
+    def last_measurement(self):
+        """Query the latest valid measurement.
+        May return None if no data is available"""
+        try:
+            data = {'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')}
+            for device in self._devices:
+                data.update(device.status())
+            return data
+
+        except Exception as exception:
+            print('{} ERROR: failed to query SNMP: {}' \
+                  .format(datetime.datetime.utcnow(), str(exception)))
+            return None
+
+    @Pyro4.expose
+    def switch(self, name, enable):
+        """Switch a named UPS switch parameter on or off"""
+        if not name in self._device_by_parameter:
+            return False
+
+        return self._device_by_parameter[name].set_parameter(name, enable)
+
+    @Pyro4.expose
+    def value(self, name):
+        """Query the value of a named parameter"""
+        if not name in self._device_by_parameter:
+            return False
+
+        return self._device_by_parameter[name].get_parameter(name)
+
+def spawn_daemon():
+    """Spawns the daemon and registers it with Pyro"""
+    Pyro4.config.COMMTIMEOUT = 5
+    Pyro4.config.REQUIRE_EXPOSE = True
+
+    pyro = Pyro4.Daemon(host=PYRO_HOST, port=PYRO_PORT)
+    power = PowerDaemon()
+    uri = pyro.register(power, objectId=PYRO_NAME)
+
+    print('Starting Power system daemon with Pyro ID:', uri)
+    pyro.requestLoop()
+    print('Stopping Power system daemon with Pyro ID:', uri)
+
+if __name__ == '__main__':
+    spawn_daemon()
