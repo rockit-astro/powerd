@@ -12,12 +12,15 @@ Requires:  python3
 Part of the observatory software for the Warwick one-meter telescope.
 
 power is a commandline utility that interfaces with the power system daemon.
+light is a commandline utility to swith the dome light on and off.
 
 %build
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}/etc/bash_completion.d
 %{__install} %{_sourcedir}/power %{buildroot}%{_bindir}
+%{__install} %{_sourcedir}/light %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/completion/power %{buildroot}/etc/bash_completion.d/power
+%{__install} %{_sourcedir}/completion/light %{buildroot}/etc/bash_completion.d/light
 
 # Install python dependencies
 # This is horrible, but it seems to be the only way that actually works!
@@ -26,6 +29,8 @@ pip3 install Pyro4
 %files
 %defattr(0755,root,root,-)
 %{_bindir}/power
+%{_bindir}/light
 /etc/bash_completion.d/power
+/etc/bash_completion.d/light
 
 %changelog
