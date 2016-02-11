@@ -17,8 +17,6 @@
 
 """Commandline client for the dome light"""
 
-import datetime
-import json
 import os
 import sys
 import Pyro4
@@ -32,15 +30,18 @@ PYRO_URI = 'PYRO:' + PYRO_NAME + '@' + PYRO_HOST + ':' + str(PYRO_PORT)
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and (sys.argv[1] == 'on' or sys.argv[1] == 'off'):
-        enable = sys.argv[1] == 'on'
+    if len(sys.argv) > 1:
         Pyro4.config.COMMTIMEOUT = PYRO_COMM_TIMEOUT
-        with Pyro4.Proxy(PYRO_URI) as power:
-            if not power.switch('light', enable):
-                print('error: failed to switch light {}'.format(sys.argv[1]))
-                sys.exit(-1)
-            sys.exit(0)
+        if sys.argv[1] == 'on' or sys.argv[1] == 'off':
+            with Pyro4.Proxy(PYRO_URI) as power:
+                if not power.switch('light', sys.argv[1] == 'on'):
+                    print('error: failed to switch light {}'.format(sys.argv[1]))
+                    sys.exit(-1)
+        elif sys.argv[1] == 'status':
+            with Pyro4.Proxy(PYRO_URI) as power:
+                print('on' if power.value('light') else 'off')
+        sys.exit(0)
 
-    print('usage: {} (on|off)'.format(SCRIPT_NAME))
+    print('usage: {} (on|off|status)'.format(SCRIPT_NAME))
     sys.exit(-1)
 
