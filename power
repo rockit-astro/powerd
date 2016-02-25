@@ -32,10 +32,26 @@ PYRO_URI = 'PYRO:' + PYRO_NAME + '@' + PYRO_HOST + ':' + str(PYRO_PORT)
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
+FMT_YELLOW = u'\033[93m'
 FMT_GREEN = u'\033[92m'
 FMT_RED = u'\033[91m'
 FMT_BOLD = u'\033[1m'
 FMT_CLEAR = u'\033[0m'
+
+UPS_STATUS = {
+    1: FMT_BOLD + FMT_RED + 'UNKNOWN' + FMT_CLEAR,
+    2: FMT_BOLD + FMT_GREEN + 'ONLINE' + FMT_CLEAR,
+    3: FMT_BOLD + FMT_YELLOW + 'ON BATTERY' + FMT_CLEAR,
+    4: FMT_BOLD + FMT_RED + 'SMART BOOST' + FMT_CLEAR,
+    5: FMT_BOLD + FMT_RED + 'TIMED SLEEPING' + FMT_CLEAR,
+    6: FMT_BOLD + FMT_RED + 'SOFTWARE BYPASS' + FMT_CLEAR,
+    7: FMT_BOLD + FMT_RED + 'OFF' + FMT_CLEAR,
+    8: FMT_BOLD + FMT_RED + 'REBOOTING' + FMT_CLEAR,
+    9: FMT_BOLD + FMT_RED + 'SWITCHED BYPASS' + FMT_CLEAR,
+    10: FMT_BOLD + FMT_RED + 'HARDWARE FAILURE BYPASS' + FMT_CLEAR,
+    11: FMT_BOLD + FMT_RED + 'SLEEPING UNTIL POWER RETURNS' + FMT_CLEAR,
+    12: FMT_BOLD + FMT_RED + 'ON SMART TRIM' + FMT_CLEAR,
+}
 
 def print_status():
     """Prints the latest data in human-readable form"""
@@ -58,7 +74,14 @@ def print_status():
         print(' Rack (UK board): ' + format_power(latest['rack_mixed']))
         print('      Dome Light: ' + format_power(latest['light']))
         print('Support Computer: ' + format_power(latest['nuc2']))
-
+        print('        Main UPS: ' + format_ups(latest['main_ups_status'],
+                                                latest['main_ups_battery_remaining'],
+                                                latest['main_ups_battery_healthy'],
+                                                latest['main_ups_load']))
+        print('        Dome UPS: ' + format_ups(latest['dome_ups_status'],
+                                                latest['dome_ups_battery_remaining'],
+                                                latest['dome_ups_battery_healthy'],
+                                                latest['dome_ups_load']))
         print()
     else:
         print('error: failed to query data')
@@ -66,9 +89,19 @@ def print_status():
     return 0
 
 def format_power(enabled):
+    """Builds a formatted string indicating whether a switch is enabled"""
     if enabled:
         return FMT_GREEN + FMT_BOLD + 'ENABLED' + FMT_CLEAR
     return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
+
+def format_ups(status, battery_remaining, battery_healthy, load):
+    """Builds a formatted string reporting UPS status"""
+    ret = UPS_STATUS[status]
+    ret += ' ({2}{0}%{3} battery; {2}{1}%{3} load)'.format(battery_remaining, load,
+                                                           FMT_BOLD, FMT_CLEAR)
+    if not battery_healthy:
+        ret += FMT_BOLD + FMT_RED + ' REPLACE BATTERY' + FMT_CLEAR
+    return ret
 
 def print_json():
     """Prints the latest data in machine-readable form"""
