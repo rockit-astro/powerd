@@ -195,7 +195,7 @@ class PowerDaemon:
     @Pyro4.expose
     def switch(self, name, enable):
         """Switch a named UPS switch parameter on or off"""
-        if not name in self._device_by_parameter:
+        if name not in self._device_by_parameter:
             return False
 
         return self._device_by_parameter[name].set_parameter(name, enable)
@@ -203,7 +203,7 @@ class PowerDaemon:
     @Pyro4.expose
     def value(self, name):
         """Query the value of a named parameter"""
-        if not name in self._device_by_parameter:
+        if name not in self._device_by_parameter:
             return False
 
         return self._device_by_parameter[name].get_parameter(name)
