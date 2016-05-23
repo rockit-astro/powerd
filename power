@@ -66,14 +66,17 @@ def print_status():
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
         print('Data received \033[1m{}\033[0m:'.format(date))
+        print('   Tel. Computer: ' + format_power(latest['telescope_nuc']))
         print('Tel. Controllers: ' + format_power(latest['telescope_12v']))
         print('     Tel. Motors: ' + format_power(latest['telescope_80v']))
-        print('       Tel. Cube: ' + format_power(latest['telescope_mixed']))
-        print('     Tel. Covers: ' + format_power(latest['telescope_covers']))
+        print('     Blue Camera: ' + format_power(latest['blue_camera']))
+        print('      Red Camera: ' + format_power(latest['red_camera']))
+        print('  Red Foc. Motor: ' + format_power(latest['red_focus_motor']))
+        print(' Red Foc. Ctrler: ' + format_power(latest['red_focus_controller']))
+        print('Support Computer: ' + format_power(latest['rack_nuc']))
         print(' Weather Station: ' + format_power(latest['vaisala']))
         print(' Rack (UK board): ' + format_power(latest['rack_mixed']))
         print('      Dome Light: ' + format_power(latest['light']))
-        print('Support Computer: ' + format_power(latest['nuc2']))
         print('        Main UPS: ' + format_ups(latest['main_ups_status'],
                                                 latest['main_ups_battery_remaining'],
                                                 latest['main_ups_battery_healthy'],

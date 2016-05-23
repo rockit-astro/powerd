@@ -71,20 +71,23 @@ class APCDeviceParameter:
 
         return int(parts[-1])
 
-MAIN_PDU_IP = '192.168.0.111'
-MAIN_PDU_PORTS = [
+RACK_PDU_IP = '192.168.0.111'
+RACK_PDU_PORTS = [
+    APCDeviceParameter('rack_nuc', ParameterType.Bool, ParameterOID.PDUChannel1),
     APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
     APCDeviceParameter('telescope_80v', ParameterType.Bool, ParameterOID.PDUChannel3),
     APCDeviceParameter('vaisala', ParameterType.Bool, ParameterOID.PDUChannel4),
-    APCDeviceParameter('telescope_mixed', ParameterType.Bool, ParameterOID.PDUChannel5),
-    APCDeviceParameter('telescope_covers', ParameterType.Bool, ParameterOID.PDUChannel6),
     APCDeviceParameter('rack_mixed', ParameterType.Bool, ParameterOID.PDUChannel7),
     APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
 
-SECOND_PDU_IP = '192.168.0.112'
-SECOND_PDU_PORTS = [
-    APCDeviceParameter('nuc2', ParameterType.Bool, ParameterOID.PDUChannel2),
+TEL_PDU_IP = '192.168.0.112'
+TEL_PDU_PORTS = [
+    APCDeviceParameter('red_camera', ParameterType.Bool, ParameterOID.PDUChannel1),
+    APCDeviceParameter('blue_camera', ParameterType.Bool, ParameterOID.PDUChannel2),
+    APCDeviceParameter('telescope_nuc', ParameterType.Bool, ParameterOID.PDUChannel3),
+    APCDeviceParameter('red_focus_motor', ParameterType.Bool, ParameterOID.PDUChannel7),
+    APCDeviceParameter('red_focus_controller', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
 
 MAIN_UPS_IP = '192.168.0.115'
@@ -165,8 +168,8 @@ class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
     def __init__(self):
         self._devices = [
-            APCDevice(MAIN_PDU_IP, MAIN_PDU_PORTS),
-            APCDevice(SECOND_PDU_IP, SECOND_PDU_PORTS),
+            APCDevice(RACK_PDU_IP, RACK_PDU_PORTS),
+            APCDevice(TEL_PDU_IP, TEL_PDU_PORTS),
             APCDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS),
             APCDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS)
         ]
