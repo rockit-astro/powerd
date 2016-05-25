@@ -25,7 +25,7 @@ import Pyro4
 
 PYRO_HOST = '192.168.0.102'
 PYRO_PORT = 9009
-PYRO_NAME = 'power_daemon'
+PYRO_NAME = 'onemetre_power_daemon'
 PYRO_COMM_TIMEOUT = 5
 
 PYRO_URI = 'PYRO:' + PYRO_NAME + '@' + PYRO_HOST + ':' + str(PYRO_PORT)
