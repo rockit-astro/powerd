@@ -22,13 +22,8 @@ import json
 import os
 import sys
 import Pyro4
+import warwick.observatory as observatory
 
-PYRO_HOST = '192.168.0.102'
-PYRO_PORT = 9009
-PYRO_NAME = 'onemetre_power_daemon'
-PYRO_COMM_TIMEOUT = 5
-
-PYRO_URI = 'PYRO:' + PYRO_NAME + '@' + PYRO_HOST + ':' + str(PYRO_PORT)
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
@@ -57,7 +52,7 @@ def print_status():
     """Prints the latest data in human-readable form"""
     latest = None
     try:
-        with Pyro4.Proxy(PYRO_URI) as power:
+        with observatory.daemons.onemetre_power.connect() as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -110,7 +105,7 @@ def print_json():
     """Prints the latest data in machine-readable form"""
     latest = None
     try:
-        with Pyro4.Proxy(PYRO_URI) as power:
+        with observatory.daemons.onemetre_power.connect() as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -126,7 +121,7 @@ def switch_power(args):
         enable = False
         if args[1] == 'on' or args[1] == 'off':
             enable = args[1] == 'on'
-            with Pyro4.Proxy(PYRO_URI) as power:
+            with observatory.daemons.onemetre_power.connect() as power:
                 if not power.switch(args[0], enable):
                     print('error: failed to switch {} {}'.format(args[0], args[1]))
                     return -1
@@ -149,7 +144,6 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.exit(print_usage(SCRIPT_NAME))
 
-    Pyro4.config.COMMTIMEOUT = PYRO_COMM_TIMEOUT
     if sys.argv[1] == 'status':
         sys.exit(print_status())
     elif sys.argv[1] == 'json':

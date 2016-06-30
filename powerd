@@ -23,10 +23,7 @@
 import datetime
 import subprocess
 import Pyro4
-
-PYRO_HOST = '192.168.0.102'
-PYRO_PORT = 9009
-PYRO_NAME = 'onemetre_power_daemon'
+import warwick.observatory as observatory
 
 # Timeout in seconds for SNMP commands
 SNMP_TIMEOUT = 2
@@ -160,8 +157,10 @@ class APCDevice:
             output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
             return parameter.parse_snmp_output(output) == value
         except Exception as exception:
-            print('{} ERROR: failed to issue SNMP command: {}' \
+            print('{} ERROR: failed to send SNMP command: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
+            observatory.log.error('powerd', 'Failed to send SNMP command (' \
+                                  + str(exception) + ')')
             return False
 
 class PowerDaemon:
@@ -193,6 +192,8 @@ class PowerDaemon:
         except Exception as exception:
             print('{} ERROR: failed to query SNMP: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
+            observatory.log.error('powerd', 'Failed to query device (' \
+                                  + str(exception) + ')')
             return None
 
     @Pyro4.expose
@@ -201,7 +202,9 @@ class PowerDaemon:
         if name not in self._device_by_parameter:
             return False
 
-        return self._device_by_parameter[name].set_parameter(name, enable)
+        ret = self._device_by_parameter[name].set_parameter(name, enable)
+        observatory.log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
+        return ret
 
     @Pyro4.expose
     def value(self, name):
@@ -211,18 +214,5 @@ class PowerDaemon:
 
         return self._device_by_parameter[name].get_parameter(name)
 
-def spawn_daemon():
-    """Spawns the daemon and registers it with Pyro"""
-    Pyro4.config.COMMTIMEOUT = 5
-    Pyro4.config.REQUIRE_EXPOSE = True
-
-    pyro = Pyro4.Daemon(host=PYRO_HOST, port=PYRO_PORT)
-    power = PowerDaemon()
-    uri = pyro.register(power, objectId=PYRO_NAME)
-
-    print('Starting Power system daemon with Pyro ID:', uri)
-    pyro.requestLoop()
-    print('Stopping Power system daemon with Pyro ID:', uri)
-
 if __name__ == '__main__':
-    spawn_daemon()
+    observatory.daemons.onemetre_power.launch(PowerDaemon())
