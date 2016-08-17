@@ -83,6 +83,7 @@ TEL_PDU_PORTS = [
     APCDeviceParameter('red_camera', ParameterType.Bool, ParameterOID.PDUChannel1),
     APCDeviceParameter('blue_camera', ParameterType.Bool, ParameterOID.PDUChannel2),
     APCDeviceParameter('telescope_nuc', ParameterType.Bool, ParameterOID.PDUChannel3),
+    APCDeviceParameter('telescope_network', ParameterType.Bool, ParameterOID.PDUChannel6),
     APCDeviceParameter('red_focus_motor', ParameterType.Bool, ParameterOID.PDUChannel7),
     APCDeviceParameter('red_focus_controller', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
