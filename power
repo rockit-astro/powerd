@@ -70,6 +70,7 @@ def print_status():
         print('  Red Foc. Motor: ' + format_power(latest['red_focus_motor']))
         print(' Red Foc. Ctrler: ' + format_power(latest['red_focus_controller']))
         print('   Rack Computer: ' + format_power(latest['rack_nuc']))
+        print('    Rack Monitor: ' + format_power(latest['monitor']))
         print('     Dome Webcam: ' + format_power(latest['webcam']))
         print(' Dome Microphone: ' + format_power(latest['microphone']))
         print('      Dome Light: ' + format_power(latest['light']))
