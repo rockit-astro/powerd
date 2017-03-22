@@ -69,10 +69,12 @@ def print_status():
         print('      Red Camera: ' + format_power(latest['red_camera']))
         print('  Red Foc. Motor: ' + format_power(latest['red_focus_motor']))
         print(' Red Foc. Ctrler: ' + format_power(latest['red_focus_controller']))
-        print('Support Computer: ' + format_power(latest['rack_nuc']))
+        print('   Rack Computer: ' + format_power(latest['rack_nuc']))
+        print(' Internal Webcam: ' + format_power(latest['webcam']))
+        print('      Room Alert: ' + format_power(latest['roomalert']))
         print(' Weather Station: ' + format_power(latest['vaisala']))
-        print(' Rack (UK board): ' + format_power(latest['rack_mixed']))
         print('      Dome Light: ' + format_power(latest['light']))
+
         print('        Main UPS: ' + format_ups(latest['main_ups_status'],
                                                 latest['main_ups_battery_remaining'],
                                                 latest['main_ups_battery_healthy'],
