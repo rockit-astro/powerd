@@ -76,6 +76,7 @@ RACK_PDU_PORTS = [
     APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
     APCDeviceParameter('telescope_80v', ParameterType.Bool, ParameterOID.PDUChannel3),
     APCDeviceParameter('vaisala', ParameterType.Bool, ParameterOID.PDUChannel4),
+    APCDeviceParameter('microphone', ParameterType.Bool, ParameterOID.PDUChannel5),
     APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
 
