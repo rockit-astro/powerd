@@ -70,7 +70,7 @@ class APCDeviceParameter:
 
         return int(parts[-1])
 
-RACK_PDU_IP = '192.168.0.111'
+RACK_PDU_IP = '10.2.6.212'
 RACK_PDU_PORTS = [
     APCDeviceParameter('rack_nuc', ParameterType.Bool, ParameterOID.PDUChannel1),
     APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
@@ -81,7 +81,7 @@ RACK_PDU_PORTS = [
     APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
 
-TEL_PDU_IP = '192.168.0.112'
+TEL_PDU_IP = '10.2.6.213'
 TEL_PDU_PORTS = [
     APCDeviceParameter('red_camera', ParameterType.Bool, ParameterOID.PDUChannel1),
     APCDeviceParameter('blue_camera', ParameterType.Bool, ParameterOID.PDUChannel2),
@@ -90,7 +90,7 @@ TEL_PDU_PORTS = [
     APCDeviceParameter('red_focus_controller', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
 
-MAIN_UPS_IP = '192.168.0.115'
+MAIN_UPS_IP = '10.2.6.210'
 MAIN_UPS_PARAMETERS = [
     APCDeviceParameter('main_ups_status', ParameterType.ReadOnlyInt, ParameterOID.UPSStatus),
     APCDeviceParameter('main_ups_battery_remaining', ParameterType.ReadOnlyGauge,
@@ -100,7 +100,7 @@ MAIN_UPS_PARAMETERS = [
     APCDeviceParameter('main_ups_load', ParameterType.ReadOnlyGauge, ParameterOID.UPSOutputLoad),
 ]
 
-DOME_UPS_IP = '192.168.0.116'
+DOME_UPS_IP = '10.2.6.211'
 DOME_UPS_PARAMETERS = [
     APCDeviceParameter('dome_ups_status', ParameterType.ReadOnlyInt, ParameterOID.UPSStatus),
     APCDeviceParameter('dome_ups_battery_remaining', ParameterType.ReadOnlyGauge,
@@ -120,7 +120,7 @@ class PoeDeviceParameter:
         """Convert a snmp output string for this parameter into a python value"""
         return int(output.split(' ')[-1]) == 3
 
-RACK_SWITCH_IP = '192.168.0.113'
+RACK_SWITCH_IP = '10.2.6.214'
 RACK_SWITCH_PARAMETERS = [
     PoeDeviceParameter('telescope_network', 1),
     PoeDeviceParameter('webcam', 3),
