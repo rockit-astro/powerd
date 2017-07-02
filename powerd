@@ -76,7 +76,6 @@ RACK_PDU_PORTS = [
     APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
     APCDeviceParameter('telescope_80v', ParameterType.Bool, ParameterOID.PDUChannel3),
     APCDeviceParameter('vaisala', ParameterType.Bool, ParameterOID.PDUChannel4),
-    APCDeviceParameter('microphone', ParameterType.Bool, ParameterOID.PDUChannel5),
     APCDeviceParameter('monitor', ParameterType.Bool, ParameterOID.PDUChannel6),
     APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
 ]
@@ -125,6 +124,7 @@ RACK_SWITCH_PARAMETERS = [
     PoeDeviceParameter('telescope_network', 1),
     PoeDeviceParameter('webcam', 3),
     PoeDeviceParameter('roomalert', 5),
+    PoeDeviceParameter('microphone', 7),
 ]
 
 class APCDevice:

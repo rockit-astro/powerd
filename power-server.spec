@@ -1,5 +1,5 @@
 Name:      onemetre-power-server
-Version:   1.12
+Version:   1.13
 Release:   1
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon for the Warwick one-metre telescope.
