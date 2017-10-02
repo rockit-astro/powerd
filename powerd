@@ -22,7 +22,9 @@
 
 import datetime
 import subprocess
+import threading
 import Pyro4
+import serial
 import warwick.observatory as observatory
 
 # Timeout in seconds for SNMP commands
@@ -109,6 +111,8 @@ DOME_UPS_PARAMETERS = [
     APCDeviceParameter('dome_ups_load', ParameterType.ReadOnlyGauge, ParameterOID.UPSOutputLoad),
 ]
 
+DEHUMIDIFIER_SERIAL_PORT = '/dev/ttyACM0'
+
 class PoeDeviceParameter:
     """Data structure encapsulating a PoE parameter"""
     def __init__(self, name, port):
@@ -126,6 +130,11 @@ RACK_SWITCH_PARAMETERS = [
     PoeDeviceParameter('roomalert', 5),
     PoeDeviceParameter('microphone', 7),
 ]
+
+class GenericParameter:
+    """Data structure encapsulating a switch parameter"""
+    def __init__(self, name):
+        self.name = name
 
 class APCDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""
@@ -237,6 +246,131 @@ class PoeDevice:
                                   + str(exception) + ')')
             return False
 
+class DehumidifierSwitchDevice:
+    """Wrapper for querying an attached Arduino via RS232"""
+    def __init__(self, port_name, parameter, power_daemon):
+        self._port = None
+        self._port_name = port_name
+        self._lock = threading.Lock()
+        self._port_connected = False
+        self._updated_condition = threading.Condition()
+
+
+        self._enabled = False
+        self._enabled_date = datetime.datetime.min
+        self._desired_enabled = False
+
+        self._button_light = False
+        self._desired_button_light = False
+
+        runloop = threading.Thread(target=self.run)
+        runloop.daemon = True
+        runloop.start()
+
+        self._power_daemon = power_daemon
+        self.parameters = [parameter]
+
+    def run(self):
+        """Main run loop"""
+        while True:
+            # Initial setup
+            try:
+                self._port = serial.Serial(self._port_name, 9600, timeout=3)
+                print('Connected to', self._port_name)
+
+                first_query = self._enabled_date == datetime.datetime.min
+                prefix = 'Established' if first_query else 'Restored'
+                observatory.log.info('powerd', prefix + ' contact with Dehumidifier switch')
+                self._port_connected = True
+            except Exception as exception:
+                if self._port_connected:
+                    observatory.log.error('powerd', 'Lost contact with Dehumidifier switch')
+
+                print('error: failed to connect to Dehumidifier switch')
+                print(exception)
+                print('Will retry in 10 seconds...')
+                time.sleep(10.)
+                continue
+
+            try:
+                # Flush any stale state
+                self._port.flushInput()
+                self._port.flushOutput()
+
+                # Main run loop
+                while True:
+                    data = ord(self._port.read(1))
+
+                    # First bit is set when the relay to the dehumidifier is enabled
+                    enabled = data & 0x01
+
+                    # Second bit is set when the status light is active
+                    # This is used internally where we don't care about thread safety, so set directly
+                    self._button_light = (data & 0x02) != 0
+
+                    if enabled != self._enabled:
+                        with self._updated_condition:
+                            self._enabled = enabled
+                            self._enabled_date = datetime.datetime.utcnow()
+
+                            # Wake up any threads that requested the change so it can return
+                            self._updated_condition.notify_all()
+
+                    # Third bit is set for one update cycle when the button is pressed
+                    if data & 0x04:
+                        light_enabled = self._power_daemon.value('light')
+                        if not self._power_daemon.switch('light', not light_enabled):
+                            observatory.log.error('powerd', 'Failed to toggle dome lights')
+
+                    if self._desired_enabled != self._enabled or self._desired_button_light != self._button_light:
+                        command = (0x01 if self._desired_enabled else 0) | \
+                                  (0x02 if self._desired_button_light else 0)
+                        self._port.write(chr(command).encode('ascii'))
+
+            except Exception as exception:
+                self._port.close()
+                if self._port_connected:
+                    observatory.log.error('powerd', 'Lost contact with dehumidifier switch')
+                    print('error: failed to connect to Dehumidifier switch')
+                    print(exception)
+
+                self._port_connected = False
+                print('Will retry in 10 seconds...')
+                time.sleep(10.)
+
+    def status(self):
+        """Return a dictionary of parameter values for this device"""
+        with self._updated_condition:
+            return {self.parameters[0].name: self._enabled}
+
+    def get_parameter(self, parameter_name):
+        """Returns the value of a named parameter"""
+        if parameter_name != self.parameters[0].name:
+            return False
+
+        with self._updated_condition:
+            return self._enabled
+
+    def set_parameter(self, parameter_name, value):
+        """Sets the value of a named parameter"""
+        if parameter_name != self.parameters[0].name:
+            return False
+
+        with self._updated_condition:
+            # Already in the desired state?
+            if self._desired_enabled == value and self._enabled == value:
+                return True
+
+            # Wait for the change to apply
+            # Arduino reports every 0.5s, so 1.5s should always be sufficient
+            self._desired_enabled = value
+            self._updated_condition.wait(1.5)
+
+        return self._enabled == self._desired_enabled
+
+    def set_light(self, enabled):
+        self._desired_button_light = enabled
+
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
     def __init__(self):
@@ -246,6 +380,7 @@ class PowerDaemon:
             APCDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS),
             APCDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS),
             PoeDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS),
+            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, GenericParameter('dehumidifier'), self),
         ]
 
         # Map of parameter name to device holding the parameter
@@ -265,7 +400,7 @@ class PowerDaemon:
             return data
 
         except Exception as exception:
-            print('{} ERROR: failed to query SNMP: {}' \
+            print('{} ERROR: failed to query: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
             observatory.log.error('powerd', 'Failed to query device (' \
                                   + str(exception) + ')')
@@ -279,6 +414,11 @@ class PowerDaemon:
 
         ret = self._device_by_parameter[name].set_parameter(name, enable)
         observatory.log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
+
+        # Light status is also shown on dehumidifier box button
+        if ret and name == 'light':
+            self._device_by_parameter['dehumidifier'].set_light(enable)
+
         return ret
 
     @Pyro4.expose

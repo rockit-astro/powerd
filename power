@@ -76,6 +76,7 @@ def print_status():
         print('      Dome Light: ' + format_power(latest['light']))
         print('      Room Alert: ' + format_power(latest['roomalert']))
         print(' Weather Station: ' + format_power(latest['vaisala']))
+        print('    Dehumidifier: ' + format_power(latest['dehumidifier']))
         print('        Main UPS: ' + format_ups(latest['main_ups_status'],
                                                 latest['main_ups_battery_remaining'],
                                                 latest['main_ups_battery_healthy'],

@@ -8,7 +8,7 @@ _power()
     opts="status json switch"
 
     if [[ ${prev} == "switch" ]] ; then
-        opts="rack_nuc monitor telescope_12v telescope_80v telescope_network vaisala webcam microphone roomalert light red_camera blue_camera telescope_nuc red_focus_motor red_focus_controller"
+        opts="rack_nuc monitor telescope_12v telescope_80v telescope_network vaisala webcam microphone roomalert light red_camera blue_camera telescope_nuc red_focus_motor red_focus_controller dehumidifier"
     fi
 
     if [[ ${prevprev} == "switch" ]] ; then
