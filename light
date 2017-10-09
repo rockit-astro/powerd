@@ -20,7 +20,7 @@
 import os
 import sys
 import Pyro4
-import warwick.observatory as observatory
+from warwick.observatory.common import daemons
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 
@@ -31,14 +31,13 @@ if __name__ == '__main__':
 
     try:
         if sys.argv[1] == 'on' or sys.argv[1] == 'off':
-            with observatory.daemons.onemetre_power.connect() as power:
+            with daemons.onemetre_power.connect() as power:
                 if not power.switch('light', sys.argv[1] == 'on'):
                     print('error: failed to switch light {}'.format(sys.argv[1]))
                     sys.exit(-1)
         elif sys.argv[1] == 'status':
-            with observatory.daemons.onemetre_power.connect() as power:
+            with daemons.onemetre_power.connect() as power:
                 print('on' if power.value('light') else 'off')
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power daemon')
         sys.exit(-1)
-

@@ -6,8 +6,8 @@ RPMBUILD = rpmbuild --define "_topdir %(pwd)/build" \
 
 all:
 	mkdir -p build
-	${RPMBUILD} -ba power-server.spec
-	${RPMBUILD} -ba power-client.spec
+	${RPMBUILD} -ba onemetre-power-server.spec
+	${RPMBUILD} -ba onemetre-power-client.spec
 	mv build/noarch/*.rpm .
 	rm -rf build
 

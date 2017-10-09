@@ -23,9 +23,10 @@
 import datetime
 import subprocess
 import threading
+import time
 import Pyro4
 import serial
-import warwick.observatory as observatory
+from warwick.observatory.common import daemons, log
 
 # Timeout in seconds for SNMP commands
 SNMP_TIMEOUT = 2
@@ -188,7 +189,7 @@ class APCDevice:
         except Exception as exception:
             print('{} ERROR: failed to send SNMP command: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
-            observatory.log.error('powerd', 'Failed to send SNMP command (' \
+            log.error('powerd', 'Failed to send SNMP command (' \
                                   + str(exception) + ')')
             return False
 
@@ -242,7 +243,7 @@ class PoeDevice:
         except Exception as exception:
             print('{} ERROR: failed to send SNMP command: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
-            observatory.log.error('powerd', 'Failed to send SNMP command (' \
+            log.error('powerd', 'Failed to send SNMP command (' \
                                   + str(exception) + ')')
             return False
 
@@ -280,11 +281,11 @@ class DehumidifierSwitchDevice:
 
                 first_query = self._enabled_date == datetime.datetime.min
                 prefix = 'Established' if first_query else 'Restored'
-                observatory.log.info('powerd', prefix + ' contact with Dehumidifier switch')
+                log.info('powerd', prefix + ' contact with Dehumidifier switch')
                 self._port_connected = True
             except Exception as exception:
                 if self._port_connected:
-                    observatory.log.error('powerd', 'Lost contact with Dehumidifier switch')
+                    log.error('powerd', 'Lost contact with Dehumidifier switch')
 
                 print('error: failed to connect to Dehumidifier switch')
                 print(exception)
@@ -305,7 +306,7 @@ class DehumidifierSwitchDevice:
                     enabled = data & 0x01
 
                     # Second bit is set when the status light is active
-                    # This is used internally where we don't care about thread safety, so set directly
+                    # Used internally where we don't care about thread safety, so set directly
                     self._button_light = (data & 0x02) != 0
 
                     if enabled != self._enabled:
@@ -320,9 +321,10 @@ class DehumidifierSwitchDevice:
                     if data & 0x04:
                         light_enabled = self._power_daemon.value('light')
                         if not self._power_daemon.switch('light', not light_enabled):
-                            observatory.log.error('powerd', 'Failed to toggle dome lights')
+                            log.error('powerd', 'Failed to toggle dome lights')
 
-                    if self._desired_enabled != self._enabled or self._desired_button_light != self._button_light:
+                    if self._desired_enabled != self._enabled \
+                            or self._desired_button_light != self._button_light:
                         command = (0x01 if self._desired_enabled else 0) | \
                                   (0x02 if self._desired_button_light else 0)
                         self._port.write(chr(command).encode('ascii'))
@@ -330,7 +332,7 @@ class DehumidifierSwitchDevice:
             except Exception as exception:
                 self._port.close()
                 if self._port_connected:
-                    observatory.log.error('powerd', 'Lost contact with dehumidifier switch')
+                    log.error('powerd', 'Lost contact with dehumidifier switch')
                     print('error: failed to connect to Dehumidifier switch')
                     print(exception)
 
@@ -380,7 +382,8 @@ class PowerDaemon:
             APCDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS),
             APCDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS),
             PoeDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS),
-            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, GenericParameter('dehumidifier'), self),
+            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, GenericParameter('dehumidifier'),
+                                     self),
         ]
 
         # Map of parameter name to device holding the parameter
@@ -402,7 +405,7 @@ class PowerDaemon:
         except Exception as exception:
             print('{} ERROR: failed to query: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
-            observatory.log.error('powerd', 'Failed to query device (' \
+            log.error('powerd', 'Failed to query device (' \
                                   + str(exception) + ')')
             return None
 
@@ -413,7 +416,7 @@ class PowerDaemon:
             return False
 
         ret = self._device_by_parameter[name].set_parameter(name, enable)
-        observatory.log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
+        log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
 
         # Light status is also shown on dehumidifier box button
         if ret and name == 'light':
@@ -430,4 +433,4 @@ class PowerDaemon:
         return self._device_by_parameter[name].get_parameter(name)
 
 if __name__ == '__main__':
-    observatory.daemons.onemetre_power.launch(PowerDaemon())
+    daemons.onemetre_power.launch(PowerDaemon())

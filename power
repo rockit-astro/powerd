@@ -22,7 +22,7 @@ import json
 import os
 import sys
 import Pyro4
-import warwick.observatory as observatory
+from warwick.observatory.common import daemons
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
@@ -52,7 +52,7 @@ def print_status():
     """Prints the latest data in human-readable form"""
     latest = None
     try:
-        with observatory.daemons.onemetre_power.connect() as power:
+        with daemons.onemetre_power.connect() as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -110,7 +110,7 @@ def print_json():
     """Prints the latest data in machine-readable form"""
     latest = None
     try:
-        with observatory.daemons.onemetre_power.connect() as power:
+        with daemons.onemetre_power.connect() as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -126,7 +126,7 @@ def switch_power(args):
         enable = False
         if args[1] == 'on' or args[1] == 'off':
             enable = args[1] == 'on'
-            with observatory.daemons.onemetre_power.connect() as power:
+            with daemons.onemetre_power.connect() as power:
                 if not power.switch(args[0], enable):
                     print('error: failed to switch {} {}'.format(args[0], args[1]))
                     return -1
@@ -158,4 +158,3 @@ if __name__ == '__main__':
 
     # Command not found
     sys.exit(print_usage(SCRIPT_NAME))
-
