@@ -81,7 +81,7 @@ RACK_SWITCH_PARAMETERS = [
     NetgearPoESocket('microphone', 7),
 ]
 
-DEHUMIDIFIER_SERIAL_PORT = '/dev/ttyACM0'
+DEHUMIDIFIER_SERIAL_PORT = '/dev/dehumidifier'
 
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""

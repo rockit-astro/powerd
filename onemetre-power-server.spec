@@ -22,9 +22,11 @@ powerd is a Pyro frontend for interacting with the PDUs and UPSes via SNMP.
 %build
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_unitdir}
+mkdir -p %{buildroot}%{_udevrulesdir}
 
 %{__install} %{_sourcedir}/powerd %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/powerd.service %{buildroot}%{_unitdir}
+%{__install} %{_sourcedir}/10-onemetre-power.rules %{buildroot}%{_udevrulesdir}
 
 %pre
 %if 0%{?suse_version}
@@ -60,7 +62,8 @@ mkdir -p %{buildroot}%{_unitdir}
 %files
 %defattr(0755,root,root,-)
 %{_bindir}/powerd
-%defattr(-,root,root,-)
+%defattr(0644,root,root,-)
+%{_udevrulesdir}/10-onemetre-power.rules
 %{_unitdir}/powerd.service
 
 %changelog
