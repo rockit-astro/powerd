@@ -8,6 +8,8 @@ Part of the observatory software for the Warwick one-meter telescope.
 
 `light` is a commandline utility to swith the dome light on and off.
 
+`python34-warwick-w1m-power` is a python module with the common power code.
+
 See [Software Infrastructure](https://github.com/warwick-one-metre/docs/wiki/Software-Infrastructure) for an overview of the W1m software architecture and instructions for developing and deploying the code.
 
 ### Software Setup

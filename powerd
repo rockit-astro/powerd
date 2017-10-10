@@ -21,369 +21,78 @@
 """Frontend for interacting with the PDUs and UPSes via SNMP."""
 
 import datetime
-import subprocess
-import threading
-import time
 import Pyro4
-import serial
+
 from warwick.observatory.common import daemons, log
+from warwick.w1m.power import (
+    DehumidifierSwitchDevice,
+    Parameter,
+    SNMPDevice,
+    APCPDUSocket,
+    APCUPSStatus,
+    APCUPSBatteryRemaining,
+    APCUPSBatteryHealthy,
+    APCUPSOutputLoad,
+    NetgearPoESocket)
 
 # Timeout in seconds for SNMP commands
 SNMP_TIMEOUT = 2
 
-class ParameterType:
-    """Defines the way that an OID parameter should be handled"""
-    Bool, ReadOnlyBool, Int, ReadOnlyInt, ReadOnlyGauge = range(5)
-
-class ParameterOID:
-    """Object ID string used by the SNMP device"""
-    UPSStatus = '.1.3.6.1.4.1.318.1.1.1.4.1.1.0'
-    UPSBatteryRemaining = '.1.3.6.1.4.1.318.1.1.1.2.2.1.0'
-    UPSBatteryHealthy = '.1.3.6.1.4.1.318.1.1.1.2.2.4.0'
-    UPSOutputLoad = '.1.3.6.1.4.1.318.1.1.1.4.2.3.0'
-    PDUChannel1 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.1'
-    PDUChannel2 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.2'
-    PDUChannel3 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.3'
-    PDUChannel4 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.4'
-    PDUChannel5 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.5'
-    PDUChannel6 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.6'
-    PDUChannel7 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.7'
-    PDUChannel8 = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.8'
-    PoEStatusPrefix = '.1.3.6.1.2.1.105.1.1.1.6.1.'
-    PoESwitchPrefix = '.1.3.6.1.2.1.105.1.1.1.3.1.'
-
-class APCDeviceParameter:
-    """Data structure encapsulating a PDU/UPS parameter"""
-    def __init__(self, name, oid_type, oid):
-        self.name = name
-        self.oid_type = oid_type
-        self.oid = oid
-
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
-        parts = output.split(' ')
-
-        if self.oid_type == ParameterType.ReadOnlyGauge and parts[-2] != 'Gauge32:':
-            raise Exception('Unabled to parse Gauge32 from SNMP output: ' + output)
-        elif self.oid_type != ParameterType.ReadOnlyGauge and parts[-2] != 'INTEGER:':
-            raise Exception('Unabled to parse integer from SNMP output: ' + output)
-
-        if self.oid_type == ParameterType.Bool or self.oid_type == ParameterType.ReadOnlyBool:
-            return int(parts[-1]) == 1
-
-        return int(parts[-1])
-
 RACK_PDU_IP = '10.2.6.212'
 RACK_PDU_PORTS = [
-    APCDeviceParameter('rack_nuc', ParameterType.Bool, ParameterOID.PDUChannel1),
-    APCDeviceParameter('telescope_12v', ParameterType.Bool, ParameterOID.PDUChannel2),
-    APCDeviceParameter('telescope_80v', ParameterType.Bool, ParameterOID.PDUChannel3),
-    APCDeviceParameter('vaisala', ParameterType.Bool, ParameterOID.PDUChannel4),
-    APCDeviceParameter('monitor', ParameterType.Bool, ParameterOID.PDUChannel6),
-    APCDeviceParameter('light', ParameterType.Bool, ParameterOID.PDUChannel8)
+    APCPDUSocket('rack_nuc', 1),
+    APCPDUSocket('telescope_12v', 2),
+    APCPDUSocket('telescope_80v', 3),
+    APCPDUSocket('vaisala', 4),
+    APCPDUSocket('monitor', 6),
+    APCPDUSocket('light', 8)
 ]
 
 TEL_PDU_IP = '10.2.6.213'
 TEL_PDU_PORTS = [
-    APCDeviceParameter('red_camera', ParameterType.Bool, ParameterOID.PDUChannel1),
-    APCDeviceParameter('blue_camera', ParameterType.Bool, ParameterOID.PDUChannel2),
-    APCDeviceParameter('telescope_nuc', ParameterType.Bool, ParameterOID.PDUChannel3),
-    APCDeviceParameter('red_focus_motor', ParameterType.Bool, ParameterOID.PDUChannel7),
-    APCDeviceParameter('red_focus_controller', ParameterType.Bool, ParameterOID.PDUChannel8)
+    APCPDUSocket('red_camera', 1),
+    APCPDUSocket('blue_camera', 2),
+    APCPDUSocket('telescope_nuc', 3),
+    APCPDUSocket('red_focus_motor', 7),
+    APCPDUSocket('red_focus_controller', 8)
 ]
 
 MAIN_UPS_IP = '10.2.6.210'
 MAIN_UPS_PARAMETERS = [
-    APCDeviceParameter('main_ups_status', ParameterType.ReadOnlyInt, ParameterOID.UPSStatus),
-    APCDeviceParameter('main_ups_battery_remaining', ParameterType.ReadOnlyGauge,
-                       ParameterOID.UPSBatteryRemaining),
-    APCDeviceParameter('main_ups_battery_healthy', ParameterType.ReadOnlyBool,
-                       ParameterOID.UPSBatteryHealthy),
-    APCDeviceParameter('main_ups_load', ParameterType.ReadOnlyGauge, ParameterOID.UPSOutputLoad),
+    APCUPSStatus('main_ups_status'),
+    APCUPSBatteryRemaining('main_ups_battery_remaining'),
+    APCUPSBatteryHealthy('main_ups_battery_healthy'),
+    APCUPSOutputLoad('main_ups_load'),
 ]
 
 DOME_UPS_IP = '10.2.6.211'
 DOME_UPS_PARAMETERS = [
-    APCDeviceParameter('dome_ups_status', ParameterType.ReadOnlyInt, ParameterOID.UPSStatus),
-    APCDeviceParameter('dome_ups_battery_remaining', ParameterType.ReadOnlyGauge,
-                       ParameterOID.UPSBatteryRemaining),
-    APCDeviceParameter('dome_ups_battery_healthy', ParameterType.ReadOnlyBool,
-                       ParameterOID.UPSBatteryHealthy),
-    APCDeviceParameter('dome_ups_load', ParameterType.ReadOnlyGauge, ParameterOID.UPSOutputLoad),
+    APCUPSStatus('dome_ups_status'),
+    APCUPSBatteryRemaining('dome_ups_battery_remaining'),
+    APCUPSBatteryHealthy('dome_ups_battery_healthy'),
+    APCUPSOutputLoad('dome_ups_load'),
 ]
-
-DEHUMIDIFIER_SERIAL_PORT = '/dev/ttyACM0'
-
-class PoeDeviceParameter:
-    """Data structure encapsulating a PoE parameter"""
-    def __init__(self, name, port):
-        self.name = name
-        self.port = port
-
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
-        return int(output.split(' ')[-1]) == 3
 
 RACK_SWITCH_IP = '10.2.6.214'
 RACK_SWITCH_PARAMETERS = [
-    PoeDeviceParameter('telescope_network', 1),
-    PoeDeviceParameter('webcam', 3),
-    PoeDeviceParameter('roomalert', 5),
-    PoeDeviceParameter('microphone', 7),
+    NetgearPoESocket('telescope_network', 1),
+    NetgearPoESocket('webcam', 3),
+    NetgearPoESocket('roomalert', 5),
+    NetgearPoESocket('microphone', 7),
 ]
 
-class GenericParameter:
-    """Data structure encapsulating a switch parameter"""
-    def __init__(self, name):
-        self.name = name
-
-class APCDevice:
-    """Wrapper for querying an APC PDU or UPS via SNMP"""
-    def __init__(self, ip, parameters):
-        self._ip = ip
-        self.parameters = parameters
-        self.parameters_by_name = {p.name: p for p in parameters}
-
-    def status(self):
-        """Return a dictionary of parameter values for this device"""
-        # Query all OIDs at once for efficiency
-        oids = [p.oid for p in self.parameters]
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip] + oids
-        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-        lines = output.strip().split('\n')
-
-        # Return a dictionary of values keyed by parameter name
-        return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
-
-    def get_parameter(self, parameter_name):
-        """Returns the value of a named parameter"""
-        if parameter_name not in self.parameters_by_name:
-            return False
-
-        parameter = self.parameters_by_name[parameter_name]
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.oid]
-        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-        return parameter.parse_snmp_output(output)
-
-    def set_parameter(self, parameter_name, value):
-        """Sets the value of a named parameter"""
-        if parameter_name not in self.parameters_by_name:
-            return False
-
-        parameter = self.parameters_by_name[parameter_name]
-        if parameter.oid_type == ParameterType.ReadOnlyInt:
-            return False
-        if parameter.oid_type == ParameterType.ReadOnlyBool:
-            return False
-
-        try:
-            str_value = str(value)
-            if parameter.oid_type == ParameterType.Bool:
-                str_value = '1' if value else '2'
-
-            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, parameter.oid,
-                    'i', str_value]
-
-            output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-            return parameter.parse_snmp_output(output) == value
-        except Exception as exception:
-            print('{} ERROR: failed to send SNMP command: {}' \
-                  .format(datetime.datetime.utcnow(), str(exception)))
-            log.error('powerd', 'Failed to send SNMP command (' \
-                                  + str(exception) + ')')
-            return False
-
-class PoeDevice:
-    """Wrapper for querying an Netgear PoE switch UPS via SNMP"""
-    def __init__(self, ip, parameters):
-        self._ip = ip
-        self.parameters = parameters
-        self.parameters_by_name = {p.name: p for p in parameters}
-
-    def status(self):
-        """Return a dictionary of parameter values for this device"""
-        # Query all OIDs at once for efficiency
-        oids = [ParameterOID.PoEStatusPrefix + str(p.port) for p in self.parameters]
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip] + oids
-        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-        lines = output.strip().split('\n')
-
-        # Return a dictionary of values keyed by parameter name
-        return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
-
-    def get_parameter(self, parameter_name):
-        """Returns the value of a named parameter"""
-        if parameter_name not in self.parameters_by_name:
-            return False
-
-        parameter = self.parameters_by_name[parameter_name]
-        oid = ParameterOID.PoEStatusPrefix + str(parameter.port)
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, oid]
-        output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-        return parameter.parse_snmp_output(output)
-
-    def set_parameter(self, parameter_name, value):
-        """Sets the value of a named parameter"""
-        if parameter_name not in self.parameters_by_name:
-            return False
-
-        parameter = self.parameters_by_name[parameter_name]
-        oid = ParameterOID.PoESwitchPrefix + str(parameter.port)
-
-        try:
-            str_value = '1' if value else '2'
-
-            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, oid,
-                    'i', str_value]
-            output = subprocess.check_output(args, universal_newlines=True, timeout=SNMP_TIMEOUT)
-
-            # The switch OID returns true/false, different to the status code that is
-            # returned by the status OID and parsed by parse_snmp_output
-            return (int(output.split(' ')[-1]) == 1) == value
-        except Exception as exception:
-            print('{} ERROR: failed to send SNMP command: {}' \
-                  .format(datetime.datetime.utcnow(), str(exception)))
-            log.error('powerd', 'Failed to send SNMP command (' \
-                                  + str(exception) + ')')
-            return False
-
-class DehumidifierSwitchDevice:
-    """Wrapper for querying an attached Arduino via RS232"""
-    def __init__(self, port_name, parameter, power_daemon):
-        self._port = None
-        self._port_name = port_name
-        self._lock = threading.Lock()
-        self._port_connected = False
-        self._updated_condition = threading.Condition()
-
-
-        self._enabled = False
-        self._enabled_date = datetime.datetime.min
-        self._desired_enabled = False
-
-        self._button_light = False
-        self._desired_button_light = False
-
-        runloop = threading.Thread(target=self.run)
-        runloop.daemon = True
-        runloop.start()
-
-        self._power_daemon = power_daemon
-        self.parameters = [parameter]
-
-    def run(self):
-        """Main run loop"""
-        while True:
-            # Initial setup
-            try:
-                self._port = serial.Serial(self._port_name, 9600, timeout=3)
-                print('Connected to', self._port_name)
-
-                first_query = self._enabled_date == datetime.datetime.min
-                prefix = 'Established' if first_query else 'Restored'
-                log.info('powerd', prefix + ' contact with Dehumidifier switch')
-                self._port_connected = True
-            except Exception as exception:
-                if self._port_connected:
-                    log.error('powerd', 'Lost contact with Dehumidifier switch')
-
-                print('error: failed to connect to Dehumidifier switch')
-                print(exception)
-                print('Will retry in 10 seconds...')
-                time.sleep(10.)
-                continue
-
-            try:
-                # Flush any stale state
-                self._port.flushInput()
-                self._port.flushOutput()
-
-                # Main run loop
-                while True:
-                    data = ord(self._port.read(1))
-
-                    # First bit is set when the relay to the dehumidifier is enabled
-                    enabled = data & 0x01
-
-                    # Second bit is set when the status light is active
-                    # Used internally where we don't care about thread safety, so set directly
-                    self._button_light = (data & 0x02) != 0
-
-                    if enabled != self._enabled:
-                        with self._updated_condition:
-                            self._enabled = enabled
-                            self._enabled_date = datetime.datetime.utcnow()
-
-                            # Wake up any threads that requested the change so it can return
-                            self._updated_condition.notify_all()
-
-                    # Third bit is set for one update cycle when the button is pressed
-                    if data & 0x04:
-                        light_enabled = self._power_daemon.value('light')
-                        if not self._power_daemon.switch('light', not light_enabled):
-                            log.error('powerd', 'Failed to toggle dome lights')
-
-                    if self._desired_enabled != self._enabled \
-                            or self._desired_button_light != self._button_light:
-                        command = (0x01 if self._desired_enabled else 0) | \
-                                  (0x02 if self._desired_button_light else 0)
-                        self._port.write(chr(command).encode('ascii'))
-
-            except Exception as exception:
-                self._port.close()
-                if self._port_connected:
-                    log.error('powerd', 'Lost contact with dehumidifier switch')
-                    print('error: failed to connect to Dehumidifier switch')
-                    print(exception)
-
-                self._port_connected = False
-                print('Will retry in 10 seconds...')
-                time.sleep(10.)
-
-    def status(self):
-        """Return a dictionary of parameter values for this device"""
-        with self._updated_condition:
-            return {self.parameters[0].name: self._enabled}
-
-    def get_parameter(self, parameter_name):
-        """Returns the value of a named parameter"""
-        if parameter_name != self.parameters[0].name:
-            return False
-
-        with self._updated_condition:
-            return self._enabled
-
-    def set_parameter(self, parameter_name, value):
-        """Sets the value of a named parameter"""
-        if parameter_name != self.parameters[0].name:
-            return False
-
-        with self._updated_condition:
-            # Already in the desired state?
-            if self._desired_enabled == value and self._enabled == value:
-                return True
-
-            # Wait for the change to apply
-            # Arduino reports every 0.5s, so 1.5s should always be sufficient
-            self._desired_enabled = value
-            self._updated_condition.wait(1.5)
-
-        return self._enabled == self._desired_enabled
-
-    def set_light(self, enabled):
-        self._desired_button_light = enabled
+DEHUMIDIFIER_SERIAL_PORT = '/dev/ttyACM0'
 
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
     def __init__(self):
         self._devices = [
-            APCDevice(RACK_PDU_IP, RACK_PDU_PORTS),
-            APCDevice(TEL_PDU_IP, TEL_PDU_PORTS),
-            APCDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS),
-            APCDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS),
-            PoeDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS),
-            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, GenericParameter('dehumidifier'),
-                                     self),
+            SNMPDevice(RACK_PDU_IP, RACK_PDU_PORTS, SNMP_TIMEOUT),
+            SNMPDevice(TEL_PDU_IP, TEL_PDU_PORTS, SNMP_TIMEOUT),
+            SNMPDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS, SNMP_TIMEOUT),
+            SNMPDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS, SNMP_TIMEOUT),
+            SNMPDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS, SNMP_TIMEOUT),
+            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, Parameter('dehumidifier'), self),
         ]
 
         # Map of parameter name to device holding the parameter
