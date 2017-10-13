@@ -23,7 +23,11 @@
 import datetime
 import Pyro4
 
-from warwick.observatory.common import daemons, log
+from warwick.observatory.common import (
+    daemons,
+    log,
+    IP)
+from warwick.observatory.common.helpers import pyro_client_matches
 from warwick.w1m.power import (
     DehumidifierSwitchDevice,
     Parameter,
@@ -34,6 +38,9 @@ from warwick.w1m.power import (
     APCUPSBatteryHealthy,
     APCUPSOutputLoad,
     NetgearPoESocket)
+
+# Machines that are allowed to issue power commands
+CONTROL_IPS = [IP.OneMetreDome, IP.OneMetreTCS]
 
 # Timeout in seconds for SNMP commands
 SNMP_TIMEOUT = 2
@@ -121,6 +128,9 @@ class PowerDaemon:
     @Pyro4.expose
     def switch(self, name, enable):
         """Switch a named UPS switch parameter on or off"""
+        if not pyro_client_matches(CONTROL_IPS):
+            return False
+
         if name not in self._device_by_parameter:
             return False
 
