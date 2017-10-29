@@ -137,10 +137,6 @@ class PowerDaemon:
         ret = self._device_by_parameter[name].set_parameter(name, enable)
         log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
 
-        # Light status is also shown on dehumidifier box button
-        if ret and name == 'light':
-            self._device_by_parameter['dehumidifier'].set_light(enable)
-
         return ret
 
     @Pyro4.expose

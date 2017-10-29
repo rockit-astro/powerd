@@ -40,9 +40,6 @@ class DehumidifierSwitchDevice:
         self._enabled_date = datetime.datetime.min
         self._desired_enabled = False
 
-        self._button_light = False
-        self._desired_button_light = False
-
         runloop = threading.Thread(target=self.run)
         runloop.daemon = True
         runloop.start()
@@ -84,10 +81,6 @@ class DehumidifierSwitchDevice:
                     # First bit is set when the relay to the dehumidifier is enabled
                     enabled = data & 0x01
 
-                    # Second bit is set when the status light is active
-                    # Used internally where we don't care about thread safety, so set directly
-                    self._button_light = (data & 0x02) != 0
-
                     if enabled != self._enabled:
                         with self._updated_condition:
                             self._enabled = enabled
@@ -96,16 +89,14 @@ class DehumidifierSwitchDevice:
                             # Wake up any threads that requested the change so it can return
                             self._updated_condition.notify_all()
 
-                    # Third bit is set for one update cycle when the button is pressed
-                    if data & 0x04:
+                    # Second bit is set for one update cycle when the button is pressed
+                    if data & 0x02:
                         light_enabled = self._power_daemon.value('light')
                         if not self._power_daemon.switch('light', not light_enabled):
                             log.error('powerd', 'Failed to toggle dome lights')
 
-                    if self._desired_enabled != self._enabled \
-                            or self._desired_button_light != self._button_light:
-                        command = (0x01 if self._desired_enabled else 0) | \
-                                  (0x02 if self._desired_button_light else 0)
+                    if self._desired_enabled != self._enabled:
+                        command = (0x01 if self._desired_enabled else 0)
                         self._port.write(chr(command).encode('ascii'))
 
             except Exception as exception:
@@ -148,7 +139,3 @@ class DehumidifierSwitchDevice:
             self._updated_condition.wait(1.5)
 
         return self._enabled == self._desired_enabled
-
-    def set_light(self, enabled):
-        """Sets the button LED status"""
-        self._desired_button_light = enabled
