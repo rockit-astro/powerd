@@ -125,12 +125,7 @@ class PowerDaemon:
                                   + str(exception) + ')')
             return None
 
-    @Pyro4.expose
-    def switch(self, name, enable):
-        """Switch a named UPS switch parameter on or off"""
-        if not pyro_client_matches(CONTROL_IPS):
-            return False
-
+    def switch_internal(self, name, enable):
         if name not in self._device_by_parameter:
             return False
 
@@ -138,6 +133,14 @@ class PowerDaemon:
         log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
 
         return ret
+
+    @Pyro4.expose
+    def switch(self, name, enable):
+        """Switch a named UPS switch parameter on or off"""
+        if not pyro_client_matches(CONTROL_IPS):
+            return False
+
+        return self.switch_internal(name, enable)
 
     @Pyro4.expose
     def value(self, name):

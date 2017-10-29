@@ -92,7 +92,7 @@ class DehumidifierSwitchDevice:
                     # Second bit is set for one update cycle when the button is pressed
                     if data & 0x02:
                         light_enabled = self._power_daemon.value('light')
-                        if not self._power_daemon.switch('light', not light_enabled):
+                        if not self._power_daemon.switch_internal('light', not light_enabled):
                             log.error('powerd', 'Failed to toggle dome lights')
 
                     if self._desired_enabled != self._enabled:
