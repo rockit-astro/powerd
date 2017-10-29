@@ -26,7 +26,8 @@ sudo systemctl start powerd.service
 
 Finally, open a port in the firewall so that other machines on the network can query the power status:
 ```
-sudo firewall-cmd --zone=public --add-port=9009/tcp
+sudo firewall-cmd --zone=public --add-port=9009/tcp --permanent
+sudo firewall-cmd --reload
 ```
 
 ### Hardware Setup
