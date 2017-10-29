@@ -66,7 +66,7 @@ class SNMPDevice:
             return False
 
         try:
-            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, parameter.oid,
+            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, parameter.set_oid,
                     'i', parameter.format_set_value(value)]
 
             output = subprocess.check_output(args, universal_newlines=True,
