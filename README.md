@@ -24,6 +24,11 @@ The service will automatically start on system boot, or you can start it immedia
 sudo systemctl start powerd.service
 ```
 
+Finally, open a port in the firewall so that other machines on the network can query the power status:
+```
+sudo firewall-cmd --zone=public --add-port=9009/tcp
+```
+
 ### Hardware Setup
 
 The [dehumidifier switch](https://github.com/warwick-one-metre/dehumidifier-switch) is matched against its unique serial number.  If the Arduino is replaced then the serial number should be updated in `10-onemetre-dome-power.rules`.
