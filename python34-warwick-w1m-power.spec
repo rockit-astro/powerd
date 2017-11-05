@@ -13,12 +13,13 @@
 # published by the Open Source Initiative.
 
 Name:           python34-warwick-w1m-power
-Version:        2.0
+Version:        2.0.1
 Release:        0
 License:        GPL3
 Summary:        Common backend code for the Warwick one-metre telescope power daemon
 Url:            https://github.com/warwick-one-metre/environmentd
 BuildArch:      noarch
+Requires:       python34-pyserial
 
 %description
 Part of the observatory software for the Warwick one-meter telescope.
