@@ -36,4 +36,5 @@ class NetgearPoESocket(Parameter):
 
     def format_set_value(self, value):
         """Format a python value to a string to send via SNMP"""
-        return str(value)
+        return '1' if value else '2'
+
