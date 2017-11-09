@@ -135,9 +135,9 @@ class PowerDaemon:
         state = (SwitchStatus.On if enable else SwitchStatus.Off)
         ret = self._device_by_parameter[name].set_parameter(name, state)
         if ret:
-            log.info('powerd', 'Switched ' + name + ' on' if enable else ' off')
+            log.info('powerd', 'Switched ' + name + (' on' if enable else ' off'))
         else:
-            log.error('powerd', 'Failed to switch ' + name + ' on' if enable else ' off')
+            log.error('powerd', 'Failed to switch ' + name + (' on' if enable else ' off'))
         return ret
 
     @Pyro4.expose
