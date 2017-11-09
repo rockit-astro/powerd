@@ -24,12 +24,21 @@
 import datetime
 import subprocess
 from warwick.observatory.common import log
+from . import Parameter
+
+class SNMPParameter(Parameter):
+    """Data structure encapsulating a parameter fetched/set via SNMP"""
+    def __init__(self, name, get_oid, set_oid, error_value):
+        Parameter.__init__(self, name, error_value)
+        self.get_oid = get_oid
+        self.set_oid = set_oid
 
 class SNMPDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""
     def __init__(self, ip, parameters, query_timeout):
         self._ip = ip
         self._query_timeout = query_timeout
+        self._last_command_failed = False
         self.parameters = parameters
         self.parameters_by_name = {p.name: p for p in parameters}
 
@@ -38,11 +47,26 @@ class SNMPDevice:
         # Query all OIDs at once for efficiency
         oids = [p.get_oid for p in self.parameters]
         args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip] + oids
-        output = subprocess.check_output(args, universal_newlines=True, timeout=self._query_timeout)
-        lines = output.strip().split('\n')
+        try:
+            output = subprocess.check_output(args, universal_newlines=True,
+                                             timeout=self._query_timeout)
+            lines = output.strip().split('\n')
 
-        # Return a dictionary of values keyed by parameter name
-        return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
+            if self._last_command_failed:
+                log.info('powerd', 'Restored contact with ' + self._ip)
+                self._last_command_failed = False
+
+            # Return a dictionary of values keyed by parameter name
+            return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
+        except Exception as exception:
+            print('{} ERROR: failed to query {}: {}' \
+                  .format(datetime.datetime.utcnow(), self._ip, str(exception)))
+
+            if not self._last_command_failed:
+                log.error('powerd', 'Lost contact with ' + self._ip)
+                self._last_command_failed = True
+
+            return {k.name: k.error_value for k in self.parameters}
 
     def get_parameter(self, parameter_name):
         """Returns the value of a named parameter"""
@@ -50,9 +74,20 @@ class SNMPDevice:
             return False
 
         parameter = self.parameters_by_name[parameter_name]
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.get_oid]
-        output = subprocess.check_output(args, universal_newlines=True, timeout=self._query_timeout)
-        return parameter.parse_snmp_output(output)
+        try:
+            args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.get_oid]
+            output = subprocess.check_output(args, universal_newlines=True,
+                                             timeout=self._query_timeout)
+            return parameter.parse_snmp_output(output)
+        except Exception as exception:
+            print('{} ERROR: failed to query {}: {}' \
+                  .format(datetime.datetime.utcnow(), self._ip, str(exception)))
+
+            if not self._last_command_failed:
+                log.error('powerd', 'Lost contact with ' + self._ip)
+                self._last_command_failed = True
+
+            return parameter.error_value
 
     def set_parameter(self, parameter_name, value):
         """Sets the value of a named parameter"""
@@ -71,10 +106,26 @@ class SNMPDevice:
 
             output = subprocess.check_output(args, universal_newlines=True,
                                              timeout=self._query_timeout)
-            return parameter.parse_snmp_output(output) == value
+            if self._last_command_failed:
+                log.info('powerd', 'Restored contact with ' + self._ip)
+                self._last_command_failed = False
         except Exception as exception:
             print('{} ERROR: failed to send SNMP command: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
-            log.error('powerd', 'Failed to send SNMP command (' \
-                                  + str(exception) + ')')
+
+            if not self._last_command_failed:
+                log.error('powerd', 'Lost contact with ' + self._ip)
+                self._last_command_failed = True
+
+            return False
+
+        try:
+            return parameter.parse_snmp_output(output) == value
+        except Exception as exception:
+            print('{} ERROR: failed to parse SNMP response: {}' \
+                  .format(datetime.datetime.utcnow(), str(exception)))
+
+            if not self._last_command_failed:
+                log.error('powerd', 'Invalid response from ' + self._ip + ': ' + str(exception))
+
             return False

@@ -18,13 +18,14 @@
 """Dummy device for testing"""
 
 # pylint: disable=unused-argument
+# pylint: disable=no-self-use
 
 import time
 from .apc_device import (
-    APCUPSStatus,
-    APCUPSBatteryRemaining,
-    APCUPSBatteryHealthy,
-    APCUPSOutputLoad)
+    APCUPSStatusParameter,
+    APCUPSBatteryRemainingParameter,
+    APCUPSBatteryHealthyParameter,
+    APCUPSOutputLoadParameter)
 
 class DummyUPSDevice:
     """Dummy UPS device for testing"""
@@ -46,16 +47,16 @@ class DummyUPSDevice:
 
         time.sleep(0.2)
         parameter = self.parameters_by_name[parameter_name]
-        if isinstance(parameter, APCUPSStatus):
+        if isinstance(parameter, APCUPSStatusParameter):
             return 2
 
-        if isinstance(parameter, APCUPSBatteryRemaining):
+        if isinstance(parameter, APCUPSBatteryRemainingParameter):
             return 100
 
-        if isinstance(parameter, APCUPSBatteryHealthy):
+        if isinstance(parameter, APCUPSBatteryHealthyParameter):
             return True
 
-        if isinstance(parameter, APCUPSOutputLoad):
+        if isinstance(parameter, APCUPSOutputLoadParameter):
             return 5
 
         return False

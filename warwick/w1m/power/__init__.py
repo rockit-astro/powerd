@@ -17,14 +17,14 @@
 
 """powerd common code"""
 
-from .constants import Parameter
-from .snmp_device import SNMPDevice
-from .netgear_device import NetgearPoESocket
+from .constants import Parameter, SwitchStatus, APCUPSStatus
+from .snmp_device import SNMPDevice, SNMPParameter
+from .netgear_device import NetgearPoESocketParameter
 from .apc_device import (
-    APCPDUSocket,
-    APCUPSStatus,
-    APCUPSBatteryRemaining,
-    APCUPSBatteryHealthy,
-    APCUPSOutputLoad)
-from .dehumidifier_switch_device import DehumidifierSwitchDevice
+    APCPDUSocketParameter,
+    APCUPSStatusParameter,
+    APCUPSBatteryRemainingParameter,
+    APCUPSBatteryHealthyParameter,
+    APCUPSOutputLoadParameter)
+from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .dummy_device import DummyUPSDevice, DummyDevice

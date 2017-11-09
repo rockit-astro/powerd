@@ -26,6 +26,12 @@ import threading
 import time
 import serial
 from warwick.observatory.common import log
+from . import Parameter, SwitchStatus
+
+class DehumidifierParameter(Parameter):
+    """Data structure encapsulating the dehumidifier switch"""
+    def __init__(self, name):
+        Parameter.__init__(self, name, SwitchStatus.Unknown)
 
 class DehumidifierSwitchDevice:
     """Wrapper for querying an attached Arduino via RS232"""
@@ -112,30 +118,42 @@ class DehumidifierSwitchDevice:
 
     def status(self):
         """Return a dictionary of parameter values for this device"""
+        if not self._port_connected:
+            return {self.parameters[0].name: self.parameters[0].error_value}
+
         with self._updated_condition:
-            return {self.parameters[0].name: self._enabled}
+            return {self.parameters[0].name: SwitchStatus.On if self._enabled else SwitchStatus.Off}
 
     def get_parameter(self, parameter_name):
         """Returns the value of a named parameter"""
         if parameter_name != self.parameters[0].name:
             return False
 
+        if not self._port_connected:
+            return self.parameters[0].error_value
+
         with self._updated_condition:
-            return self._enabled
+            return SwitchStatus.On if self._enabled else SwitchStatus.Off
 
     def set_parameter(self, parameter_name, value):
         """Sets the value of a named parameter"""
         if parameter_name != self.parameters[0].name:
             return False
 
+        if not self._port_connected:
+            print('error: cannot switch dehumidifier - not plugged in')
+            return False
+
+        desired_enabled = value == SwitchStatus.On
+
         with self._updated_condition:
             # Already in the desired state?
-            if self._desired_enabled == value and self._enabled == value:
+            if self._desired_enabled == value and self._enabled == desired_enabled:
                 return True
 
             # Wait for the change to apply
             # Arduino reports every 0.5s, so 1.5s should always be sufficient
-            self._desired_enabled = value
+            self._desired_enabled = desired_enabled
             self._updated_condition.wait(1.5)
 
         return self._enabled == self._desired_enabled

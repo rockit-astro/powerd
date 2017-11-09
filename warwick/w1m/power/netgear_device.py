@@ -20,21 +20,20 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=no-self-use
 
-from . import Parameter
+from . import SNMPParameter, SwitchStatus
 
-class NetgearPoESocket(Parameter):
+class NetgearPoESocketParameter(SNMPParameter):
     """Data structure encapsulating a PoE parameter"""
     def __init__(self, name, port):
-        Parameter.__init__(self, name)
+        get_oid = '.1.3.6.1.2.1.105.1.1.1.6.1.' + str(port)
+        set_oid = '.1.3.6.1.2.1.105.1.1.1.3.1.' + str(port)
+        SNMPParameter.__init__(self, name, get_oid, set_oid, SwitchStatus.Unknown)
         self.port = port
-        self.get_oid = '.1.3.6.1.2.1.105.1.1.1.6.1.' + str(port)
-        self.set_oid = '.1.3.6.1.2.1.105.1.1.1.3.1.' + str(port)
 
     def parse_snmp_output(self, output):
         """Convert a snmp output string for this parameter into a python value"""
-        return int(output.split(' ')[-1]) == 3
+        return SwitchStatus.On if int(output.split(' ')[-1]) == 3 else SwitchStatus.Off
 
     def format_set_value(self, value):
         """Format a python value to a string to send via SNMP"""
-        return '1' if value else '2'
-
+        return '1' if value == SwitchStatus.On else '2'

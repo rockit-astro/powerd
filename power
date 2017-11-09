@@ -23,6 +23,7 @@ import os
 import sys
 import Pyro4
 from warwick.observatory.common import daemons
+from warwick.w1m.power import SwitchStatus, APCUPSStatus
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
@@ -33,26 +34,11 @@ FMT_RED = u'\033[91m'
 FMT_BOLD = u'\033[1m'
 FMT_CLEAR = u'\033[0m'
 
-UPS_STATUS = {
-    1: FMT_BOLD + FMT_RED + 'UNKNOWN' + FMT_CLEAR,
-    2: FMT_BOLD + FMT_GREEN + 'ONLINE' + FMT_CLEAR,
-    3: FMT_BOLD + FMT_YELLOW + 'ON BATTERY' + FMT_CLEAR,
-    4: FMT_BOLD + FMT_RED + 'SMART BOOST' + FMT_CLEAR,
-    5: FMT_BOLD + FMT_RED + 'TIMED SLEEPING' + FMT_CLEAR,
-    6: FMT_BOLD + FMT_RED + 'SOFTWARE BYPASS' + FMT_CLEAR,
-    7: FMT_BOLD + FMT_RED + 'OFF' + FMT_CLEAR,
-    8: FMT_BOLD + FMT_RED + 'REBOOTING' + FMT_CLEAR,
-    9: FMT_BOLD + FMT_RED + 'SWITCHED BYPASS' + FMT_CLEAR,
-    10: FMT_BOLD + FMT_RED + 'HARDWARE FAILURE BYPASS' + FMT_CLEAR,
-    11: FMT_BOLD + FMT_RED + 'SLEEPING UNTIL POWER RETURNS' + FMT_CLEAR,
-    12: FMT_BOLD + FMT_RED + 'ON SMART TRIM' + FMT_CLEAR,
-}
-
 def print_status():
     """Prints the latest data in human-readable form"""
     latest = None
     try:
-        with daemons.onemetre_power.connect() as power:
+        with daemons.onemetre_power.connect(timeout=15) as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -61,22 +47,22 @@ def print_status():
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
         print('Data received \033[1m{}\033[0m:'.format(date))
-        print('   Tel. Computer: ' + format_power(latest['telescope_nuc']))
-        print('    Tel. Network: ' + format_power(latest['telescope_network']))
-        print('Tel. Controllers: ' + format_power(latest['telescope_12v']))
-        print('     Tel. Motors: ' + format_power(latest['telescope_80v']))
-        print('     Blue Camera: ' + format_power(latest['blue_camera']))
-        print('      Red Camera: ' + format_power(latest['red_camera']))
-        print('  Red Foc. Motor: ' + format_power(latest['red_focus_motor']))
-        print(' Red Foc. Ctrler: ' + format_power(latest['red_focus_controller']))
-        print('   Rack Computer: ' + format_power(latest['rack_nuc']))
-        print('    Rack Monitor: ' + format_power(latest['monitor']))
-        print('     Dome Webcam: ' + format_power(latest['webcam']))
-        print(' Dome Microphone: ' + format_power(latest['microphone']))
-        print('      Dome Light: ' + format_power(latest['light']))
-        print('      Room Alert: ' + format_power(latest['roomalert']))
-        print(' Weather Station: ' + format_power(latest['vaisala']))
-        print('    Dehumidifier: ' + format_power(latest['dehumidifier']))
+        print('   Tel. Computer: ' + format_switch(latest['telescope_nuc']))
+        print('    Tel. Network: ' + format_switch(latest['telescope_network']))
+        print('Tel. Controllers: ' + format_switch(latest['telescope_12v']))
+        print('     Tel. Motors: ' + format_switch(latest['telescope_80v']))
+        print('     Blue Camera: ' + format_switch(latest['blue_camera']))
+        print('      Red Camera: ' + format_switch(latest['red_camera']))
+        print('  Red Foc. Motor: ' + format_switch(latest['red_focus_motor']))
+        print(' Red Foc. Ctrler: ' + format_switch(latest['red_focus_controller']))
+        print('   Rack Computer: ' + format_switch(latest['rack_nuc']))
+        print('    Rack Monitor: ' + format_switch(latest['monitor']))
+        print('     Dome Webcam: ' + format_switch(latest['webcam']))
+        print(' Dome Microphone: ' + format_switch(latest['microphone']))
+        print('      Dome Light: ' + format_switch(latest['light']))
+        print('      Room Alert: ' + format_switch(latest['roomalert']))
+        print(' Weather Station: ' + format_switch(latest['vaisala']))
+        print('    Dehumidifier: ' + format_switch(latest['dehumidifier']))
         print('        Main UPS: ' + format_ups(latest['main_ups_status'],
                                                 latest['main_ups_battery_remaining'],
                                                 latest['main_ups_battery_healthy'],
@@ -91,15 +77,20 @@ def print_status():
 
     return 0
 
-def format_power(enabled):
+def format_switch(status):
     """Builds a formatted string indicating whether a switch is enabled"""
-    if enabled:
+    if status == SwitchStatus.On:
         return FMT_GREEN + FMT_BOLD + 'ENABLED' + FMT_CLEAR
-    return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
+    if status == SwitchStatus.Off:
+        return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
+    return FMT_RED + FMT_BOLD + 'UNKNOWN' + FMT_CLEAR
 
 def format_ups(status, battery_remaining, battery_healthy, load):
     """Builds a formatted string reporting UPS status"""
-    ret = UPS_STATUS[status]
+    ret = APCUPSStatus.message(status)
+    if status == APCUPSStatus.Unknown:
+        return ret
+
     ret += ' ({2}{0}%{3} battery; {2}{1}%{3} load)'.format(battery_remaining, load,
                                                            FMT_BOLD, FMT_CLEAR)
     if not battery_healthy:

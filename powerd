@@ -29,15 +29,18 @@ from warwick.observatory.common import (
     IP)
 from warwick.observatory.common.helpers import pyro_client_matches
 from warwick.w1m.power import (
+    SwitchStatus,
     DehumidifierSwitchDevice,
-    Parameter,
+    DehumidifierParameter,
     SNMPDevice,
-    APCPDUSocket,
-    APCUPSStatus,
-    APCUPSBatteryRemaining,
-    APCUPSBatteryHealthy,
-    APCUPSOutputLoad,
-    NetgearPoESocket)
+    APCPDUSocketParameter,
+    APCUPSStatusParameter,
+    APCUPSBatteryRemainingParameter,
+    APCUPSBatteryHealthyParameter,
+    APCUPSOutputLoadParameter,
+    NetgearPoESocketParameter)
+
+SWITCHABLE_PARAMETERS = (DehumidifierParameter, APCPDUSocketParameter, NetgearPoESocketParameter)
 
 # Machines that are allowed to issue power commands
 CONTROL_IPS = [IP.OneMetreDome, IP.OneMetreTCS]
@@ -47,45 +50,45 @@ SNMP_TIMEOUT = 2
 
 RACK_PDU_IP = '10.2.6.212'
 RACK_PDU_PORTS = [
-    APCPDUSocket('rack_nuc', 1),
-    APCPDUSocket('telescope_12v', 2),
-    APCPDUSocket('telescope_80v', 3),
-    APCPDUSocket('vaisala', 4),
-    APCPDUSocket('monitor', 6),
-    APCPDUSocket('light', 8)
+    APCPDUSocketParameter('rack_nuc', 1),
+    APCPDUSocketParameter('telescope_12v', 2),
+    APCPDUSocketParameter('telescope_80v', 3),
+    APCPDUSocketParameter('vaisala', 4),
+    APCPDUSocketParameter('monitor', 6),
+    APCPDUSocketParameter('light', 8)
 ]
 
 TEL_PDU_IP = '10.2.6.213'
 TEL_PDU_PORTS = [
-    APCPDUSocket('red_camera', 1),
-    APCPDUSocket('blue_camera', 2),
-    APCPDUSocket('telescope_nuc', 3),
-    APCPDUSocket('red_focus_motor', 7),
-    APCPDUSocket('red_focus_controller', 8)
+    APCPDUSocketParameter('red_camera', 1),
+    APCPDUSocketParameter('blue_camera', 2),
+    APCPDUSocketParameter('telescope_nuc', 3),
+    APCPDUSocketParameter('red_focus_motor', 7),
+    APCPDUSocketParameter('red_focus_controller', 8)
 ]
 
 MAIN_UPS_IP = '10.2.6.210'
 MAIN_UPS_PARAMETERS = [
-    APCUPSStatus('main_ups_status'),
-    APCUPSBatteryRemaining('main_ups_battery_remaining'),
-    APCUPSBatteryHealthy('main_ups_battery_healthy'),
-    APCUPSOutputLoad('main_ups_load'),
+    APCUPSStatusParameter('main_ups_status'),
+    APCUPSBatteryRemainingParameter('main_ups_battery_remaining'),
+    APCUPSBatteryHealthyParameter('main_ups_battery_healthy'),
+    APCUPSOutputLoadParameter('main_ups_load'),
 ]
 
 DOME_UPS_IP = '10.2.6.211'
 DOME_UPS_PARAMETERS = [
-    APCUPSStatus('dome_ups_status'),
-    APCUPSBatteryRemaining('dome_ups_battery_remaining'),
-    APCUPSBatteryHealthy('dome_ups_battery_healthy'),
-    APCUPSOutputLoad('dome_ups_load'),
+    APCUPSStatusParameter('dome_ups_status'),
+    APCUPSBatteryRemainingParameter('dome_ups_battery_remaining'),
+    APCUPSBatteryHealthyParameter('dome_ups_battery_healthy'),
+    APCUPSOutputLoadParameter('dome_ups_load'),
 ]
 
 RACK_SWITCH_IP = '10.2.6.214'
 RACK_SWITCH_PARAMETERS = [
-    NetgearPoESocket('telescope_network', 1),
-    NetgearPoESocket('webcam', 3),
-    NetgearPoESocket('roomalert', 5),
-    NetgearPoESocket('microphone', 7),
+    NetgearPoESocketParameter('telescope_network', 1),
+    NetgearPoESocketParameter('webcam', 3),
+    NetgearPoESocketParameter('roomalert', 5),
+    NetgearPoESocketParameter('microphone', 7),
 ]
 
 DEHUMIDIFIER_SERIAL_PORT = '/dev/dehumidifier'
@@ -99,39 +102,42 @@ class PowerDaemon:
             SNMPDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS, SNMP_TIMEOUT),
             SNMPDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS, SNMP_TIMEOUT),
             SNMPDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS, SNMP_TIMEOUT),
-            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT, Parameter('dehumidifier'), self),
+            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT,
+                                     DehumidifierParameter('dehumidifier'), self),
         ]
 
         # Map of parameter name to device holding the parameter
         self._device_by_parameter = {}
+        self._parameters_by_name = {}
         for device in self._devices:
             for parameter in device.parameters:
                 self._device_by_parameter.update({parameter.name: device})
+                self._parameters_by_name.update({parameter.name: parameter})
 
     @Pyro4.expose
     def last_measurement(self):
-        """Query the latest valid measurement.
-        May return None if no data is available"""
-        try:
-            data = {'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')}
-            for device in self._devices:
-                data.update(device.status())
-            return data
-
-        except Exception as exception:
-            print('{} ERROR: failed to query: {}' \
-                  .format(datetime.datetime.utcnow(), str(exception)))
-            log.error('powerd', 'Failed to query device (' \
-                                  + str(exception) + ')')
-            return None
+        """Query the latest valid measurement"""
+        data = {'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')}
+        for device in self._devices:
+            data.update(device.status())
+        return data
 
     def switch_internal(self, name, enable):
+        """Switch a named UPS switch parameter on or off
+           Used internally (avoids the pyro client checks)
+        """
         if name not in self._device_by_parameter:
             return False
 
-        ret = self._device_by_parameter[name].set_parameter(name, enable)
-        log.info('powerd', 'Switched ' + name + ' ' + ('on' if enable else 'off'))
+        if not isinstance(self._parameters_by_name[name], SWITCHABLE_PARAMETERS):
+            return False
 
+        state = (SwitchStatus.On if enable else SwitchStatus.Off)
+        ret = self._device_by_parameter[name].set_parameter(name, state)
+        if ret:
+            log.info('powerd', 'Switched ' + name + ' on' if enable else ' off')
+        else:
+            log.error('powerd', 'Failed to switch ' + name + ' on' if enable else ' off')
         return ret
 
     @Pyro4.expose
