@@ -31,11 +31,6 @@ from warwick.observatory.power import (
     APCUPSOutputLoadParameter,
     NetgearPoESocketParameter)
 
-SWITCHABLE_PARAMETERS = (DehumidifierParameter, APCPDUSocketParameter, NetgearPoESocketParameter)
-
-# Machines that are allowed to issue power commands
-CONTROL_IPS = [IP.OneMetreDome, IP.OneMetreTCS]
-
 # Timeout in seconds for SNMP commands
 SNMP_TIMEOUT = 2
 

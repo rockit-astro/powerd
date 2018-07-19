@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           python34-warwick-observatory-power
-Version:        2.1.0
+Version:        2.2.0
 Release:        0
 License:        GPL3
 Summary:        Common backend code for the Warwick one-metre and RASA prototype telescopes power daemon

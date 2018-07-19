@@ -29,6 +29,7 @@ from warwick.observatory.common import log
 from warwick.observatory.common.helpers import pyro_client_matches
 from warwick.observatory.power import (
     OneMetreConfig,
+    RASAConfig,
     SwitchStatus,
     DehumidifierParameter,
     APCPDUSocketParameter,
@@ -45,7 +46,8 @@ SWITCHABLE_PARAMETERS = (
     NetgearPoESocketParameter)
 
 CONFIG = {
-    'onemetre': OneMetreConfig
+    'onemetre': OneMetreConfig,
+    'rasa': RASAConfig
 }
 
 class PowerDaemon:

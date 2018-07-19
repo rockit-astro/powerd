@@ -20,7 +20,7 @@
 import os
 import sys
 import Pyro4
-from warwick.observatory.power import OneMetreConfig
+from warwick.observatory.power import OneMetreConfig, RASAConfig
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook

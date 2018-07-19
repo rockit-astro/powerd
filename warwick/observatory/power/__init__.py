@@ -30,3 +30,4 @@ from .apc_device import (
 from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .dummy_device import DummyUPSDevice, DummyDevice
 from .onemetre_config import OneMetreConfig
+from .rasa_config import  RASAConfig
