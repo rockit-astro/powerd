@@ -35,7 +35,8 @@ class SNMPParameter(Parameter):
 
 class SNMPDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""
-    def __init__(self, ip, parameters, query_timeout):
+    def __init__(self, log_name, ip, parameters, query_timeout):
+        self._log_name = log_name
         self._ip = ip
         self._query_timeout = query_timeout
         self._last_command_failed = False
@@ -53,7 +54,7 @@ class SNMPDevice:
             lines = output.strip().split('\n')
 
             if self._last_command_failed:
-                log.info('powerd', 'Restored contact with ' + self._ip)
+                log.info(self._log_name, 'Restored contact with ' + self._ip)
                 self._last_command_failed = False
 
             # Return a dictionary of values keyed by parameter name
@@ -63,7 +64,7 @@ class SNMPDevice:
                   .format(datetime.datetime.utcnow(), self._ip, str(exception)))
 
             if not self._last_command_failed:
-                log.error('powerd', 'Lost contact with ' + self._ip)
+                log.error(self._log_name, 'Lost contact with ' + self._ip)
                 self._last_command_failed = True
 
             return {k.name: k.error_value for k in self.parameters}
@@ -84,7 +85,7 @@ class SNMPDevice:
                   .format(datetime.datetime.utcnow(), self._ip, str(exception)))
 
             if not self._last_command_failed:
-                log.error('powerd', 'Lost contact with ' + self._ip)
+                log.error(self._log_name, 'Lost contact with ' + self._ip)
                 self._last_command_failed = True
 
             return parameter.error_value
@@ -107,14 +108,14 @@ class SNMPDevice:
             output = subprocess.check_output(args, universal_newlines=True,
                                              timeout=self._query_timeout)
             if self._last_command_failed:
-                log.info('powerd', 'Restored contact with ' + self._ip)
+                log.info(self._log_name, 'Restored contact with ' + self._ip)
                 self._last_command_failed = False
         except Exception as exception:
             print('{} ERROR: failed to send SNMP command: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))
 
             if not self._last_command_failed:
-                log.error('powerd', 'Lost contact with ' + self._ip)
+                log.error(self._log_name, 'Lost contact with ' + self._ip)
                 self._last_command_failed = True
 
             return False
@@ -126,6 +127,7 @@ class SNMPDevice:
                   .format(datetime.datetime.utcnow(), str(exception)))
 
             if not self._last_command_failed:
-                log.error('powerd', 'Invalid response from ' + self._ip + ': ' + str(exception))
+                log.error(self._log_name, 'Invalid response from ' + self._ip + ': '
+                          + str(exception))
 
             return False

@@ -8,7 +8,7 @@ all:
 	mkdir -p build
 	${RPMBUILD} -ba onemetre-power-server.spec
 	${RPMBUILD} -ba onemetre-power-client.spec
-	${RPMBUILD} -ba python34-warwick-w1m-power.spec
+	${RPMBUILD} -ba python34-warwick-observatory-power.spec
 	mv build/noarch/*.rpm .
 	rm -rf build
 

@@ -35,7 +35,8 @@ class DehumidifierParameter(Parameter):
 
 class DehumidifierSwitchDevice:
     """Wrapper for querying an attached Arduino via RS232"""
-    def __init__(self, port_name, parameter, power_daemon):
+    def __init__(self, log_name, port_name, parameter, power_daemon):
+        self._log_name = log_name
         self._port = None
         self._port_name = port_name
         self._lock = threading.Lock()
@@ -63,11 +64,11 @@ class DehumidifierSwitchDevice:
 
                 first_query = self._enabled_date == datetime.datetime.min
                 prefix = 'Established' if first_query else 'Restored'
-                log.info('powerd', prefix + ' contact with Dehumidifier switch')
+                log.info(self._log_name, prefix + ' contact with Dehumidifier switch')
                 self._port_connected = True
             except Exception as exception:
                 if self._port_connected:
-                    log.error('powerd', 'Lost contact with Dehumidifier switch')
+                    log.error(self._log_name, 'Lost contact with Dehumidifier switch')
 
                 print('error: failed to connect to Dehumidifier switch')
                 print(exception)
@@ -99,7 +100,7 @@ class DehumidifierSwitchDevice:
                     if data & 0x02:
                         light_enabled = self._power_daemon.value('light')
                         if not self._power_daemon.switch_internal('light', not light_enabled):
-                            log.error('powerd', 'Failed to toggle dome lights')
+                            log.error(self._log_name, 'Failed to toggle dome lights')
 
                     if self._desired_enabled != self._enabled:
                         command = (0x01 if self._desired_enabled else 0)
@@ -108,7 +109,7 @@ class DehumidifierSwitchDevice:
             except Exception as exception:
                 self._port.close()
                 if self._port_connected:
-                    log.error('powerd', 'Lost contact with dehumidifier switch')
+                    log.error(self._log_name, 'Lost contact with dehumidifier switch')
                     print('error: failed to connect to Dehumidifier switch')
                     print(exception)
 

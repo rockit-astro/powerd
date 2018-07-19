@@ -1,5 +1,5 @@
 Name:      onemetre-power-client
-Version:   2.1.0
+Version:   2.2.0
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system client for the Warwick one-metre telescope.

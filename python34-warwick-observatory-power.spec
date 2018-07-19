@@ -1,5 +1,5 @@
 #
-# spec file for package python3-warwick-w1m-power
+# spec file for package python3-warwick-observatory-power
 #
 # Copyright (c) 2016 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
@@ -12,19 +12,19 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-Name:           python34-warwick-w1m-power
-Version:        2.0.2
+Name:           python34-warwick-observatory-power
+Version:        2.1.0
 Release:        0
 License:        GPL3
-Summary:        Common backend code for the Warwick one-metre telescope power daemon
+Summary:        Common backend code for the Warwick one-metre and RASA prototype telescopes power daemon
 Url:            https://github.com/warwick-one-metre/environmentd
 BuildArch:      noarch
 Requires:       python34-pyserial
 
 %description
-Part of the observatory software for the Warwick one-meter telescope.
+Part of the observatory software for the Warwick one-meter and RASA prototype telescopes.
 
-python34-warwick-w1m-power holds the common power code.
+python34-warwick-observatory-power holds the common power code.
 
 %prep
 

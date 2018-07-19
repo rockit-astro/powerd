@@ -17,16 +17,19 @@
 
 """Commandline client for interfacing with the power system daemon"""
 
+# pylint: disable=invalid-name
+
 import datetime
 import json
 import os
 import sys
 import Pyro4
-from warwick.observatory.common import daemons
-from warwick.w1m.power import SwitchStatus, APCUPSStatus
+from warwick.observatory.power import SwitchStatus, APCUPSStatus, OneMetreConfig
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
+
+CONFIG = OneMetreConfig
 
 FMT_YELLOW = u'\033[93m'
 FMT_GREEN = u'\033[92m'
@@ -34,11 +37,11 @@ FMT_RED = u'\033[91m'
 FMT_BOLD = u'\033[1m'
 FMT_CLEAR = u'\033[0m'
 
-def print_status():
+def print_status(daemon, print_telescope_status):
     """Prints the latest data in human-readable form"""
     latest = None
     try:
-        with daemons.onemetre_power.connect(timeout=15) as power:
+        with daemon.connect(timeout=15) as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -47,30 +50,7 @@ def print_status():
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
         print('Data received \033[1m{}\033[0m:'.format(date))
-        print('   Tel. Computer: ' + format_switch(latest['telescope_nuc']))
-        print('    Tel. Network: ' + format_switch(latest['telescope_network']))
-        print('Tel. Controllers: ' + format_switch(latest['telescope_12v']))
-        print('     Tel. Motors: ' + format_switch(latest['telescope_80v']))
-        print('     Blue Camera: ' + format_switch(latest['blue_camera']))
-        print('      Red Camera: ' + format_switch(latest['red_camera']))
-        print('  Red Foc. Motor: ' + format_switch(latest['red_focus_motor']))
-        print(' Red Foc. Ctrler: ' + format_switch(latest['red_focus_controller']))
-        print('   Rack Computer: ' + format_switch(latest['rack_nuc']))
-        print('    Rack Monitor: ' + format_switch(latest['monitor']))
-        print('     Dome Webcam: ' + format_switch(latest['webcam']))
-        print(' Dome Microphone: ' + format_switch(latest['microphone']))
-        print('      Dome Light: ' + format_switch(latest['light']))
-        print('      Room Alert: ' + format_switch(latest['roomalert']))
-        print(' Weather Station: ' + format_switch(latest['vaisala']))
-        print('    Dehumidifier: ' + format_switch(latest['dehumidifier']))
-        print('        Main UPS: ' + format_ups(latest['main_ups_status'],
-                                                latest['main_ups_battery_remaining'],
-                                                latest['main_ups_battery_healthy'],
-                                                latest['main_ups_load']))
-        print('        Dome UPS: ' + format_ups(latest['dome_ups_status'],
-                                                latest['dome_ups_battery_remaining'],
-                                                latest['dome_ups_battery_healthy'],
-                                                latest['dome_ups_load']))
+        print_telescope_status(latest, format_switch, format_ups)
         print()
     else:
         print('error: failed to query data')
@@ -97,11 +77,11 @@ def format_ups(status, battery_remaining, battery_healthy, load):
         ret += FMT_BOLD + FMT_RED + ' REPLACE BATTERY' + FMT_CLEAR
     return ret
 
-def print_json():
+def print_json(daemon):
     """Prints the latest data in machine-readable form"""
     latest = None
     try:
-        with daemons.onemetre_power.connect() as power:
+        with daemon.connect() as power:
             latest = power.last_measurement()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
@@ -111,13 +91,13 @@ def print_json():
 
     return 0
 
-def switch_power(args):
+def switch_power(daemon, args):
     """Switches a named PDU port on or off"""
     if len(args) > 1:
         enable = False
         if args[1] == 'on' or args[1] == 'off':
             enable = args[1] == 'on'
-            with daemons.onemetre_power.connect() as power:
+            with daemon.connect() as power:
                 if not power.switch(args[0], enable):
                     print('error: failed to switch {} {}'.format(args[0], args[1]))
                     return -1
@@ -141,11 +121,11 @@ if __name__ == '__main__':
         sys.exit(print_usage(SCRIPT_NAME))
 
     if sys.argv[1] == 'status':
-        sys.exit(print_status())
+        sys.exit(print_status(CONFIG.daemon, CONFIG.print_status))
     elif sys.argv[1] == 'json':
-        sys.exit(print_json())
+        sys.exit(print_json(CONFIG.daemon))
     elif sys.argv[1] == 'switch':
-        sys.exit(switch_power(sys.argv[2:]))
+        sys.exit(switch_power(CONFIG.daemon, sys.argv[2:]))
 
     # Command not found
     sys.exit(print_usage(SCRIPT_NAME))

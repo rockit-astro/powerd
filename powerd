@@ -17,94 +17,38 @@
 
 # pylint: disable=broad-except
 # pylint: disable=too-few-public-methods
+# pylint: disable=invalid-name
 
 """Frontend for interacting with the PDUs and UPSes via SNMP."""
 
+import argparse
 import datetime
+import sys
 import Pyro4
-
-from warwick.observatory.common import (
-    daemons,
-    log,
-    IP)
+from warwick.observatory.common import log
 from warwick.observatory.common.helpers import pyro_client_matches
-from warwick.w1m.power import (
+from warwick.observatory.power import (
+    OneMetreConfig,
     SwitchStatus,
-    DehumidifierSwitchDevice,
     DehumidifierParameter,
-    SNMPDevice,
     APCPDUSocketParameter,
-    APCUPSStatusParameter,
-    APCUPSBatteryRemainingParameter,
-    APCUPSBatteryHealthyParameter,
-    APCUPSOutputLoadParameter,
     NetgearPoESocketParameter)
+
+# Include more detailed exceptions
+sys.excepthook = Pyro4.util.excepthook
 
 SWITCHABLE_PARAMETERS = (DehumidifierParameter, APCPDUSocketParameter, NetgearPoESocketParameter)
 
-# Machines that are allowed to issue power commands
-CONTROL_IPS = [IP.OneMetreDome, IP.OneMetreTCS]
-
-# Timeout in seconds for SNMP commands
-SNMP_TIMEOUT = 2
-
-RACK_PDU_IP = '10.2.6.212'
-RACK_PDU_PORTS = [
-    APCPDUSocketParameter('rack_nuc', 1),
-    APCPDUSocketParameter('telescope_12v', 2),
-    APCPDUSocketParameter('telescope_80v', 3),
-    APCPDUSocketParameter('vaisala', 4),
-    APCPDUSocketParameter('monitor', 6),
-    APCPDUSocketParameter('light', 8)
-]
-
-TEL_PDU_IP = '10.2.6.213'
-TEL_PDU_PORTS = [
-    APCPDUSocketParameter('red_camera', 1),
-    APCPDUSocketParameter('blue_camera', 2),
-    APCPDUSocketParameter('telescope_nuc', 3),
-    APCPDUSocketParameter('red_focus_motor', 7),
-    APCPDUSocketParameter('red_focus_controller', 8)
-]
-
-MAIN_UPS_IP = '10.2.6.210'
-MAIN_UPS_PARAMETERS = [
-    APCUPSStatusParameter('main_ups_status'),
-    APCUPSBatteryRemainingParameter('main_ups_battery_remaining'),
-    APCUPSBatteryHealthyParameter('main_ups_battery_healthy'),
-    APCUPSOutputLoadParameter('main_ups_load'),
-]
-
-DOME_UPS_IP = '10.2.6.211'
-DOME_UPS_PARAMETERS = [
-    APCUPSStatusParameter('dome_ups_status'),
-    APCUPSBatteryRemainingParameter('dome_ups_battery_remaining'),
-    APCUPSBatteryHealthyParameter('dome_ups_battery_healthy'),
-    APCUPSOutputLoadParameter('dome_ups_load'),
-]
-
-RACK_SWITCH_IP = '10.2.6.214'
-RACK_SWITCH_PARAMETERS = [
-    NetgearPoESocketParameter('telescope_network', 1),
-    NetgearPoESocketParameter('webcam', 3),
-    NetgearPoESocketParameter('roomalert', 5),
-    NetgearPoESocketParameter('microphone', 7),
-]
-
-DEHUMIDIFIER_SERIAL_PORT = '/dev/dehumidifier'
+CONFIG = {
+    'onemetre': OneMetreConfig
+}
 
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
-    def __init__(self):
-        self._devices = [
-            SNMPDevice(RACK_PDU_IP, RACK_PDU_PORTS, SNMP_TIMEOUT),
-            SNMPDevice(TEL_PDU_IP, TEL_PDU_PORTS, SNMP_TIMEOUT),
-            SNMPDevice(MAIN_UPS_IP, MAIN_UPS_PARAMETERS, SNMP_TIMEOUT),
-            SNMPDevice(DOME_UPS_IP, DOME_UPS_PARAMETERS, SNMP_TIMEOUT),
-            SNMPDevice(RACK_SWITCH_IP, RACK_SWITCH_PARAMETERS, SNMP_TIMEOUT),
-            DehumidifierSwitchDevice(DEHUMIDIFIER_SERIAL_PORT,
-                                     DehumidifierParameter('dehumidifier'), self),
-        ]
+    def __init__(self, config):
+        self._devices = config.get_devices(self)
+        self._control_ips = config.control_ips
+        self._log_name = config.log_name
 
         # Map of parameter name to device holding the parameter
         self._device_by_parameter = {}
@@ -135,15 +79,15 @@ class PowerDaemon:
         state = (SwitchStatus.On if enable else SwitchStatus.Off)
         ret = self._device_by_parameter[name].set_parameter(name, state)
         if ret:
-            log.info('powerd', 'Switched ' + name + (' on' if enable else ' off'))
+            log.info(self._log_name, 'Switched ' + name + (' on' if enable else ' off'))
         else:
-            log.error('powerd', 'Failed to switch ' + name + (' on' if enable else ' off'))
+            log.error(self._log_name, 'Failed to switch ' + name + (' on' if enable else ' off'))
         return ret
 
     @Pyro4.expose
     def switch(self, name, enable):
         """Switch a named UPS switch parameter on or off"""
-        if not pyro_client_matches(CONTROL_IPS):
+        if not pyro_client_matches(self._control_ips):
             return False
 
         return self.switch_internal(name, enable)
@@ -157,4 +101,8 @@ class PowerDaemon:
         return self._device_by_parameter[name].get_parameter(name)
 
 if __name__ == '__main__':
-    daemons.onemetre_power.launch(PowerDaemon())
+    parser = argparse.ArgumentParser(description='Power Server')
+    parser.add_argument('telescope', choices=CONFIG.keys(), help='Select a telescope')
+    args = parser.parse_args()
+    telescope = CONFIG[args.telescope]
+    telescope.daemon.launch(PowerDaemon(telescope))

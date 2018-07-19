@@ -17,9 +17,9 @@
 
 from distutils.core import setup
 
-setup(name='warwick.w1m.power',
+setup(name='warwick.observatory.power',
       version='0',
-      packages = ['warwick.w1m.power'],
+      packages = ['warwick.observatory.power'],
       author='Paul Chote',
       description='Common code for the W1m power daemon',
       license='GNU GPLv3',
