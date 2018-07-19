@@ -67,7 +67,7 @@ class PowerDaemon:
         return data
 
     def switch_internal(self, name, enable):
-        """Switch a named UPS switch parameter on or off
+        """Switch a named switch parameter on or off
            Used internally (avoids the pyro client checks)
         """
         if name not in self._device_by_parameter:
@@ -86,7 +86,7 @@ class PowerDaemon:
 
     @Pyro4.expose
     def switch(self, name, enable):
-        """Switch a named UPS switch parameter on or off"""
+        """Switch a named switch parameter on or off"""
         if not pyro_client_matches(self._control_ips):
             return False
 
