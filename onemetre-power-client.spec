@@ -6,12 +6,7 @@ Summary:   Power system client for the Warwick one-metre telescope.
 License:   GPL-3.0
 Group:     Unspecified
 BuildArch: noarch
-%if 0%{?suse_version}
-Requires:  python3, python34-Pyro4, python34-warwick-observatory-common
-%endif
-%if 0%{?centos_ver}
-Requires:  python34, python34-Pyro4, python34-warwick-observatory-common
-%endif
+Requires:  python34, python34-Pyro4, python34-warwick-observatory-common, python34-warwick-observatory-power
 
 %description
 Part of the observatory software for the Warwick one-meter telescope.
