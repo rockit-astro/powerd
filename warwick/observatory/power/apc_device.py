@@ -45,6 +45,29 @@ class APCPDUSocketParameter(SNMPParameter):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
 
+class APCUPSSocketGroupParameter(SNMPParameter):
+    """Parameter representing a specific UPS socket group"""
+    def __init__(self, name, socket):
+        oid = '.1.3.6.1.4.1.318.1.1.1.12.3.2.1.3.' + str(socket)
+        SNMPParameter.__init__(self, name, oid, oid, SwitchStatus.Unknown)
+
+    def format_set_value(self, value):
+        """Format a python value to a string to send via SNMP"""
+        return '1' if value == SwitchStatus.On else '2'
+
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
+        parts = output.split(' ')
+
+        if parts[-2] != 'INTEGER:':
+            raise Exception('Unabled to parse integer from SNMP output: ' + output)
+
+        return SwitchStatus.On if int(parts[-1]) == 1 else SwitchStatus.Off
+
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
+
 class APCUPSStatusParameter(SNMPParameter):
     """Parameter representing the read-only UPS status enum"""
     def __init__(self, name):

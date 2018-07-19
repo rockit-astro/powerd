@@ -25,7 +25,8 @@ from .apc_device import (
     APCUPSStatusParameter,
     APCUPSBatteryRemainingParameter,
     APCUPSBatteryHealthyParameter,
-    APCUPSOutputLoadParameter)
+    APCUPSOutputLoadParameter,
+    APCUPSSocketGroupParameter)
 from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .dummy_device import DummyUPSDevice, DummyDevice
 from .onemetre_config import OneMetreConfig

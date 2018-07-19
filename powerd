@@ -32,12 +32,17 @@ from warwick.observatory.power import (
     SwitchStatus,
     DehumidifierParameter,
     APCPDUSocketParameter,
+    APCUPSSocketGroupParameter,
     NetgearPoESocketParameter)
 
 # Include more detailed exceptions
 sys.excepthook = Pyro4.util.excepthook
 
-SWITCHABLE_PARAMETERS = (DehumidifierParameter, APCPDUSocketParameter, NetgearPoESocketParameter)
+SWITCHABLE_PARAMETERS = (
+    DehumidifierParameter,
+    APCPDUSocketParameter,
+    APCUPSSocketGroupParameter,
+    NetgearPoESocketParameter)
 
 CONFIG = {
     'onemetre': OneMetreConfig
