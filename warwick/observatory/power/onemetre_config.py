@@ -80,6 +80,7 @@ RACK_SWITCH_PARAMETERS = [
     NetgearPoESocketParameter('webcam', 3),
     NetgearPoESocketParameter('roomalert', 5),
     NetgearPoESocketParameter('microphone', 7),
+    NetgearPoESocketParameter('extcam', 18),
 ]
 
 DEHUMIDIFIER_SERIAL_PORT = '/dev/dehumidifier'
@@ -117,6 +118,7 @@ class OneMetreConfig:
         print('   Rack Computer: ' + format_switch(data['rack_nuc']))
         print('    Rack Monitor: ' + format_switch(data['monitor']))
         print('     Dome Webcam: ' + format_switch(data['webcam']))
+        print(' External Webcam: ' + format_switch(data['extcam']))
         print(' Dome Microphone: ' + format_switch(data['microphone']))
         print('      Dome Light: ' + format_switch(data['light']))
         print('      Room Alert: ' + format_switch(data['roomalert']))
