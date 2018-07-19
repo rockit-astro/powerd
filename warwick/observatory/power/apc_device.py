@@ -32,8 +32,8 @@ class APCPDUSocketParameter(SNMPParameter):
         """Format a python value to a string to send via SNMP"""
         return '1' if value == SwitchStatus.On else '2'
 
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
         parts = output.split(' ')
 
         if parts[-2] != 'INTEGER:':
@@ -41,20 +41,28 @@ class APCPDUSocketParameter(SNMPParameter):
 
         return SwitchStatus.On if int(parts[-1]) == 1 else SwitchStatus.Off
 
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
+
 class APCUPSStatusParameter(SNMPParameter):
     """Parameter representing the read-only UPS status enum"""
     def __init__(self, name):
         oid = '.1.3.6.1.4.1.318.1.1.1.4.1.1.0'
         SNMPParameter.__init__(self, name, oid, None, APCUPSStatus.Unknown)
 
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
         parts = output.split(' ')
 
         if parts[-2] != 'INTEGER:':
             raise Exception('Unabled to parse integer from SNMP output: ' + output)
 
         return int(parts[-1])
+
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
 
 class APCUPSBatteryHealthyParameter(SNMPParameter):
     """Parameter representing the read-only UPS battery health flag"""
@@ -62,8 +70,8 @@ class APCUPSBatteryHealthyParameter(SNMPParameter):
         oid = '.1.3.6.1.4.1.318.1.1.1.2.2.4.0'
         SNMPParameter.__init__(self, name, oid, None, False)
 
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
         parts = output.split(' ')
 
         if parts[-2] != 'INTEGER:':
@@ -71,18 +79,26 @@ class APCUPSBatteryHealthyParameter(SNMPParameter):
 
         return int(parts[-1]) == 1
 
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
+
 class APCGaugeParameter(SNMPParameter):
     """Data structure encapsulating a readonly UPS Gauge parameter"""
     def __init__(self, name, oid):
         SNMPParameter.__init__(self, name, oid, None, 0)
 
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
         parts = output.split(' ')
         if parts[-2] != 'Gauge32:':
             raise Exception('Unabled to parse Gauge32 from SNMP output: ' + output)
 
         return int(parts[-1])
+
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
 
 class APCUPSBatteryRemainingParameter(APCGaugeParameter):
     """Parameter representing the read-only UPS battery remaining gauge"""

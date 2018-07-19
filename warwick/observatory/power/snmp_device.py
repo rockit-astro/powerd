@@ -58,7 +58,7 @@ class SNMPDevice:
                 self._last_command_failed = False
 
             # Return a dictionary of values keyed by parameter name
-            return {k.name: k.parse_snmp_output(v) for k, v in zip(self.parameters, lines)}
+            return {k.name: k.parse_snmpget_output(v) for k, v in zip(self.parameters, lines)}
         except Exception as exception:
             print('{} ERROR: failed to query {}: {}' \
                   .format(datetime.datetime.utcnow(), self._ip, str(exception)))
@@ -79,7 +79,7 @@ class SNMPDevice:
             args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.get_oid]
             output = subprocess.check_output(args, universal_newlines=True,
                                              timeout=self._query_timeout)
-            return parameter.parse_snmp_output(output)
+            return parameter.parse_snmpget_output(output)
         except Exception as exception:
             print('{} ERROR: failed to query {}: {}' \
                   .format(datetime.datetime.utcnow(), self._ip, str(exception)))
@@ -121,7 +121,7 @@ class SNMPDevice:
             return False
 
         try:
-            return parameter.parse_snmp_output(output) == value
+            return parameter.parse_snmpset_output(output) == value
         except Exception as exception:
             print('{} ERROR: failed to parse SNMP response: {}' \
                   .format(datetime.datetime.utcnow(), str(exception)))

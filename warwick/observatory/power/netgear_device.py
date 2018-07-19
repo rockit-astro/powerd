@@ -30,9 +30,13 @@ class NetgearPoESocketParameter(SNMPParameter):
         SNMPParameter.__init__(self, name, get_oid, set_oid, SwitchStatus.Unknown)
         self.port = port
 
-    def parse_snmp_output(self, output):
-        """Convert a snmp output string for this parameter into a python value"""
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
         return SwitchStatus.On if int(output.split(' ')[-1]) == 3 else SwitchStatus.Off
+
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return SwitchStatus.On if int(output.split(' ')[-1]) == 1 else SwitchStatus.Off
 
     def format_set_value(self, value):
         """Format a python value to a string to send via SNMP"""
