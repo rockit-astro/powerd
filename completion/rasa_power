@@ -8,7 +8,7 @@ _power()
     opts="status json switch"
 
     if [[ ${prev} == "switch" ]] ; then
-        opts="nuc light telescope poe_network monitor dome"
+        opts="nuc light telescope dehumidifier poe_network monitor dome"
     fi
 
     if [[ ${prevprev} == "switch" ]] ; then

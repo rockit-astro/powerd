@@ -28,10 +28,12 @@ from warwick.observatory.power import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCUPSSocketGroupParameter,
-    NetgearPoESocketParameter)
+    ETH002Device,
+    ETH002SwitchParameter)
 
-# Timeout in seconds for SNMP commands
+# Timeout in seconds for remote queries
 SNMP_TIMEOUT = 2
+HTTP_TIMEOUT = 2
 
 UPS_IP = '10.2.6.40'
 UPS_PARAMETERS = [
@@ -51,8 +53,13 @@ RACK_PDU_PORTS = [
     APCPDUSocketParameter('monitor', 8),
 ]
 
+DEHUMIDIFIER_IP = '10.2.6.48'
+DEHUMIDIFIER_PORTS = [
+    ETH002SwitchParameter('dehumidifier', 0),
+]
+
 class RASAConfig:
-    """Configuration for the W1m's power daemon"""
+    """Configuration for the RASA's power daemon"""
     daemon = daemons.rasa_power
     log_name = 'rasa_powerd'
     control_ips = [IP.RASAMain]
@@ -63,6 +70,7 @@ class RASAConfig:
         return [
             SNMPDevice(cls.log_name, UPS_IP, UPS_PARAMETERS, SNMP_TIMEOUT),
             SNMPDevice(cls.log_name, RACK_PDU_IP, RACK_PDU_PORTS, SNMP_TIMEOUT),
+            ETH002Device(cls.log_name, DEHUMIDIFIER_IP, DEHUMIDIFIER_PORTS, HTTP_TIMEOUT)
         ]
 
     @classmethod
@@ -71,6 +79,7 @@ class RASAConfig:
         print('        Computer: ' + format_switch(data['nuc']))
         print('       Telescope: ' + format_switch(data['telescope']))
         print('      Dome Light: ' + format_switch(data['light']))
+        print('    Dehumidifier: ' + format_switch(data['dehumidifier']))
         print('            Dome: ' + format_switch(data['dome']))
         print('     PoE Network: ' + format_switch(data['poe_network']))
         print('    Rack Monitor: ' + format_switch(data['monitor']))
