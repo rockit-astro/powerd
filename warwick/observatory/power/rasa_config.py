@@ -33,7 +33,7 @@ from warwick.observatory.power import (
 
 # Timeout in seconds for remote queries
 SNMP_TIMEOUT = 2
-HTTP_TIMEOUT = 2
+HTTP_TIMEOUT = 5
 
 UPS_IP = '10.2.6.40'
 UPS_PARAMETERS = [
