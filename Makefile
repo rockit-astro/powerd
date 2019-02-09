@@ -16,7 +16,7 @@ all:
 	${RPMBUILD} -ba rasa-power-server.spec
 	${RPMBUILD} -ba rasa-power-client.spec
 
-	${RPMBUILD} -ba python34-warwick-observatory-power.spec
+	${RPMBUILD} -ba python36-warwick-observatory-power.spec
 	mv build/noarch/*.rpm .
 	rm -rf build
 	mv power.bak power
