@@ -16,16 +16,13 @@
 
 """Wrapper for accessing an ETH002 relay board via http"""
 
-# pylint: disable=broad-except
-# pylint: disable=too-few-public-methods
-# pylint: disable=too-many-instance-attributes
-
 import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
 
 from warwick.observatory.common import log
-from . import Parameter, SwitchStatus
+from .constants import Parameter, SwitchStatus
+
 
 class ETH002SwitchParameter(Parameter):
     """Data structure encapsulating an ETH002 relay"""
@@ -41,7 +38,7 @@ class ETH002SwitchParameter(Parameter):
                 return SwitchStatus.Off
             if status == '1':
                 return SwitchStatus.On
-        except:
+        except Exception:
             pass
 
         return SwitchStatus.Unknown
@@ -51,6 +48,7 @@ class ETH002SwitchParameter(Parameter):
         return 'io.cgi?DO{0}{1}=0'.format(
             'A' if value else 'I',
             str(self.channel + 1))
+
 
 class ETH002Device:
     """Wrapper for querying an ETH002 ethernet relay board via http"""

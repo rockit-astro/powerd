@@ -16,14 +16,13 @@
 
 """Wrapper for accessing a device via SNMP"""
 
-# pylint: disable=broad-except
-# pylint: disable=too-few-public-methods
 # pylint: disable=no-self-use
 
 import datetime
 import subprocess
 from warwick.observatory.common import log
-from . import Parameter
+from .constants import Parameter
+
 
 class SNMPParameter(Parameter):
     """Data structure encapsulating a parameter fetched/set via SNMP"""
@@ -31,6 +30,7 @@ class SNMPParameter(Parameter):
         Parameter.__init__(self, name, error_value)
         self.get_oid = get_oid
         self.set_oid = set_oid
+
 
 class SNMPDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""

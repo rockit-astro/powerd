@@ -16,10 +16,11 @@
 
 """Netgear-specific parameters for SNMPDevice"""
 
-# pylint: disable=too-few-public-methods
 # pylint: disable=no-self-use
 
-from . import SNMPParameter, SwitchStatus
+from .constants import SwitchStatus
+from .snmp_device import SNMPParameter
+
 
 class NetgearPoESocketParameter(SNMPParameter):
     """Data structure encapsulating a PoE parameter"""

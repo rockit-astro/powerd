@@ -16,21 +16,19 @@
 
 """Wrapper for accessing the custom Arduino board via USB"""
 
-# pylint: disable=broad-except
-# pylint: disable=too-few-public-methods
-# pylint: disable=too-many-instance-attributes
-
 import datetime
 import threading
 import time
 import serial
 from warwick.observatory.common import log
-from . import Parameter, SwitchStatus
+from .constants import Parameter, SwitchStatus
+
 
 class DehumidifierParameter(Parameter):
     """Data structure encapsulating the dehumidifier switch"""
     def __init__(self, name):
         Parameter.__init__(self, name, SwitchStatus.Unknown)
+
 
 class DehumidifierSwitchDevice:
     """Wrapper for querying an attached Arduino via RS232"""

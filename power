@@ -17,8 +17,6 @@
 
 """Commandline client for interfacing with the power system daemon"""
 
-# pylint: disable=invalid-name
-
 import datetime
 import json
 import os

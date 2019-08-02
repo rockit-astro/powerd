@@ -16,8 +16,6 @@
 
 """Configuration for the RASA's power daemon"""
 
-# pylint: disable=too-few-public-methods
-
 from warwick.observatory.common import IP, daemons
 from warwick.observatory.power import (
     SNMPDevice,
@@ -56,6 +54,7 @@ DEHUMIDIFIER_IP = '10.2.6.48'
 DEHUMIDIFIER_PORTS = [
     ETH002SwitchParameter('dehumidifier', 0),
 ]
+
 
 class RASAConfig:
     """Configuration for the RASA's power daemon"""

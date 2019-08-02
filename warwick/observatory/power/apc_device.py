@@ -16,10 +16,11 @@
 
 """APC-specific parameters for SNMPDevice"""
 
-# pylint: disable=too-few-public-methods
 # pylint: disable=no-self-use
 
-from . import SNMPParameter, SwitchStatus, APCUPSStatus
+from .constants import SwitchStatus, APCUPSStatus
+from .snmp_device import SNMPParameter
+
 
 class APCPDUSocketParameter(SNMPParameter):
     """Parameter representing a specific PDU socket"""
@@ -44,6 +45,7 @@ class APCPDUSocketParameter(SNMPParameter):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
 
+
 class APCUPSSocketGroupParameter(SNMPParameter):
     """Parameter representing a specific UPS socket group"""
     def __init__(self, name, socket):
@@ -67,6 +69,7 @@ class APCUPSSocketGroupParameter(SNMPParameter):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
 
+
 class APCUPSStatusParameter(SNMPParameter):
     """Parameter representing the read-only UPS status enum"""
     def __init__(self, name):
@@ -85,6 +88,7 @@ class APCUPSStatusParameter(SNMPParameter):
     def parse_snmpset_output(self, output):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
+
 
 class APCUPSBatteryHealthyParameter(SNMPParameter):
     """Parameter representing the read-only UPS battery health flag"""
@@ -105,6 +109,7 @@ class APCUPSBatteryHealthyParameter(SNMPParameter):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
 
+
 class APCGaugeParameter(SNMPParameter):
     """Data structure encapsulating a readonly UPS Gauge parameter"""
     def __init__(self, name, oid):
@@ -122,10 +127,12 @@ class APCGaugeParameter(SNMPParameter):
         """Convert a snmpset output string for this parameter into a python value"""
         return self.parse_snmpget_output(output)
 
+
 class APCUPSBatteryRemainingParameter(APCGaugeParameter):
     """Parameter representing the read-only UPS battery remaining gauge"""
     def __init__(self, name):
         APCGaugeParameter.__init__(self, name, '.1.3.6.1.4.1.318.1.1.1.2.2.1.0')
+
 
 class APCUPSOutputLoadParameter(APCGaugeParameter):
     """Parameter representing the read-only UPS load gauge"""

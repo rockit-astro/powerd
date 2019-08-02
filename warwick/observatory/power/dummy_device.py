@@ -26,6 +26,7 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter)
 
+
 class DummyUPSDevice:
     """Dummy UPS device for testing"""
     def __init__(self, ip, parameters, query_timeout):
@@ -63,6 +64,7 @@ class DummyUPSDevice:
     def set_parameter(self, parameter_name, value):
         """APC UPSes have no settable parameters"""
         return False
+
 
 class DummyDevice:
     """Dummy device for testing"""

@@ -30,4 +30,4 @@ from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitc
 from .eth002_device import ETH002Device, ETH002SwitchParameter
 from .dummy_device import DummyUPSDevice, DummyDevice
 from .onemetre_config import OneMetreConfig
-from .rasa_config import  RASAConfig
+from .rasa_config import RASAConfig

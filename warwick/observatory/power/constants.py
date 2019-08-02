@@ -16,14 +16,12 @@
 
 """Constants and status codes used by powerd"""
 
-# pylint: disable=too-few-public-methods
-# pylint: disable=invalid-name
-
 FMT_YELLOW = u'\033[93m'
 FMT_GREEN = u'\033[92m'
 FMT_RED = u'\033[91m'
 FMT_BOLD = u'\033[1m'
 FMT_CLEAR = u'\033[0m'
+
 
 class Parameter:
     """Data structure encapsulating a switchable port/device"""
@@ -31,9 +29,11 @@ class Parameter:
         self.name = name
         self.error_value = error_value
 
+
 class SwitchStatus:
     """Represents the state of a power port"""
     Off, On, Unknown = range(3)
+
 
 class APCUPSStatus:
     """Represents the state of an APC UPS"""
