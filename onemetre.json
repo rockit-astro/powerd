@@ -1,0 +1,147 @@
+{
+  "daemon": "onemetre_power",
+  "log_name": "powerd",
+  "control_machines": ["OneMetreDome", "OneMetreTCS"],
+  "devices": [
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.212",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "rack_nuc",
+          "label": "Rack Computer",
+          "display_order": 9
+        },
+        {
+          "socket": 2,
+          "name": "telescope_12v",
+          "label": "Tel. Controllers",
+          "display_order": 3
+        },
+        {
+          "socket": 3,
+          "name": "telescope_80v",
+          "label": "Tel. Motors",
+          "display_order": 4
+        },
+        {
+          "socket": 4,
+          "name": "vaisala",
+          "label": "Weather Station",
+          "display_order": 16
+        },
+        {
+          "socket": 6,
+          "name": "monitor",
+          "label": "Rack Monitor",
+          "display_order": 10
+        },
+        {
+          "socket": 8,
+          "name": "light",
+          "label": "Dome Light",
+          "display_order": 14
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.213",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "red_camera",
+          "label": "Red Camera",
+          "display_order": 6
+        },
+        {
+          "socket": 2,
+          "name": "blue_camera",
+          "label": "Blue Camera",
+          "display_order": 5
+        },
+        {
+          "socket": 3,
+          "name": "telescope_nuc",
+          "label": "Tel. Computer",
+          "display_order": 1
+        },
+        {
+          "socket": 7,
+          "name": "red_focus_motor",
+          "label": "Red Foc. Motor",
+          "display_order": 7
+        },
+        {
+          "socket": 8,
+          "name": "red_focus_controller",
+          "label": "Red Foc. Ctrler",
+          "display_order": 8
+        }
+      ]
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.210",
+      "query_timeout": 2,
+      "name": "main_ups",
+      "label": "Main UPS",
+      "display_order": 18
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.211",
+      "query_timeout": 2,
+      "name": "dome_ups",
+      "label": "Dome UPS",
+      "display_order": 19
+    },
+    {
+      "type": "NetgearPOE",
+      "ip": "10.2.6.214",
+      "query_timeout": 2,
+      "ports": [
+        {
+          "port": 1,
+          "name": "telescope_network",
+          "label": "Tel. Network",
+          "display_order": 2
+        },
+        {
+          "port": 3,
+          "name": "webcam",
+          "label": "Dome Webcam",
+          "display_order": 11
+        },
+        {
+          "port": 5,
+          "name": "roomalert",
+          "label": "Room Alert",
+          "display_order": 15
+        },
+        {
+          "port": 7,
+          "name": "microphone",
+          "label": "Dome Microphone",
+          "display_order": 13
+        },
+        {
+          "port": 18,
+          "name": "extcam",
+          "label": "East Ext Webcam",
+          "display_order": 12
+        }
+      ]
+    },
+    {
+      "type": "ArduinoRelay",
+      "name": "dehumidifier",
+      "label": "Dehumidifier",
+      "device": "/dev/dehumidifier",
+      "display_order": 17
+    }
+  ]
+}

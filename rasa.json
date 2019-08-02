@@ -1,0 +1,73 @@
+{
+  "daemon": "rasa_power",
+  "log_name": "rasa_powerd",
+  "control_machines": ["RASAMain"],
+  "devices": [
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.41",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "nuc",
+          "label": "Computer",
+          "display_order": 1
+        },
+        {
+          "socket": 2,
+          "name": "light",
+          "label": "Dome Light",
+          "display_order": 3
+        },
+        {
+          "socket": 3,
+          "name": "telescope",
+          "label": "Telescope",
+          "display_order": 2
+        },
+        {
+          "socket": 4,
+          "name": "poe_network",
+          "label": "PoE Network",
+          "display_order": 6
+        },
+        {
+          "socket": 8,
+          "name": "monitor",
+          "label": "Rack Monitor",
+          "display_order": 7
+        }
+      ]
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.40",
+      "query_timeout": 2,
+      "name": "ups",
+      "label": "UPS",
+      "display_order": 8,
+      "groups": [
+        {
+          "group": 2,
+          "name": "dome",
+          "label": "Dome",
+          "display_order": 5
+        }
+      ]
+    },
+    {
+      "type": "ETH002",
+      "ip": "10.2.6.48",
+      "query_timeout": 5,
+      "relays": [
+        {
+          "relay": 0,
+          "name": "dehumidifier",
+          "label": "Dehumidifier",
+          "display_order": 4
+        }
+      ]
+    }
+  ]
+}

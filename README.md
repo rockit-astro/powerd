@@ -52,8 +52,8 @@ sudo firewall-cmd --reload
 
 The [dehumidifier switch](https://github.com/warwick-one-metre/dehumidifier-switch) is matched against its unique serial number.  If the Arduino is replaced then the serial number should be updated in `10-onemetre-dome-power.rules`.
 
-The IPs for the SNMP devices (PDUs, UPSes, network switch) are hardcoded in `warwick/observatory/power/onemetre_config.py`.
+The IPs and port configurations are defined in the `onemetre.json` config file.
 
 ### Hardware Setup (RASA)
 
-The IPs for the SNMP devices (PDUs, UPSes, network switch) are hardcoded in `warwick/observatory/power/rasa_config.py`.
+The IPs and port configurations are defined in the `rasa.json` config file.

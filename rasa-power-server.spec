@@ -1,5 +1,5 @@
 Name:      rasa-power-server
-Version:   2.4.0
+Version:   2.5.0
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon for the RASA prototype telescope.
@@ -18,9 +18,11 @@ powerd is a Pyro frontend for interacting with the PDUs and UPSes via SNMP.
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_udevrulesdir}
+mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 
 %{__install} %{_sourcedir}/powerd %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/rasa_powerd.service %{buildroot}%{_unitdir}
+%{__install} %{_sourcedir}/rasa.json %{buildroot}%{_sysconfdir}/powerd/
 
 %post
 %systemd_post rasa_powerd.service
@@ -36,5 +38,6 @@ mkdir -p %{buildroot}%{_udevrulesdir}
 %{_bindir}/powerd
 %defattr(0644,root,root,-)
 %{_unitdir}/rasa_powerd.service
+%{_sysconfdir}/powerd/rasa.json
 
 %changelog

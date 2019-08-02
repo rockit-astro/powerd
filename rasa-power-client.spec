@@ -1,5 +1,5 @@
 Name:      rasa-power-client
-Version:   2.4.0
+Version:   2.5.0
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system client for the RASA prototype telescope.
@@ -19,7 +19,7 @@ mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}/etc/bash_completion.d
 %{__install} %{_sourcedir}/power %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/light %{buildroot}%{_bindir}
-%{__install} %{_sourcedir}/completion/rasa_power %{buildroot}/etc/bash_completion.d/power
+%{__install} %{_sourcedir}/completion/power %{buildroot}/etc/bash_completion.d/power
 %{__install} %{_sourcedir}/completion/light %{buildroot}/etc/bash_completion.d/light
 
 %files

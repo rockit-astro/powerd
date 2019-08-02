@@ -16,6 +16,7 @@
 
 """powerd common code"""
 
+from .config import Config
 from .constants import Parameter, SwitchStatus, APCUPSStatus
 from .snmp_device import SNMPDevice, SNMPParameter
 from .netgear_device import NetgearPoESocketParameter
@@ -29,5 +30,3 @@ from .apc_device import (
 from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .eth002_device import ETH002Device, ETH002SwitchParameter
 from .dummy_device import DummyUPSDevice, DummyDevice
-from .onemetre_config import OneMetreConfig
-from .rasa_config import RASAConfig

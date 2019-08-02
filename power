@@ -22,12 +22,13 @@ import json
 import os
 import sys
 import Pyro4
-from warwick.observatory.power import SwitchStatus, APCUPSStatus, OneMetreConfig, RASAConfig
+from warwick.observatory.common import daemons
+from warwick.observatory.power import SwitchStatus, APCUPSStatus
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-CONFIG = OneMetreConfig
+DAEMON = daemons.onemetre_power
 
 FMT_YELLOW = u'\033[93m'
 FMT_GREEN = u'\033[92m'
@@ -35,25 +36,45 @@ FMT_RED = u'\033[91m'
 FMT_BOLD = u'\033[1m'
 FMT_CLEAR = u'\033[0m'
 
-def print_status(daemon, print_telescope_status):
+
+def print_status(daemon):
     """Prints the latest data in human-readable form"""
-    latest = None
     try:
         with daemon.connect(timeout=15) as power:
             latest = power.last_measurement()
+            metadata = power.measurement_labels()
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
         return 1
 
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
+
+        # Find the longest label to set the parameter indent
+        max_label_length = 0
+        for m in metadata:
+            max_label_length = max(max_label_length, len(m['label']))
+
         print('Data received \033[1m{}\033[0m:'.format(date))
-        print_telescope_status(latest, format_switch, format_ups)
+        for m in metadata:
+            label_padding = max_label_length - len(m['label'])
+            label = ' ' * label_padding + m['label'] + ': '
+            if m['type'] == 'switch':
+                label += format_switch(latest[m['name']])
+            elif m['type'] == 'ups':
+                label += format_ups(
+                    latest[m['name'] + '_status'],
+                    latest[m['name'] + '_battery_remaining'],
+                    latest[m['name'] + '_battery_healthy'],
+                    latest[m['name'] + '_load']
+                )
+            print(label)
         print()
     else:
         print('error: failed to query data')
 
     return 0
+
 
 def format_switch(status):
     """Builds a formatted string indicating whether a switch is enabled"""
@@ -62,6 +83,7 @@ def format_switch(status):
     if status == SwitchStatus.Off:
         return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
     return FMT_RED + FMT_BOLD + 'UNKNOWN' + FMT_CLEAR
+
 
 def format_ups(status, battery_remaining, battery_healthy, load):
     """Builds a formatted string reporting UPS status"""
@@ -74,6 +96,7 @@ def format_ups(status, battery_remaining, battery_healthy, load):
     if not battery_healthy:
         ret += FMT_BOLD + FMT_RED + ' REPLACE BATTERY' + FMT_CLEAR
     return ret
+
 
 def print_json(daemon):
     """Prints the latest data in machine-readable form"""
@@ -89,6 +112,21 @@ def print_json(daemon):
 
     return 0
 
+
+def print_switches(daemon):
+    """Prints a list of the switchable parameters"""
+    try:
+        with daemon.connect(timeout=15) as power:
+            switches = power.switch_names()
+    except Pyro4.errors.CommunicationError:
+        return 1
+
+    if switches is not None:
+        print(' '.join(switches))
+        return 0
+    return 1
+
+
 def switch_power(daemon, args):
     """Switches a named PDU port on or off"""
     if len(args) > 1:
@@ -103,6 +141,7 @@ def switch_power(daemon, args):
     print('usage: {} switch <port> (on|off)'.format(SCRIPT_NAME))
     return -1
 
+
 def print_usage(name):
     """Prints the utility help"""
     print('Usage: {} <command>'.format(name))
@@ -114,16 +153,19 @@ def print_usage(name):
 
     return 1
 
+
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.exit(print_usage(SCRIPT_NAME))
 
     if sys.argv[1] == 'status':
-        sys.exit(print_status(CONFIG.daemon, CONFIG.print_status))
+        sys.exit(print_status(DAEMON))
     elif sys.argv[1] == 'json':
-        sys.exit(print_json(CONFIG.daemon))
+        sys.exit(print_json(DAEMON))
     elif sys.argv[1] == 'switch':
-        sys.exit(switch_power(CONFIG.daemon, sys.argv[2:]))
+        sys.exit(switch_power(DAEMON, sys.argv[2:]))
+    elif sys.argv[1] == 'list-switches':
+        sys.exit(print_switches(DAEMON))
 
     # Command not found
     sys.exit(print_usage(SCRIPT_NAME))

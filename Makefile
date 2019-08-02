@@ -11,8 +11,8 @@ all:
 
 	cp power power.bak
 	cp light light.bak
-	awk '{sub("CONFIG = .*$$","CONFIG = RASAConfig"); print $0}' power.bak > power
-	awk '{sub("CONFIG = .*$$","CONFIG = RASAConfig"); print $0}' light.bak > light
+	awk '{sub("DAEMON = .*$$","DAEMON = daemons.rasa_power"); print $0}' power.bak > power
+	awk '{sub("DAEMON = .*$$","DAEMON = daemons.rasa_power"); print $0}' light.bak > light
 	${RPMBUILD} -ba rasa-power-server.spec
 	${RPMBUILD} -ba rasa-power-client.spec
 

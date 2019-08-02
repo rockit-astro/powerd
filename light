@@ -20,12 +20,12 @@
 import os
 import sys
 import Pyro4
-from warwick.observatory.power import OneMetreConfig, RASAConfig
+from warwick.observatory.common import daemons
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-CONFIG = OneMetreConfig
+DAEMON = daemons.onemetre_power
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
@@ -34,12 +34,12 @@ if __name__ == '__main__':
 
     try:
         if sys.argv[1] == 'on' or sys.argv[1] == 'off':
-            with CONFIG.daemon.connect() as power:
+            with DAEMON.connect() as power:
                 if not power.switch('light', sys.argv[1] == 'on'):
                     print('error: failed to switch light {}'.format(sys.argv[1]))
                     sys.exit(-1)
         elif sys.argv[1] == 'status':
-            with CONFIG.daemon.connect() as power:
+            with DAEMON.connect() as power:
                 print('on' if power.value('light') else 'off')
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power daemon')

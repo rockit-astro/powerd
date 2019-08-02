@@ -24,8 +24,7 @@ import Pyro4
 from warwick.observatory.common import log
 from warwick.observatory.common.helpers import pyro_client_matches
 from warwick.observatory.power import (
-    OneMetreConfig,
-    RASAConfig,
+    Config,
     SwitchStatus,
     DehumidifierParameter,
     APCPDUSocketParameter,
@@ -43,10 +42,6 @@ SWITCHABLE_PARAMETERS = (
     NetgearPoESocketParameter,
     ETH002SwitchParameter)
 
-CONFIG = {
-    'onemetre': OneMetreConfig,
-    'rasa': RASAConfig
-}
 
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
@@ -54,6 +49,7 @@ class PowerDaemon:
         self._devices = config.get_devices(self)
         self._control_ips = config.control_ips
         self._log_name = config.log_name
+        self._labels = config.get_labels()
 
         # Map of parameter name to device holding the parameter
         self._device_by_parameter = {}
@@ -70,6 +66,16 @@ class PowerDaemon:
         for device in self._devices:
             data.update(device.status())
         return data
+
+    @Pyro4.expose
+    def measurement_labels(self):
+        """Query the labels associated with last_measurement"""
+        return self._labels
+
+    @Pyro4.expose
+    def switch_names(self):
+        """Queries the list of the switchable parameters"""
+        return [k for k, v in self._parameters_by_name.items() if isinstance(v, SWITCHABLE_PARAMETERS)]
 
     def switch_internal(self, name, enable):
         """Switch a named switch parameter on or off
@@ -105,9 +111,10 @@ class PowerDaemon:
 
         return self._device_by_parameter[name].get_parameter(name)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Power Server')
-    parser.add_argument('telescope', choices=CONFIG.keys(), help='Select a telescope')
+    parser.add_argument('config', help='Path to configuration json file')
     args = parser.parse_args()
-    telescope = CONFIG[args.telescope]
-    telescope.daemon.launch(PowerDaemon(telescope))
+    c = Config(args.config)
+    c.daemon.launch(PowerDaemon(c))
