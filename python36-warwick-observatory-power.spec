@@ -5,7 +5,7 @@ License:        GPL3
 Summary:        Common backend code for the Warwick one-metre and RASA prototype telescopes power daemon
 Url:            https://github.com/warwick-one-metre/environmentd
 BuildArch:      noarch
-Requires:       python36-pyserial
+Requires:       python36-pyserial, python36-jsonschema
 
 %description
 Part of the observatory software for the Warwick one-meter and RASA prototype telescopes.
