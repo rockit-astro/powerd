@@ -92,6 +92,14 @@
       "display_order": 18
     },
     {
+      "type": "APCUPS",
+      "ip": "10.2.6.211",
+      "query_timeout": 2,
+      "name": "dome_ups",
+      "label": "NITES UPS",
+      "display_order": 19
+    },
+    {
       "type": "NetgearPOE",
       "ip": "10.2.6.214",
       "query_timeout": 2,
