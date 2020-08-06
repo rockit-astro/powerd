@@ -1,12 +1,12 @@
 Name:      onemetre-power-server
-Version:   2.5.2
+Version:   2.5.3
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon for the Warwick one-metre telescope.
 License:   GPL-3.0
 Group:     Unspecified
 BuildArch: noarch
-Requires:  python36, python36-Pyro4, python36-warwick-observatory-common, python36-warwick-observatory-power
+Requires:  python3, python3-Pyro4, python3-warwick-observatory-common, python3-warwick-observatory-power
 Requires:  observatory-log-client, net-snmp-utils, %{?systemd_requires}
 
 %description
