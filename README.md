@@ -16,13 +16,13 @@ See [Software Infrastructure](https://github.com/warwick-one-metre/docs/wiki/Sof
 
 After installing `observatory-power-server`, the `powerd` must be enabled using:
 ```
-sudo systemctl enable powerd.service@<telescope>
+sudo systemctl enable powerd@<telescope>
 ```
 where `<telescope>` can be `onemetre`, `rasa`, `superwasp`, or `gotoupsmon`.
 
 The service will automatically start on system boot, or you can start it immediately using:
 ```
-sudo systemctl start powerd.service@<telescope>
+sudo systemctl start powerd@<telescope>
 ```
 
 Finally, open a port in the firewall so that other machines on the network can query the power status:
