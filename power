@@ -33,7 +33,8 @@ sys.excepthook = Pyro4.util.excepthook
 DAEMONS = {
     daemons.onemetre_power: [IP.OneMetreDome, IP.OneMetreTCS],
     daemons.rasa_power: [IP.RASAMain],
-    daemons.superwasp_power: [IP.GOTOServer]
+    daemons.superwasp_power: [IP.GOTOServer],
+    daemons.goto_ups: [IP.GOTOServer]
 }
 
 FMT_YELLOW = u'\033[93m'

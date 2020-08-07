@@ -1,5 +1,5 @@
 Name:      observatory-power-server
-Version:   2.6.1
+Version:   2.6.4
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon for the Warwick La Palma telescopes.
@@ -26,6 +26,16 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/rasa.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
+%{__install} %{_sourcedir}/gotoupsmon.json %{buildroot}%{_sysconfdir}/powerd/
+
+%post
+%systemd_post powerd@.service
+
+%preun
+%systemd_preun powerd@.service
+
+%postun
+%systemd_postun_with_restart powerd@.service
 
 %files
 %defattr(0755,root,root,-)
@@ -36,5 +46,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{_sysconfdir}/powerd/onemetre.json
 %{_sysconfdir}/powerd/rasa.json
 %{_sysconfdir}/powerd/superwasp.json
+%{_sysconfdir}/powerd/gotoupsmon.json
 
 %changelog

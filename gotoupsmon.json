@@ -1,0 +1,23 @@
+{
+  "daemon": "goto_ups",
+  "log_name": "gotoupsd",
+  "control_machines": ["GOTOServer"],
+  "devices": [
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.1",
+      "query_timeout": 2,
+      "name": "main_ups",
+      "label": "Main UPS",
+      "display_order": 1
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.2",
+      "query_timeout": 2,
+      "name": "dome_ups",
+      "label": "Dome UPS",
+      "display_order": 2
+    }
+  ]
+}

@@ -18,7 +18,7 @@ After installing `observatory-power-server`, the `powerd` must be enabled using:
 ```
 sudo systemctl enable powerd.service@<telescope>
 ```
-where `<telescope>` can be `onemetre` or `rasa`.
+where `<telescope>` can be `onemetre`, `rasa`, `superwasp`, or `gotoupsmon`.
 
 The service will automatically start on system boot, or you can start it immediately using:
 ```
@@ -31,7 +31,15 @@ sudo firewall-cmd --zone=public --add-port=<port>/tcp --permanent
 sudo firewall-cmd --reload
 ```
 
-where `<port>` is 9009 for the onemetre and 9033 for the RASA (defined in the daemon config).
+where `<port>` is (defined in the warwick-observatory-common daemon config):
+
+| Telescope | Port |
+| --------- | ---- |
+| onemetre  | 9009 |
+| RASA      | 9033 |
+| SuperWASP | 9027 |
+| GOTO (upsmon) | 9021 |
+
 
 ### Configuration
 

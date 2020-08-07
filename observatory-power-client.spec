@@ -1,5 +1,5 @@
 Name:      observatory-power-client
-Version:   2.6.0
+Version:   2.6.1
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system client for the Warwick La Palma telescopes.
