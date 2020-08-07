@@ -22,13 +22,18 @@ import json
 import os
 import sys
 import Pyro4
-from warwick.observatory.common import daemons
+from warwick.observatory.common import daemons, IP, helpers
+from warwick.observatory.common.helpers import key_for_current_ip
 from warwick.observatory.power import SwitchStatus, APCUPSStatus
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-DAEMON = daemons.onemetre_power
+# Decide which system to control based on client IP
+DAEMONS = {
+    daemons.onemetre_power: [IP.OneMetreDome, IP.OneMetreTCS],
+    daemons.rasa_power: [IP.RASAMain]
+}
 
 FMT_YELLOW = u'\033[93m'
 FMT_GREEN = u'\033[92m'
@@ -158,14 +163,19 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.exit(print_usage(SCRIPT_NAME))
 
+    d = key_for_current_ip(DAEMONS)
+    if not d:
+        print('error: cannot determine daemon for current IP')
+        sys.exit(1)
+
     if sys.argv[1] == 'status':
-        sys.exit(print_status(DAEMON))
+        sys.exit(print_status(d))
     elif sys.argv[1] == 'json':
-        sys.exit(print_json(DAEMON))
+        sys.exit(print_json(d))
     elif sys.argv[1] == 'switch':
-        sys.exit(switch_power(DAEMON, sys.argv[2:]))
+        sys.exit(switch_power(d, sys.argv[2:]))
     elif sys.argv[1] == 'list-switches':
-        sys.exit(print_switches(DAEMON))
+        sys.exit(print_switches(d))
 
     # Command not found
     sys.exit(print_usage(SCRIPT_NAME))

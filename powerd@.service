@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 Restart=on-failure
 Type=simple
-ExecStart=/usr/bin/env python3.6 -u /usr/bin/powerd /etc/powerd/onemetre.json
+ExecStart=/usr/bin/env python3.6 -u /usr/bin/powerd /etc/powerd/%i.json
 ExecStartPost=/usr/bin/env python3.6 -u /usr/bin/obslog info powerd Started by systemd
 ExecStopPost=/usr/bin/env python3.6 -u /usr/bin/obslog info powerd Stopped by systemd
 StandardOutput=syslog

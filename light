@@ -20,26 +20,35 @@
 import os
 import sys
 import Pyro4
-from warwick.observatory.common import daemons
+from warwick.observatory.common import daemons, IP
+from warwick.observatory.common.helpers import key_for_current_ip
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-DAEMON = daemons.onemetre_power
+DAEMONS = {
+    daemons.onemetre_power: [IP.OneMetreDome, IP.OneMetreTCS],
+    daemons.rasa_power: [IP.RASAMain]
+}
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         print('usage: {} (on|off|status)'.format(SCRIPT_NAME))
         sys.exit(-1)
 
+    d = key_for_current_ip(DAEMONS)
+    if not d:
+        print('error: cannot determine daemon for current IP')
+        sys.exit(1)
+
     try:
         if sys.argv[1] == 'on' or sys.argv[1] == 'off':
-            with DAEMON.connect() as power:
+            with d.connect() as power:
                 if not power.switch('light', sys.argv[1] == 'on'):
                     print('error: failed to switch light {}'.format(sys.argv[1]))
                     sys.exit(-1)
         elif sys.argv[1] == 'status':
-            with DAEMON.connect() as power:
+            with d.connect() as power:
                 print('on' if power.value('light') else 'off')
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power daemon')

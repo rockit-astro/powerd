@@ -20,10 +20,8 @@ script:
  # Clone the centos-packages repository to deploy/repository/
  - deploy/fetch-package-repository.sh
  # Set the spec Revision field to <latest in repo> + 1
- - deploy/repository/set-spec-release.sh onemetre-power-server.spec
- - deploy/repository/set-spec-release.sh onemetre-power-client.spec
- - deploy/repository/set-spec-release.sh rasa-power-server.spec
- - deploy/repository/set-spec-release.sh rasa-power-client.spec
+ - deploy/repository/set-spec-release.sh observatory-power-server.spec
+ - deploy/repository/set-spec-release.sh observatory-power-client.spec
  - deploy/repository/set-spec-release.sh python3-warwick-observatory-power.spec
  # Compile rpm packages by running `make` in a centos7 container
  - docker run --rm=true -e "USERID=${UID}" -v `pwd`:/src:rw centos:centos7 /bin/sh -c "cd src && deploy/make-on-centos7.sh"
