@@ -1,0 +1,23 @@
+{
+  "daemon": "superwasp_power",
+  "log_name": "wasp_powerd",
+  "control_machines": ["GOTOServer"],
+  "devices": [
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.220",
+      "query_timeout": 2,
+      "name": "ups1",
+      "label": "UPS 1",
+      "display_order": 1
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.221",
+      "query_timeout": 2,
+      "name": "ups2",
+      "label": "UPS 2",
+      "display_order": 2
+    }
+  ]
+}
