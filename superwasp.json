@@ -18,6 +18,13 @@
       "name": "ups2",
       "label": "UPS 2",
       "display_order": 2
+    },
+    {
+      "type": "BatteryVoltmeter",
+      "name": "roofbattery",
+      "label": "Roof Battery",
+      "device": "/dev/roofbattery",
+      "display_order": 3
     }
   ]
 }

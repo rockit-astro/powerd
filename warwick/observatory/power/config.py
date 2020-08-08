@@ -33,6 +33,7 @@ from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitc
 from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
+from .battery_voltmeter import BatteryVoltmeterDevice, VoltageParameter
 
 CONFIG_SCHEMA = {
     'type': 'object',
@@ -63,7 +64,7 @@ CONFIG_SCHEMA = {
                     'type': {
                         'type': 'string',
                         # These must also be defined in the 'anyOf' cases below
-                        'enum': ['APCPDU', 'APCUPS', 'NetgearPOE', 'ETH002', 'ArduinoRelay']
+                        'enum': ['APCPDU', 'APCUPS', 'NetgearPOE', 'ETH002', 'ArduinoRelay', 'BatteryVoltmeter']
                     },
 
                     # Used by APCPDU, APCUPS, NetgearPOE, ETH002
@@ -193,7 +194,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by ArduinoRelay
+                    # Used by ArduinoRelay, BatteryVoltmeter
                     'device': {
                         'type': 'string',
                     }
@@ -235,6 +236,14 @@ CONFIG_SCHEMA = {
                         'properties': {
                             'type': {
                                 'enum': ['ArduinoRelay']
+                            }
+                        },
+                        'required': ['device', 'name', 'label']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['BatteryVoltmeter']
                             }
                         },
                         'required': ['device', 'name', 'label']
@@ -345,6 +354,9 @@ class Config:
             elif config['type'] == 'ArduinoRelay':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
+            elif config['type'] == 'BatteryVoltmeter':
+                labels.append([config['name'], config['label'], 'voltage', config['display_order']])
+
         labels.sort(key=lambda x: x[3])
         return [{'name': l[0], 'label': l[1], 'type': l[2]} for l in labels]
 
@@ -381,4 +393,8 @@ class Config:
                 ret.append(DehumidifierSwitchDevice(
                     self.log_name, config['device'],
                     DehumidifierParameter(config['name']), power_daemon))
+
+            elif config['type'] == 'BatteryVoltmeter':
+                ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], VoltageParameter(config['name'])))
+
         return ret

@@ -68,6 +68,8 @@ def print_status(daemon):
             label = ' ' * label_padding + m['label'] + ': '
             if m['type'] == 'switch':
                 label += format_switch(latest[m['name']])
+            if m['type'] == 'voltage':
+                label += format_voltage(latest[m['name']])
             elif m['type'] == 'ups':
                 label += format_ups(
                     latest[m['name'] + '_status'],
@@ -90,6 +92,14 @@ def format_switch(status):
     if status == SwitchStatus.Off:
         return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
     return FMT_RED + FMT_BOLD + 'UNKNOWN' + FMT_CLEAR
+
+
+def format_voltage(voltage):
+    """Builds a formatted string reporting a voltage measurement"""
+    if voltage is None:
+        return FMT_RED + FMT_BOLD + 'ERROR' + FMT_CLEAR
+
+    return '{:.2f}'.format(voltage) + FMT_BOLD + ' V' + FMT_CLEAR
 
 
 def format_ups(status, battery_remaining, battery_healthy, load):
