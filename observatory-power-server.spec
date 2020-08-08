@@ -23,6 +23,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/powerd %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/powerd@.service %{buildroot}%{_unitdir}
 %{__install} %{_sourcedir}/10-onemetre-power.rules %{buildroot}%{_udevrulesdir}
+%{__install} %{_sourcedir}/10-superwasp-roofbattery.rules %{buildroot}%{_udevrulesdir}
 %{__install} %{_sourcedir}/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/rasa.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
@@ -42,6 +43,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{_bindir}/powerd
 %defattr(0644,root,root,-)
 %{_udevrulesdir}/10-onemetre-power.rules
+%{_udevrulesdir}/10-superwasp-roofbattery.rules
 %{_unitdir}/powerd@.service
 %{_sysconfdir}/powerd/onemetre.json
 %{_sysconfdir}/powerd/rasa.json

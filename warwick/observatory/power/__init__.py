@@ -29,4 +29,5 @@ from .apc_device import (
     APCUPSSocketGroupParameter)
 from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .eth002_device import ETH002Device, ETH002SwitchParameter
+from .battery_voltmeter import BatteryVoltmeterDevice
 from .dummy_device import DummyUPSDevice, DummyDevice
