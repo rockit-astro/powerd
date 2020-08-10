@@ -5,7 +5,7 @@
   "devices": [
     {
       "type": "APCUPS",
-      "ip": "10.2.6.220",
+      "ip": "10.2.6.110",
       "query_timeout": 2,
       "name": "ups1",
       "label": "UPS 1",
@@ -13,7 +13,7 @@
     },
     {
       "type": "APCUPS",
-      "ip": "10.2.6.221",
+      "ip": "10.2.6.111",
       "query_timeout": 2,
       "name": "ups2",
       "label": "UPS 2",
@@ -25,6 +25,167 @@
       "label": "Roof Battery",
       "device": "/dev/roofbattery",
       "display_order": 3
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.112",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "roof_interface",
+          "label": "CSIMC Roof Interface",
+          "display_order": 4
+        },
+        {
+          "socket": 2,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 5
+        },
+        {
+          "socket": 3,
+          "name": "poe_network",
+          "label": "PoE Network",
+          "display_order": 6
+        },
+        {
+          "socket": 4,
+          "name": "gpspi",
+          "label": "GPS Pi",
+          "display_order": 7
+        },
+        {
+          "socket": 7,
+          "name": "lensheaters",
+          "label": "Lens Heaters",
+          "display_order": 10
+        },
+        {
+          "socket": 8,
+          "name": "ilight",
+          "label": "Instr. Room Light",
+          "display_order": 11
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.113",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "roomalert",
+          "label": "RoomAlert",
+          "display_order": 12
+        },
+        {
+          "socket": 2,
+          "name": "aag",
+          "label": "AAG Cloud Mon.",
+          "display_order": 13
+        },
+        {
+          "socket": 3,
+          "name": "clight",
+          "label": "Comp. Room Light",
+          "display_order": 14
+        },
+        {
+          "socket": 8,
+          "name": "3com",
+          "label": "3COM Switch",
+          "display_order": 19
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.114",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "das1",
+          "label": "DAS 1",
+          "display_order": 20
+        },
+        {
+          "socket": 2,
+          "name": "das2",
+          "label": "DAS 2",
+          "display_order": 21
+        },
+        {
+          "socket": 4,
+          "name": "das4",
+          "label": "DAS 4",
+          "display_order": 23
+        },
+        {
+          "socket": 5,
+          "name": "das5",
+          "label": "DAS 5",
+          "display_order": 24
+        },
+        {
+          "socket": 6,
+          "name": "das6",
+          "label": "DAS 6",
+          "display_order": 25
+        },
+        {
+          "socket": 7,
+          "name": "das7",
+          "label": "DAS 7",
+          "display_order": 26
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.115",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "ccd1",
+          "label": "CCD 1",
+          "display_order": 28
+        },
+        {
+          "socket": 2,
+          "name": "ccd2",
+          "label": "CCD 2",
+          "display_order": 29
+        },
+        {
+          "socket": 4,
+          "name": "ccd4",
+          "label": "CCD 4",
+          "display_order": 30
+        },
+        {
+          "socket": 5,
+          "name": "ccd5",
+          "label": "CCD 5",
+          "display_order": 31
+        },
+        {
+          "socket": 6,
+          "name": "ccd6",
+          "label": "CCD 6",
+          "display_order": 32
+        },
+        {
+          "socket": 7,
+          "name": "ccd7",
+          "label": "CCD 7",
+          "display_order": 33
+        }
+      ]
     }
   ]
 }
+
