@@ -21,6 +21,12 @@
           "display_order": 2
         },
         {
+          "socket": 3,
+          "name": "wifi",
+          "label": "Wifi Network",
+          "display_order": 10
+        },
+        {
           "socket": 4,
           "name": "poe_network",
           "label": "PoE Network",
@@ -77,7 +83,7 @@
       "query_timeout": 2,
       "name": "ups",
       "label": "UPS",
-      "display_order": 10,
+      "display_order": 11,
       "groups": [
         {
           "group": 2,
@@ -96,7 +102,7 @@
           "relay": 0,
           "name": "dehumidifier",
           "label": "Dehumidifier",
-          "display_order": 11
+          "display_order": 12
         }
       ]
     }
