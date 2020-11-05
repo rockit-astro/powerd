@@ -20,11 +20,19 @@
       "display_order": 2
     },
     {
+      "type": "APCAccessUPS",
+      "device": "/etc/apcupsd/apcupsd.conf",
+      "query_timeout": 2,
+      "name": "ups3",
+      "label": "UPS 3",
+      "display_order": 3
+    },
+    {
       "type": "BatteryVoltmeter",
       "name": "roofbattery",
       "label": "Roof Battery",
       "device": "/dev/roofbattery",
-      "display_order": 3
+      "display_order": 4
     },
     {
       "type": "APCPDU",
@@ -35,37 +43,37 @@
           "socket": 1,
           "name": "roof_interface",
           "label": "CSIMC Roof Interface",
-          "display_order": 4
+          "display_order": 14
         },
         {
           "socket": 2,
           "name": "mount",
           "label": "Mount",
-          "display_order": 5
+          "display_order": 15
         },
         {
           "socket": 3,
           "name": "poe_network",
           "label": "PoE Network",
-          "display_order": 6
+          "display_order": 16
         },
         {
           "socket": 4,
           "name": "gpspi",
           "label": "GPS Pi",
-          "display_order": 7
+          "display_order": 17
         },
         {
           "socket": 7,
           "name": "lensheaters",
           "label": "Lens Heaters",
-          "display_order": 10
+          "display_order": 20
         },
         {
           "socket": 8,
           "name": "ilight",
           "label": "Instr. Room Light",
-          "display_order": 11
+          "display_order": 21
         }
       ]
     },
@@ -78,25 +86,25 @@
           "socket": 1,
           "name": "roomalert",
           "label": "RoomAlert",
-          "display_order": 12
+          "display_order": 22
         },
         {
           "socket": 2,
           "name": "aag",
           "label": "AAG Cloud Mon.",
-          "display_order": 13
+          "display_order": 23
         },
         {
           "socket": 3,
           "name": "clight",
           "label": "Comp. Room Light",
-          "display_order": 14
+          "display_order": 24
         },
         {
           "socket": 8,
           "name": "3com",
           "label": "3COM Switch",
-          "display_order": 19
+          "display_order": 29
         }
       ]
     },
@@ -109,37 +117,37 @@
           "socket": 1,
           "name": "das1",
           "label": "DAS 1",
-          "display_order": 20
+          "display_order": 30
         },
         {
           "socket": 2,
           "name": "das2",
           "label": "DAS 2",
-          "display_order": 21
+          "display_order": 31
         },
         {
           "socket": 4,
           "name": "das4",
           "label": "DAS 4",
-          "display_order": 23
+          "display_order": 33
         },
         {
           "socket": 5,
           "name": "das5",
           "label": "DAS 5",
-          "display_order": 24
+          "display_order": 34
         },
         {
           "socket": 6,
           "name": "das6",
           "label": "DAS 6",
-          "display_order": 25
+          "display_order": 35
         },
         {
           "socket": 7,
           "name": "das7",
           "label": "DAS 7",
-          "display_order": 26
+          "display_order": 36
         }
       ]
     },
@@ -152,37 +160,37 @@
           "socket": 1,
           "name": "ccd1",
           "label": "CCD 1",
-          "display_order": 28
+          "display_order": 38
         },
         {
           "socket": 2,
           "name": "ccd2",
           "label": "CCD 2",
-          "display_order": 29
+          "display_order": 39
         },
         {
           "socket": 4,
           "name": "ccd4",
           "label": "CCD 4",
-          "display_order": 30
+          "display_order": 40
         },
         {
           "socket": 5,
           "name": "ccd5",
           "label": "CCD 5",
-          "display_order": 31
+          "display_order": 41
         },
         {
           "socket": 6,
           "name": "ccd6",
           "label": "CCD 6",
-          "display_order": 32
+          "display_order": 42
         },
         {
           "socket": 7,
           "name": "ccd7",
           "label": "CCD 7",
-          "display_order": 33
+          "display_order": 43
         }
       ]
     }
