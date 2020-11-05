@@ -58,12 +58,6 @@
           "display_order": 16
         },
         {
-          "socket": 4,
-          "name": "gpspi",
-          "label": "GPS Pi",
-          "display_order": 17
-        },
-        {
           "socket": 7,
           "name": "lensheaters",
           "label": "Lens Heaters",
