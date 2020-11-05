@@ -29,6 +29,12 @@ from .apc_device import (
     APCUPSBatteryRemainingParameter,
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter)
+from .apcaccess_device import (
+    APCAccessDevice,
+    APCAccessUPSStatusParameter,
+    APCAccessUPSBatteryRemainingParameter,
+    APCAccessUPSBatteryHealthyParameter,
+    APCAccessUPSOutputLoadParameter)
 from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
@@ -64,7 +70,11 @@ CONFIG_SCHEMA = {
                     'type': {
                         'type': 'string',
                         # These must also be defined in the 'anyOf' cases below
-                        'enum': ['APCPDU', 'APCUPS', 'NetgearPOE', 'ETH002', 'ArduinoRelay', 'BatteryVoltmeter']
+                        'enum': [
+                            'APCPDU', 'APCUPS', 'APCAccessUPS',
+                            'NetgearPOE', 'ETH002',
+                            'ArduinoRelay', 'BatteryVoltmeter'
+                        ]
                     },
 
                     # Used by APCPDU, APCUPS, NetgearPOE, ETH002
@@ -72,7 +82,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, NetgearPOE, ETH002
+                    # Used by APCPDU, APCUPS, APCAccessUPS, NetgearPOE, ETH002
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -194,7 +204,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by ArduinoRelay, BatteryVoltmeter
+                    # Used by ArduinoRelay, BatteryVoltmeter, APCAccessUPS
                     'device': {
                         'type': 'string',
                     }
@@ -215,6 +225,14 @@ CONFIG_SCHEMA = {
                             }
                         },
                         'required': ['ip', 'query_timeout', 'name', 'label']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['APCAccessUPS']
+                            }
+                        },
+                        'required': ['device', 'query_timeout', 'name', 'label']
                     },
                     {
                         'properties': {
@@ -345,6 +363,9 @@ class Config:
                 for g in config.get('groups', []):
                     labels.append([g['name'], g['label'], 'switch', g['display_order']])
 
+            elif config['type'] == 'APCAccessUPS':
+                labels.append([config['name'], config['label'], 'ups', config['display_order']])
+
             elif config['type'] == 'NetgearPOE':
                 labels.extend([[p['name'], p['label'], 'switch', p['display_order']] for p in config['ports']])
 
@@ -380,6 +401,16 @@ class Config:
                     parameters.append(APCUPSSocketGroupParameter(g['name'], g['group']))
 
                 ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
+
+            elif config['type'] == 'APCAccessUPS':
+                parameters = [
+                    APCAccessUPSStatusParameter(config['name'] + '_status'),
+                    APCAccessUPSBatteryRemainingParameter(config['name'] + '_battery_remaining'),
+                    APCAccessUPSBatteryHealthyParameter(config['name'] + '_battery_healthy'),
+                    APCAccessUPSOutputLoadParameter(config['name'] + '_load'),
+                ]
+
+                ret.append(APCAccessDevice(self.log_name, config['device'], config['query_timeout'], parameters))
 
             elif config['type'] == 'NetgearPOE':
                 parameters = [NetgearPoESocketParameter(p['name'], p['port']) for p in config['ports']]
