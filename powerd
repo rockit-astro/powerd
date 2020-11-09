@@ -27,6 +27,7 @@ from warwick.observatory.power import (
     Config,
     SwitchStatus,
     DehumidifierParameter,
+    DomeAlertRelayParameter,
     APCPDUSocketParameter,
     APCUPSSocketGroupParameter,
     NetgearPoESocketParameter,
@@ -39,6 +40,7 @@ SWITCHABLE_PARAMETERS = (
     DehumidifierParameter,
     APCPDUSocketParameter,
     APCUPSSocketGroupParameter,
+    DomeAlertRelayParameter,
     NetgearPoESocketParameter,
     ETH002SwitchParameter)
 

@@ -39,6 +39,12 @@
           "display_order": 10
         },
         {
+          "socket": 6,
+          "name": "domealert",
+          "label": "DomeAlert",
+          "display_order": 11
+        },
+        {
           "socket": 8,
           "name": "light",
           "label": "Dome Light",
@@ -117,18 +123,6 @@
           "display_order": 11
         },
         {
-          "port": 5,
-          "name": "roomalert",
-          "label": "Room Alert",
-          "display_order": 15
-        },
-        {
-          "port": 7,
-          "name": "microphone",
-          "label": "Dome Microphone",
-          "display_order": 13
-        },
-        {
           "port": 18,
           "name": "extcam",
           "label": "East Ext Webcam",
@@ -137,10 +131,11 @@
       ]
     },
     {
-      "type": "ArduinoRelay",
+      "type": "DomeAlert",
       "name": "dehumidifier",
       "label": "Dehumidifier",
-      "device": "/dev/dehumidifier",
+      "daemon": "onemetre_roomalert",
+      "query_timeout": 5,
       "display_order": 17
     }
   ]
