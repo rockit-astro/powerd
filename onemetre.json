@@ -33,12 +33,6 @@
           "display_order": 16
         },
         {
-          "socket": 5,
-          "name": "rainsensors",
-          "label": "Rain Sensors",
-          "display_order": 10
-        },
-        {
           "socket": 6,
           "name": "domealert",
           "label": "DomeAlert",
@@ -121,6 +115,12 @@
           "name": "webcam",
           "label": "Dome Webcam",
           "display_order": 11
+        },
+        {
+          "port": 7,
+          "name": "rainsensors",
+          "label": "Rain Sensors",
+          "display_order": 10
         },
         {
           "port": 18,
