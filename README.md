@@ -1,4 +1,4 @@
-## W1m Power daemon [![Travis CI build status](https://travis-ci.org/warwick-one-metre/powerd.svg?branch=master)](https://travis-ci.org/warwick-one-metre/powerd)
+## Power control daemon ![Build Status](https://github.com/warwick-one-metre/powerd/workflows/RPM%20Packaging/badge.svg)
 
 Part of the observatory software for the Warwick La Palma telescopes.
 
