@@ -61,6 +61,16 @@ CONFIG_SCHEMA = {
                 'machine_name': True
             }
         },
+        'dashboard_machine': {
+            'type': 'string',
+            'machine_name': True
+        },
+        'dashboard_toggleable_channels': {
+            'type': 'array',
+            'items': {
+                'type': 'string',
+            }
+        },
         'devices': {
             'type': 'array',
             'items': {
@@ -363,6 +373,9 @@ class Config:
         self.daemon = getattr(daemons, config_json['daemon'])
         self.log_name = config_json['log_name']
         self.control_ips = [getattr(IP, machine) for machine in config_json['control_machines']]
+        self.dashboard_ip = getattr(IP, config_json['dashboard_machine'])
+        self.dashboard_toggleable_parameters = config_json['dashboard_toggleable_channels']
+
         self._device_config = config_json['devices']
 
     def get_labels(self):

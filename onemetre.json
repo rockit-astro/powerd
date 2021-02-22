@@ -2,6 +2,8 @@
   "daemon": "onemetre_power",
   "log_name": "powerd",
   "control_machines": ["OneMetreDome", "OneMetreTCS"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": ["light"],
   "devices": [
     {
       "type": "APCPDU",

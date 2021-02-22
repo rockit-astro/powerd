@@ -53,6 +53,9 @@ class PowerDaemon:
         self._log_name = config.log_name
         self._labels = config.get_labels()
 
+        self._dashboard_ip = config.dashboard_ip
+        self._dashboard_toggleable_parameters = config.dashboard_toggleable_parameters
+
         # Map of parameter name to device holding the parameter
         self._device_by_parameter = {}
         self._parameters_by_name = {}
@@ -112,6 +115,18 @@ class PowerDaemon:
             return False
 
         return self._device_by_parameter[name].get_parameter(name)
+
+    @Pyro4.expose
+    def dashboard_switch(self, name, enable, dashboard_username):
+        """Switch a named switch parameter on or off from the web dashboard"""
+        if not pyro_client_matches([self._dashboard_ip]):
+            return False
+
+        if name not in self._dashboard_toggleable_parameters:
+            return False
+
+        log.info(self._log_name, dashboard_username + ' switching ' + name + ' from web dashboard')
+        return self.switch_internal(name, enable)
 
 
 if __name__ == '__main__':

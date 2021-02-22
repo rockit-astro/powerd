@@ -2,6 +2,8 @@
   "daemon": "goto_ups",
   "log_name": "gotoupsd",
   "control_machines": ["GOTOServer"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": [],
   "devices": [
     {
       "type": "APCUPS",

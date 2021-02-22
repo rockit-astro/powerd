@@ -2,6 +2,8 @@
   "daemon": "rasa_power",
   "log_name": "rasa_powerd",
   "control_machines": ["RASAMain"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": ["light"],
   "devices": [
     {
       "type": "APCPDU",

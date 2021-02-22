@@ -2,6 +2,8 @@
   "daemon": "superwasp_power",
   "log_name": "wasp_powerd",
   "control_machines": ["GOTOServer"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": ["ilight", "clight"],
   "devices": [
     {
       "type": "APCUPS",
