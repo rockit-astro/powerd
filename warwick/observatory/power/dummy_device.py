@@ -29,7 +29,7 @@ from .apc_device import (
 
 class DummyUPSDevice:
     """Dummy UPS device for testing"""
-    def __init__(self, ip, parameters, query_timeout):
+    def __init__(self, parameters):
         # IP and query_timeout are deliberately ignored
         self.parameters = parameters
         self.parameters_by_name = {p.name: p for p in parameters}
@@ -61,14 +61,14 @@ class DummyUPSDevice:
 
         return False
 
-    def set_parameter(self, parameter_name, value):
+    def set_parameter(self, *_):
         """APC UPSes have no settable parameters"""
         return False
 
 
 class DummyDevice:
     """Dummy device for testing"""
-    def __init__(self, ip, parameters, query_timeout):
+    def __init__(self, parameters):
         # IP and query_timeout are deliberately ignored
         self.parameters = parameters
         self.parameters_by_name = {p.name: p for p in parameters}

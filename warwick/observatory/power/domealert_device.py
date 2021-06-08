@@ -17,10 +17,10 @@
 """Wrapper for accessing a DomeAlert relay via Pyro"""
 
 from warwick.observatory.common import log
-from .constants import Parameter, SwitchStatus
+from .constants import Parameter, SwitchableParameter, SwitchStatus
 
 
-class DomeAlertRelayParameter(Parameter):
+class DomeAlertRelayParameter(Parameter, SwitchableParameter):
     """Data structure encapsulating the dehumidifier switch"""
     def __init__(self, name):
         Parameter.__init__(self, name, SwitchStatus.Unknown)

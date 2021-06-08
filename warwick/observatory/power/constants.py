@@ -16,11 +16,7 @@
 
 """Constants and status codes used by powerd"""
 
-FMT_YELLOW = u'\033[93m'
-FMT_GREEN = u'\033[92m'
-FMT_RED = u'\033[91m'
-FMT_BOLD = u'\033[1m'
-FMT_CLEAR = u'\033[0m'
+from warwick.observatory.common import TFmt
 
 
 class Parameter:
@@ -28,6 +24,10 @@ class Parameter:
     def __init__(self, name, error_value):
         self.name = name
         self.error_value = error_value
+
+
+class SwitchableParameter:
+    pass
 
 
 class SwitchStatus:
@@ -51,18 +51,18 @@ class APCUPSStatus:
     OnSmartTrim = 12
 
     _messages = {
-        1: FMT_BOLD + FMT_RED + 'UNKNOWN' + FMT_CLEAR,
-        2: FMT_BOLD + FMT_GREEN + 'ONLINE' + FMT_CLEAR,
-        3: FMT_BOLD + FMT_YELLOW + 'ON BATTERY' + FMT_CLEAR,
-        4: FMT_BOLD + FMT_RED + 'SMART BOOST' + FMT_CLEAR,
-        5: FMT_BOLD + FMT_RED + 'TIMED SLEEPING' + FMT_CLEAR,
-        6: FMT_BOLD + FMT_RED + 'SOFTWARE BYPASS' + FMT_CLEAR,
-        7: FMT_BOLD + FMT_RED + 'OFF' + FMT_CLEAR,
-        8: FMT_BOLD + FMT_RED + 'REBOOTING' + FMT_CLEAR,
-        9: FMT_BOLD + FMT_RED + 'SWITCHED BYPASS' + FMT_CLEAR,
-        10: FMT_BOLD + FMT_RED + 'HARDWARE FAILURE BYPASS' + FMT_CLEAR,
-        11: FMT_BOLD + FMT_RED + 'SLEEPING UNTIL POWER RETURNS' + FMT_CLEAR,
-        12: FMT_BOLD + FMT_RED + 'ON SMART TRIM' + FMT_CLEAR,
+        1: TFmt.Bold + TFmt.Red + 'UNKNOWN' + TFmt.Clear,
+        2: TFmt.Bold + TFmt.Green + 'ONLINE' + TFmt.Clear,
+        3: TFmt.Bold + TFmt.Yellow + 'ON BATTERY' + TFmt.Clear,
+        4: TFmt.Bold + TFmt.Red + 'SMART BOOST' + TFmt.Clear,
+        5: TFmt.Bold + TFmt.Red + 'TIMED SLEEPING' + TFmt.Clear,
+        6: TFmt.Bold + TFmt.Red + 'SOFTWARE BYPASS' + TFmt.Clear,
+        7: TFmt.Bold + TFmt.Red + 'OFF' + TFmt.Clear,
+        8: TFmt.Bold + TFmt.Red + 'REBOOTING' + TFmt.Clear,
+        9: TFmt.Bold + TFmt.Red + 'SWITCHED BYPASS' + TFmt.Clear,
+        10: TFmt.Bold + TFmt.Red + 'HARDWARE FAILURE BYPASS' + TFmt.Clear,
+        11: TFmt.Bold + TFmt.Red + 'SLEEPING UNTIL POWER RETURNS' + TFmt.Clear,
+        12: TFmt.Bold + TFmt.Red + 'ON SMART TRIM' + TFmt.Clear,
     }
 
     @classmethod

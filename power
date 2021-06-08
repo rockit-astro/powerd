@@ -18,41 +18,47 @@
 """Commandline client for interfacing with the power system daemon"""
 
 import datetime
+import glob
 import json
 import os
 import sys
 import Pyro4
-from warwick.observatory.common import daemons, IP
-from warwick.observatory.common.helpers import key_for_current_ip
-from warwick.observatory.power import SwitchStatus, APCUPSStatus
+from warwick.observatory.common import TFmt
+from warwick.observatory.power import Config, SwitchStatus, APCUPSStatus
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-# Decide which system to control based on client IP
-DAEMONS = {
-    daemons.onemetre_power: [IP.OneMetreDome, IP.OneMetreTCS],
-    daemons.rasa_power: [IP.RASAMain],
-    daemons.superwasp_power: [IP.GOTOServer],
-    daemons.goto_ups: [IP.GOTOServer]
-}
 
-FMT_YELLOW = u'\033[93m'
-FMT_GREEN = u'\033[92m'
-FMT_RED = u'\033[91m'
-FMT_BOLD = u'\033[1m'
-FMT_CLEAR = u'\033[0m'
+def run_command(command, args):
+    """Runs a daemon command, handling error messages"""
+    if 'POWERD_CONFIG_PATH' in os.environ:
+        config = Config(os.environ['POWERD_CONFIG_PATH'])
+    else:
+        # Load the config file defined in the POWERD_CONFIG_PATH environment variable or from the
+        # default system location (/etc/powerd/). Exit with an error if zero or multiple are found.
+        files = glob.glob("/etc/powerd/*.json")
+        if len(files) != 1:
+            print('error: failed to guess the default config file. ' +
+                  'Run as POWERD_CONFIG_PATH=/path/to/config.json power <command>')
+            return 1
 
+        config = Config(files[0])
 
-def print_status(daemon):
-    """Prints the latest data in human-readable form"""
     try:
-        with daemon.connect(timeout=15) as power:
-            latest = power.last_measurement()
-            metadata = power.measurement_labels()
+        ret = command(config, args)
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power system daemon')
         return 1
+
+    sys.exit(ret)
+
+
+def print_status(config, _):
+    """Prints the latest data in human-readable form"""
+    with config.daemon.connect(timeout=15) as power:
+        latest = power.last_measurement()
+        metadata = power.measurement_labels()
 
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
@@ -88,18 +94,18 @@ def print_status(daemon):
 def format_switch(status):
     """Builds a formatted string indicating whether a switch is enabled"""
     if status == SwitchStatus.On:
-        return FMT_GREEN + FMT_BOLD + 'ENABLED' + FMT_CLEAR
+        return TFmt.Green + TFmt.Bold + 'ENABLED' + TFmt.Clear
     if status == SwitchStatus.Off:
-        return FMT_RED + FMT_BOLD + 'DISABLED' + FMT_CLEAR
-    return FMT_RED + FMT_BOLD + 'UNKNOWN' + FMT_CLEAR
+        return TFmt.Red + TFmt.Bold + 'DISABLED' + TFmt.Clear
+    return TFmt.Red + TFmt.Bold + 'UNKNOWN' + TFmt.Clear
 
 
 def format_voltage(voltage):
     """Builds a formatted string reporting a voltage measurement"""
     if voltage is None:
-        return FMT_RED + FMT_BOLD + 'ERROR' + FMT_CLEAR
+        return TFmt.Red + TFmt.Bold + 'ERROR' + TFmt.Clear
 
-    return '{:.2f}'.format(voltage) + FMT_BOLD + ' V' + FMT_CLEAR
+    return '{:.2f}'.format(voltage) + TFmt.Bold + ' V' + TFmt.Clear
 
 
 def format_ups(status, battery_remaining, battery_healthy, load):
@@ -108,35 +114,26 @@ def format_ups(status, battery_remaining, battery_healthy, load):
     if status == APCUPSStatus.Unknown:
         return ret
 
-    ret += ' ({2}{0}%{3} battery; {2}{1}%{3} load)'.format(battery_remaining, load,
-                                                           FMT_BOLD, FMT_CLEAR)
+    ret += ' ({2}{0}%{3} battery; {2}{1}%{3} load)'.format(battery_remaining, load, TFmt.Bold, TFmt.Clear)
     if not battery_healthy:
-        ret += FMT_BOLD + FMT_RED + ' REPLACE BATTERY' + FMT_CLEAR
+        ret += TFmt.Bold + TFmt.Red + ' REPLACE BATTERY' + TFmt.Clear
     return ret
 
 
-def print_json(daemon):
+def print_json(config, _):
     """Prints the latest data in machine-readable form"""
-    latest = None
-    try:
-        with daemon.connect() as power:
-            latest = power.last_measurement()
-    except Pyro4.errors.CommunicationError:
-        print('error: unable to communicate with the power system daemon')
-        return 1
+    with config.daemon.connect() as power:
+        latest = power.last_measurement()
 
     print(json.dumps(latest))
 
     return 0
 
 
-def print_switches(daemon):
+def print_switches(config, _):
     """Prints a list of the switchable parameters"""
-    try:
-        with daemon.connect(timeout=15) as power:
-            switches = power.switch_names()
-    except Pyro4.errors.CommunicationError:
-        return 1
+    with config.daemon.connect(timeout=15) as power:
+        switches = power.switch_names()
 
     if switches is not None:
         print(' '.join(switches))
@@ -144,13 +141,12 @@ def print_switches(daemon):
     return 1
 
 
-def switch_power(daemon, args):
+def switch_power(config, args):
     """Switches a named PDU port on or off"""
     if len(args) > 1:
-        enable = False
         if args[1] == 'on' or args[1] == 'off':
             enable = args[1] == 'on'
-            with daemon.connect() as power:
+            with config.daemon.connect() as power:
                 if not power.switch(args[0], enable):
                     print('error: failed to switch {} {}'.format(args[0], args[1]))
                     return -1
@@ -159,9 +155,9 @@ def switch_power(daemon, args):
     return -1
 
 
-def print_usage(name):
+def print_usage():
     """Prints the utility help"""
-    print('Usage: {} <command>'.format(name))
+    print('Usage: {} <command>'.format(SCRIPT_NAME))
     print()
     print('   status      print a human-readable summary of the power system')
     print('   json        print a machine-readable summary of the power system')
@@ -172,22 +168,14 @@ def print_usage(name):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        sys.exit(print_usage(SCRIPT_NAME))
+    commands = {
+        'status': print_status,
+        'json': print_json,
+        'switch': switch_power,
+        'list-switches': print_switches
+    }
 
-    d = key_for_current_ip(DAEMONS)
-    if not d:
-        print('error: cannot determine daemon for current IP')
-        sys.exit(1)
+    if len(sys.argv) >= 2 and sys.argv[1] in commands:
+        sys.exit(run_command(commands[sys.argv[1]], sys.argv[2:]))
 
-    if sys.argv[1] == 'status':
-        sys.exit(print_status(d))
-    elif sys.argv[1] == 'json':
-        sys.exit(print_json(d))
-    elif sys.argv[1] == 'switch':
-        sys.exit(switch_power(d, sys.argv[2:]))
-    elif sys.argv[1] == 'list-switches':
-        sys.exit(print_switches(d))
-
-    # Command not found
-    sys.exit(print_usage(SCRIPT_NAME))
+    sys.exit(print_usage())

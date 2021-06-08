@@ -18,11 +18,11 @@
 
 # pylint: disable=no-self-use
 
-from .constants import SwitchStatus, APCUPSStatus
+from .constants import SwitchStatus, APCUPSStatus, SwitchableParameter
 from .snmp_device import SNMPParameter
 
 
-class APCPDUSocketParameter(SNMPParameter):
+class APCPDUSocketParameter(SNMPParameter, SwitchableParameter):
     """Parameter representing a specific PDU socket"""
     def __init__(self, name, socket):
         oid = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.' + str(socket)
@@ -46,7 +46,7 @@ class APCPDUSocketParameter(SNMPParameter):
         return self.parse_snmpget_output(output)
 
 
-class APCUPSSocketGroupParameter(SNMPParameter):
+class APCUPSSocketGroupParameter(SNMPParameter, SwitchableParameter):
     """Parameter representing a specific UPS socket group"""
     def __init__(self, name, socket):
         oid = '.1.3.6.1.4.1.318.1.1.1.12.3.2.1.3.' + str(socket)

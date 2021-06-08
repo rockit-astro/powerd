@@ -17,10 +17,7 @@
 """Helper function to validate and parse the json config file"""
 
 import json
-import sys
-import traceback
-import jsonschema
-from warwick.observatory.common import daemons, IP
+from warwick.observatory.common import daemons, IP, validation
 
 from .apc_device import (
     APCPDUSocketParameter,
@@ -40,6 +37,7 @@ from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
 from .battery_voltmeter import BatteryVoltmeterDevice, VoltageParameter
+from .dummy_device import DummyDevice, DummyUPSDevice
 
 CONFIG_SCHEMA = {
     'type': 'object',
@@ -83,7 +81,8 @@ CONFIG_SCHEMA = {
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCAccessUPS',
                             'DomeAlert', 'NetgearPOE', 'ETH002',
-                            'BatteryVoltmeter'
+                            'BatteryVoltmeter',
+                            'Dummy', 'DummyUPS'
                         ]
                     },
 
@@ -99,7 +98,7 @@ CONFIG_SCHEMA = {
                         'max': 30
                     },
 
-                    # Used by APCPDU
+                    # Used by APCPDU, Dummy
                     'sockets': {
                         'type': 'array',
                         'items': {
@@ -151,7 +150,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, DomeAlert
+                    # Used by APCUPS, DummyUPS, DomeAlert
                     'name': {
                         'type': 'string',
                     },
@@ -281,74 +280,28 @@ CONFIG_SCHEMA = {
                             }
                         },
                         'required': ['device', 'name', 'label']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['Dummy']
+                            }
+                        },
+                        'required': ['sockets']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['DummyUPS']
+                            }
+                        },
+                        'required': ['name', 'label']
                     }
                 ],
             }
         }
     }
 }
-
-
-class ConfigSchemaViolationError(Exception):
-    """Exception used to report schema violations"""
-    def __init__(self, errors):
-        message = 'Invalid configuration:\n\t' + '\n\t'.join(errors)
-        super(ConfigSchemaViolationError, self).__init__(message)
-
-
-def __create_validator():
-    """Returns a template validator that includes support for the
-       custom schema tags used by the observation schedules:
-            daemon_name: add to string properties to require they match an entry in the
-                         warwick.observatory.common.daemons address book
-            machine_name: add to string properties to require they match an entry in the
-                         warwick.observatory.common.IP address book
-    """
-    validators = dict(jsonschema.Draft4Validator.VALIDATORS)
-
-    # pylint: disable=unused-argument
-    def daemon_name(validator, value, instance, schema):
-        """Validate a string as a valid daemon name"""
-        try:
-            getattr(daemons, instance)
-        except Exception:
-            yield jsonschema.ValidationError('{} is not a valid daemon name'.format(instance))
-
-    def machine_name(validator, value, instance, schema):
-        """Validate a string as a valid machine name"""
-        try:
-            getattr(IP, instance)
-        except Exception:
-            yield jsonschema.ValidationError('{} is not a valid machine name'.format(instance))
-    # pylint: enable=unused-argument
-
-    validators['daemon_name'] = daemon_name
-    validators['machine_name'] = machine_name
-    return jsonschema.validators.create(meta_schema=jsonschema.Draft4Validator.META_SCHEMA,
-                                        validators=validators)
-
-
-def validate_config(config_json):
-    """Tests whether a json object defines a valid environment config file
-       Raises SchemaViolationError on error
-    """
-    errors = []
-    try:
-        validator = __create_validator()
-        for error in sorted(validator(CONFIG_SCHEMA).iter_errors(config_json),
-                            key=lambda e: e.path):
-            if error.path:
-                path = '->'.join([str(p) for p in error.path])
-                message = path + ': ' + error.message
-            else:
-                message = error.message
-            errors.append(message)
-    except Exception:
-        traceback.print_exc(file=sys.stdout)
-        errors = ['exception while validating']
-
-    if errors:
-        raise ConfigSchemaViolationError(errors)
 
 
 class Config:
@@ -359,7 +312,10 @@ class Config:
             config_json = json.load(config_file)
 
         # Will throw on schema violations
-        validate_config(config_json)
+        validation.validate_config(config_json, CONFIG_SCHEMA, {
+            'daemon_name': validation.daemon_name_validator,
+            'machine_name': validation.machine_name_validator
+        })
 
         self.daemon = getattr(daemons, config_json['daemon'])
         self.log_name = config_json['log_name']
@@ -396,6 +352,12 @@ class Config:
 
             elif config['type'] == 'BatteryVoltmeter':
                 labels.append([config['name'], config['label'], 'voltage', config['display_order']])
+
+            if config['type'] == 'Dummy':
+                labels.extend([[s['name'], s['label'], 'switch', s['display_order']] for s in config['sockets']])
+
+            elif config['type'] == 'DummyUPS':
+                labels.append([config['name'], config['label'], 'ups', config['display_order']])
 
         labels.sort(key=lambda x: x[3])
         return [{'name': l[0], 'label': l[1], 'type': l[2]} for l in labels]
@@ -446,5 +408,20 @@ class Config:
 
             elif config['type'] == 'BatteryVoltmeter':
                 ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], VoltageParameter(config['name'])))
+
+            elif config['type'] == 'Dummy':
+                parameters = [APCPDUSocketParameter(s['name'], s['socket']) for s in config['sockets']]
+                ret.append(DummyDevice(parameters))
+
+            elif config['type'] == 'DummyUPS':
+                parameters = [
+                    APCUPSStatusParameter(config['name'] + '_status'),
+                    APCUPSBatteryRemainingParameter(config['name'] + '_battery_remaining'),
+                    APCUPSBatteryHealthyParameter(config['name'] + '_battery_healthy'),
+                    APCUPSOutputLoadParameter(config['name'] + '_load'),
+                ]
+
+                ret.append(DummyUPSDevice(parameters))
+
 
         return ret

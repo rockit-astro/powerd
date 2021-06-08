@@ -16,7 +16,6 @@
 
 """Wrapper for accessing the custom Arduino board via USB"""
 
-import datetime
 import re
 import threading
 import time
@@ -27,6 +26,7 @@ from .constants import Parameter
 # pylint: disable=anomalous-backslash-in-string
 DATA_REGEX = b'^(?P<voltage>[-+][0-9]{2}\.[0-9]{2})\r\n$'
 # pylint: enable=anomalous-backslash-in-string
+
 
 class VoltageParameter(Parameter):
     """Parameter representing the read-only voltage measurement"""
@@ -114,7 +114,7 @@ class BatteryVoltmeterDevice:
         with self._updated_condition:
             return self._voltage
 
-    def set_parameter(self, parameter_name, value):
+    def set_parameter(self, *_):
         """Sets the value of a named parameter"""
 
         # Voltage is read-only

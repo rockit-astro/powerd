@@ -17,7 +17,7 @@
 """powerd common code"""
 
 from .config import Config
-from .constants import Parameter, SwitchStatus, APCUPSStatus
+from .constants import Parameter, SwitchableParameter, SwitchStatus, APCUPSStatus
 from .snmp_device import SNMPDevice, SNMPParameter
 from .netgear_device import NetgearPoESocketParameter
 from .apc_device import (

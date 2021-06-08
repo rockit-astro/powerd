@@ -23,24 +23,10 @@ import sys
 import Pyro4
 from warwick.observatory.common import log
 from warwick.observatory.common.helpers import pyro_client_matches
-from warwick.observatory.power import (
-    Config,
-    SwitchStatus,
-    DomeAlertRelayParameter,
-    APCPDUSocketParameter,
-    APCUPSSocketGroupParameter,
-    NetgearPoESocketParameter,
-    ETH002SwitchParameter)
+from warwick.observatory.power import Config, SwitchStatus, SwitchableParameter
 
 # Include more detailed exceptions
 sys.excepthook = Pyro4.util.excepthook
-
-SWITCHABLE_PARAMETERS = (
-    APCPDUSocketParameter,
-    APCUPSSocketGroupParameter,
-    DomeAlertRelayParameter,
-    NetgearPoESocketParameter,
-    ETH002SwitchParameter)
 
 
 class PowerDaemon:
@@ -78,7 +64,7 @@ class PowerDaemon:
     @Pyro4.expose
     def switch_names(self):
         """Queries the list of the switchable parameters"""
-        return [k for k, v in self._parameters_by_name.items() if isinstance(v, SWITCHABLE_PARAMETERS)]
+        return [k for k, v in self._parameters_by_name.items() if isinstance(v, SwitchableParameter)]
 
     def switch_internal(self, name, enable):
         """Switch a named switch parameter on or off
@@ -87,7 +73,7 @@ class PowerDaemon:
         if name not in self._device_by_parameter:
             return False
 
-        if not isinstance(self._parameters_by_name[name], SWITCHABLE_PARAMETERS):
+        if not isinstance(self._parameters_by_name[name], SwitchableParameter):
             return False
 
         state = (SwitchStatus.On if enable else SwitchStatus.Off)

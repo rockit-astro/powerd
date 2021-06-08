@@ -121,7 +121,7 @@ class APCAccessDevice:
 
         return self.query_apcaccess(self.parameters_by_name[parameter_name])
 
-    def set_parameter(self, parameter_name, value):
+    def set_parameter(self, *_):
         """Sets the value of a named parameter"""
         # apcaccess is read-only
         return False

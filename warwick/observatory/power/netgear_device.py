@@ -18,11 +18,11 @@
 
 # pylint: disable=no-self-use
 
-from .constants import SwitchStatus
+from .constants import SwitchStatus, SwitchableParameter
 from .snmp_device import SNMPParameter
 
 
-class NetgearPoESocketParameter(SNMPParameter):
+class NetgearPoESocketParameter(SNMPParameter, SwitchableParameter):
     """Data structure encapsulating a PoE parameter"""
     def __init__(self, name, port):
         get_oid = '.1.3.6.1.2.1.105.1.1.1.6.1.' + str(port)

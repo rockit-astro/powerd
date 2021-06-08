@@ -21,10 +21,10 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 from warwick.observatory.common import log
-from .constants import Parameter, SwitchStatus
+from .constants import Parameter, SwitchableParameter, SwitchStatus
 
 
-class ETH002SwitchParameter(Parameter):
+class ETH002SwitchParameter(Parameter, SwitchableParameter):
     """Data structure encapsulating an ETH002 relay"""
     def __init__(self, name, channel):
         Parameter.__init__(self, name, SwitchStatus.Unknown)

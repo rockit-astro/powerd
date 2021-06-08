@@ -1,18 +1,14 @@
 Name:      observatory-power-client
-Version:   2.7.0
+Version:   20210608
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
-Summary:   Power system client for the Warwick La Palma telescopes.
+Summary:   Power system client.
 License:   GPL-3.0
 Group:     Unspecified
 BuildArch: noarch
 Requires:  python3, python3-Pyro4, python3-warwick-observatory-common, python3-warwick-observatory-power
 
 %description
-Part of the observatory software for the Warwick La Palma telescopes.
-
-power is a commandline utility that interfaces with the power system daemon.
-light is a commandline utility to swith the dome light on and off.
 
 %build
 mkdir -p %{buildroot}%{_bindir}

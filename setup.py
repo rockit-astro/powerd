@@ -18,9 +18,9 @@ from distutils.core import setup
 
 setup(name='warwick.observatory.power',
       version='0',
-      packages = ['warwick.observatory.power'],
+      packages=['warwick.observatory.power'],
       author='Paul Chote',
-      description='Common code for the W1m power daemon',
+      description='Common code for the power daemon',
       license='GNU GPLv3',
       author_email='p.chote@warwick.ac.uk',
       url="https://github.com/warwick-one-metre/powerd",

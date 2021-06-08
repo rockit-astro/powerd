@@ -1,48 +1,93 @@
-## Power control daemon ![Build Status](https://github.com/warwick-one-metre/powerd/workflows/RPM%20Packaging/badge.svg)
-
-Part of the observatory software for the Warwick La Palma telescopes.
+## Power control daemon
 
 `powerd` is a Pyro frontend for interacting with the PDUs and UPSes.
 
 `power` is a commandline utility that interfaces with the power system daemon.
 
-`light` is a commandline utility to swith the dome light on and off.
+`light` is a commandline utility to switch the dome light on and off.
 
-`python3-warwick-observatory-power` is a python module with the common power code.
+See [Software Infrastructure](https://github.com/warwick-one-metre/docs/wiki/Software-Infrastructure) for an overview of the software architecture and instructions for developing and deploying the code.
 
-See [Software Infrastructure](https://github.com/warwick-one-metre/docs/wiki/Software-Infrastructure) for an overview of the W1m software architecture and instructions for developing and deploying the code.
+### Configuration
 
-### Software Setup
+Configuration is read from json files that are installed by default to `/etc/powerd`.
+A configuration file is specified when launching the power server, and the `power` frontend will search this location when launched.
 
-After installing `observatory-power-server`, the `powerd` must be enabled using:
+```python
+{
+  "daemon": "localhost_test", # Run the server as this daemon. Daemon types are registered in `warwick.observatory.common.daemons`.
+  "log_name": "powerd", # The name to use when writing messages to the observatory log.
+  "control_machines": ["LocalHost"], # Machine names that are allowed to control (rather than just query) state. Machine names are registered in `warwick.observatory.common.IP`.
+  "dashboard_machine": "GOTOServer", # Machine name that is allowed to call the `dashboard_switch` method to control lights from the web UI.
+  "dashboard_toggleable_channels": ["light"], # Switch names that are allowed to be toggled by `dasboard_switch`.
+  "devices": [
+    {
+      "type": "Dummy", # APCPDU, APCUPS, APCAccessUPS, DomeAlert, NetgearPOE, ETH002, BatteryVoltmeter, Dummy, DummyUPS
+      "sockets": [ # Type-specific configuration. See existing config definitions and config.py for details
+        {
+          "socket": 1,
+          "name": "test",
+          "label": "Test Socket",
+          "display_order": 1
+        }
+      ]
+    }
+  ]
+}
 ```
-sudo systemctl enable powerd@<telescope>
-```
-where `<telescope>` can be `onemetre`, `rasa`, `superwasp`, or `gotoupsmon`.
 
-The service will automatically start on system boot, or you can start it immediately using:
+### Initial Installation
+
+The automated packaging scripts will push 6 RPM packages to the observatory package repository:
+
+| Package           | Description |
+| ----------------- | ------ |
+| observatory-power-server | Contains the `pipelined` server and systemd service file. |
+| observatory-power-client | Contains the `pipeline` commandline utility for controlling the power server. |
+| python3-warwick-observatory-power | Contains the python module with shared code. |
+| onemetre-power-data | Contains the json configuration and udev rules for the W1m. |
+| superwasp-power-data | Contains the json configuration and udev rules for SuperWASP. |
+| goto-power-data | Contains the json configuration for the GOTO UPS monitoring. |
+
+
+`observatory-power-server` and `observatory-power-client` and `onemetre-power-data` packages should be installed on the `onemetre-dome` machine.
+`observatory-power-server` and `observatory-power-client` and `superwasp-power-data` and `goto-power-data` packages should be installed on the `gotoserver` machine.
+
+After installing packages, the systemd service should be enabled:
+
 ```
-sudo systemctl start powerd@<telescope>
+sudo systemctl enable powerd@<config>
+sudo systemctl start powerd@<config>
 ```
 
-Finally, open a port in the firewall so that other machines on the network can query the power status:
+where `config` is the name of the json file for the appropriate telescope (`onemetre` for `onemetre-dome`, `superwasp` *and* `goto` for `gotoserver`).
+
+Now open a port in the firewall:
 ```
 sudo firewall-cmd --zone=public --add-port=<port>/tcp --permanent
 sudo firewall-cmd --reload
 ```
+where `port` is the port defined in `warwick.observatory.common.daemons` for the daemon specified in the power config.
 
-where `<port>` is (defined in the warwick-observatory-common daemon config):
+### Upgrading Installation
 
-| Telescope | Port |
-| --------- | ---- |
-| onemetre  | 9009 |
-| RASA      | 9033 |
-| SuperWASP | 9027 |
-| GOTO (upsmon) | 9021 |
+New RPM packages are automatically created and pushed to the package repository for each push to the `master` branch.
+These can be upgraded locally using the standard system update procedure:
+```
+sudo yum clean expire-cache
+sudo yum update
+```
 
+The daemon should then be restarted to use the newly installed code:
+```
+sudo systemctl stop powerd@<config>
+sudo systemctl start powerd@<config>
+```
 
-### Configuration
+### Testing Locally
 
-The IPs and port configurations for PDUs etc are defined in the json config files.
-
-The `power` and `light` scripts define a dictionary defining which daemon should be controlled based on the IP of the system running the script.
+The power server and client can be run directly from a git clone:
+```
+./powerd test.json
+POWERD_CONFIG_PATH=./test.json ./power status
+```
