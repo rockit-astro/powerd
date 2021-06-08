@@ -43,8 +43,6 @@ where `<port>` is (defined in the warwick-observatory-common daemon config):
 
 ### Configuration
 
-The onemetre [dehumidifier switch](https://github.com/warwick-one-metre/dehumidifier-switch) is matched against its unique serial number.  If the Arduino is replaced then the serial number should be updated in `10-onemetre-dome-power.rules`.
-
 The IPs and port configurations for PDUs etc are defined in the json config files.
 
 The `power` and `light` scripts define a dictionary defining which daemon should be controlled based on the IP of the system running the script.

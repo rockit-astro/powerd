@@ -26,7 +26,6 @@ from warwick.observatory.common.helpers import pyro_client_matches
 from warwick.observatory.power import (
     Config,
     SwitchStatus,
-    DehumidifierParameter,
     DomeAlertRelayParameter,
     APCPDUSocketParameter,
     APCUPSSocketGroupParameter,
@@ -37,7 +36,6 @@ from warwick.observatory.power import (
 sys.excepthook = Pyro4.util.excepthook
 
 SWITCHABLE_PARAMETERS = (
-    DehumidifierParameter,
     APCPDUSocketParameter,
     APCUPSSocketGroupParameter,
     DomeAlertRelayParameter,
@@ -48,7 +46,7 @@ SWITCHABLE_PARAMETERS = (
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
     def __init__(self, config):
-        self._devices = config.get_devices(self)
+        self._devices = config.get_devices()
         self._control_ips = config.control_ips
         self._log_name = config.log_name
         self._labels = config.get_labels()

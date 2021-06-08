@@ -35,7 +35,6 @@ from .apcaccess_device import (
     APCAccessUPSBatteryRemainingParameter,
     APCAccessUPSBatteryHealthyParameter,
     APCAccessUPSOutputLoadParameter)
-from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .domealert_device import DomeAlertDevice
 from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
@@ -84,7 +83,7 @@ CONFIG_SCHEMA = {
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCAccessUPS',
                             'DomeAlert', 'NetgearPOE', 'ETH002',
-                            'ArduinoRelay', 'BatteryVoltmeter'
+                            'BatteryVoltmeter'
                         ]
                     },
 
@@ -152,7 +151,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, ArduinoRelay, DomeAlert
+                    # Used by APCUPS, DomeAlert
                     'name': {
                         'type': 'string',
                     },
@@ -221,7 +220,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by ArduinoRelay, BatteryVoltmeter, APCAccessUPS
+                    # Used by BatteryVoltmeter, APCAccessUPS
                     'device': {
                         'type': 'string',
                     }
@@ -266,14 +265,6 @@ CONFIG_SCHEMA = {
                             }
                         },
                         'required': ['ip', 'query_timeout', 'relays']
-                    },
-                    {
-                        'properties': {
-                            'type': {
-                                'enum': ['ArduinoRelay']
-                            }
-                        },
-                        'required': ['device', 'name', 'label']
                     },
                     {
                         'properties': {
@@ -400,9 +391,6 @@ class Config:
             elif config['type'] == 'ETH002':
                 labels.extend([[r['name'], r['label'], 'switch', r['display_order']] for r in config['relays']])
 
-            elif config['type'] == 'ArduinoRelay':
-                labels.append([config['name'], config['label'], 'switch', config['display_order']])
-
             elif config['type'] == 'DomeAlert':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
@@ -412,7 +400,7 @@ class Config:
         labels.sort(key=lambda x: x[3])
         return [{'name': l[0], 'label': l[1], 'type': l[2]} for l in labels]
 
-    def get_devices(self, power_daemon):
+    def get_devices(self):
         """Returns a list of devices wrapped by the power daemon"""
         ret = []
         for config in self._device_config:
@@ -450,11 +438,6 @@ class Config:
             elif config['type'] == 'ETH002':
                 parameters = [ETH002SwitchParameter(p['name'], p['relay']) for p in config['relays']]
                 ret.append(ETH002Device(self.log_name, config['ip'], parameters, config['query_timeout']))
-
-            elif config['type'] == 'ArduinoRelay':
-                ret.append(DehumidifierSwitchDevice(
-                    self.log_name, config['device'],
-                    DehumidifierParameter(config['name']), power_daemon))
 
             elif config['type'] == 'DomeAlert':
                 ret.append(DomeAlertDevice(
