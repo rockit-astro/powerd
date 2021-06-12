@@ -1,5 +1,5 @@
 Name:      observatory-power-server
-Version:   20210608
+Version:   20210612
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon.
