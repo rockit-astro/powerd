@@ -22,6 +22,24 @@
           "label": "Monitor",
           "display_order": 2
         },
+	{
+          "socket": 3,
+          "name": "focuser",
+          "label": "Focuser",
+          "display_order": 3
+        },
+	{
+          "socket": 4,
+          "name": "cam1",
+          "label": "Camera 1",
+          "display_order": 4
+        },
+	{
+          "socket": 5,
+          "name": "cam2",
+          "label": "Camera 2",
+          "display_order": 5
+        },
         {
           "socket": 8,
           "name": "light",
