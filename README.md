@@ -47,10 +47,12 @@ The automated packaging scripts will push 6 RPM packages to the observatory pack
 | python3-warwick-observatory-power | Contains the python module with shared code. |
 | onemetre-power-data | Contains the json configuration and udev rules for the W1m. |
 | superwasp-power-data | Contains the json configuration and udev rules for SuperWASP. |
+| clasp-power-data | Contains the json configuration and udev rules for the CLASP telescope. |
 | goto-power-data | Contains the json configuration for the GOTO UPS monitoring. |
 
 
 `observatory-power-server` and `observatory-power-client` and `onemetre-power-data` packages should be installed on the `onemetre-dome` machine.
+`observatory-power-server` and `observatory-power-client` and `clasp-power-data` packages should be installed on the `clasp-tcs` machine.
 `observatory-power-server` and `observatory-power-client` and `superwasp-power-data` and `goto-power-data` packages should be installed on the `gotoserver` machine.
 
 After installing packages, the systemd service should be enabled:

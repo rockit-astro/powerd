@@ -35,6 +35,7 @@ jobs:
           centos-packages/set-spec-release.sh python3-warwick-observatory-power.spec
           centos-packages/set-spec-release.sh onemetre-power-data.spec
           centos-packages/set-spec-release.sh superwasp-power-data.spec
+          centos-packages/set-spec-release.sh clasp-power-data.spec
           centos-packages/set-spec-release.sh goto-power-data.spec
 
       - name: Package RPMs

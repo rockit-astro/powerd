@@ -1,0 +1,34 @@
+{
+  "daemon": "localhost_test",
+  "log_name": "powerd@clasp",
+  "control_machines": ["LocalHost"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": ["light"],
+  "devices": [
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.184",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "tcs",
+          "label": "TCS",
+          "display_order": 1
+        },
+        {
+          "socket": 2,
+          "name": "monitor",
+          "label": "Monitor",
+          "display_order": 2
+        },
+        {
+          "socket": 8,
+          "name": "light",
+          "label": "Dome Light",
+          "display_order": 3
+        }
+      ]
+    }
+  ]
+}
