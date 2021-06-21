@@ -1,4 +1,4 @@
-Name:      superwasp-power-server
+Name:      superwasp-power-data
 Version:   20210608
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
