@@ -1,7 +1,7 @@
 {
-  "daemon": "localhost_test",
+  "daemon": "clasp_power",
   "log_name": "powerd@clasp",
-  "control_machines": ["LocalHost"],
+  "control_machines": ["CLASPTCS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
