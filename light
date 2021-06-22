@@ -17,38 +17,42 @@
 
 """Commandline client for the dome light"""
 
+import glob
 import os
 import sys
 import Pyro4
-from warwick.observatory.common import daemons, IP
-from warwick.observatory.common.helpers import key_for_current_ip
+from warwick.observatory.power import Config
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 sys.excepthook = Pyro4.util.excepthook
 
-DAEMONS = {
-    daemons.onemetre_power: [IP.OneMetreDome, IP.OneMetreTCS],
-    daemons.rasa_power: [IP.RASAMain]
-}
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         print('usage: {} (on|off|status)'.format(SCRIPT_NAME))
         sys.exit(-1)
 
-    d = key_for_current_ip(DAEMONS)
-    if not d:
-        print('error: cannot determine daemon for current IP')
-        sys.exit(1)
+    if 'POWERD_CONFIG_PATH' in os.environ:
+        config = Config(os.environ['POWERD_CONFIG_PATH'])
+    else:
+        # Load the config file defined in the POWERD_CONFIG_PATH environment variable or from the
+        # default system location (/etc/powerd/). Exit with an error if zero or multiple are found.
+        files = glob.glob("/etc/powerd/*.json")
+        if len(files) != 1:
+            print('error: failed to guess the default config file. ' +
+                  'Run as POWERD_CONFIG_PATH=/path/to/config.json power <command>')
+            sys.exit(1)
+
+        config = Config(files[0])
 
     try:
         if sys.argv[1] == 'on' or sys.argv[1] == 'off':
-            with d.connect() as power:
+            with config.daemon.connect() as power:
                 if not power.switch('light', sys.argv[1] == 'on'):
                     print('error: failed to switch light {}'.format(sys.argv[1]))
                     sys.exit(-1)
         elif sys.argv[1] == 'status':
-            with d.connect() as power:
+            with config.daemon.connect() as power:
                 print('on' if power.value('light') else 'off')
     except Pyro4.errors.CommunicationError:
         print('error: unable to communicate with the power daemon')
