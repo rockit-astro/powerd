@@ -40,11 +40,17 @@
           "label": "Camera 2",
           "display_order": 5
         },
+	{
+          "socket": 7,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 7
+        },
         {
           "socket": 8,
           "name": "light",
           "label": "Dome Light",
-          "display_order": 3
+          "display_order": 8
         }
       ]
     }
