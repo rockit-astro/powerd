@@ -1,7 +1,7 @@
 {
   "daemon": "superwasp_power",
   "log_name": "wasp_powerd",
-  "control_machines": ["GOTOServer"],
+  "control_machines": ["GOTOServer", "SWASPTCS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["ilight", "clight"],
   "devices": [
