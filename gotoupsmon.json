@@ -1,6 +1,6 @@
 {
   "daemon": "goto_ups",
-  "log_name": "gotoupsd",
+  "log_name": "powerd@gotoupsmon",
   "control_machines": ["GOTOServer"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": [],
@@ -9,17 +9,33 @@
       "type": "APCUPS",
       "ip": "10.2.6.1",
       "query_timeout": 2,
-      "name": "main_ups",
-      "label": "Main UPS",
+      "name": "dome1_upper_ups",
+      "label": "Dome 1 Upper UPS",
       "display_order": 1
     },
     {
       "type": "APCUPS",
       "ip": "10.2.6.2",
       "query_timeout": 2,
-      "name": "dome_ups",
-      "label": "Dome UPS",
+      "name": "dome1_lower_ups",
+      "label": "Dome 1 Lower UPS",
       "display_order": 2
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.41",
+      "query_timeout": 2,
+      "name": "dome2_upper_ups",
+      "label": "Dome 2 Upper UPS",
+      "display_order": 3
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.40",
+      "query_timeout": 2,
+      "name": "dome2_lower_ups",
+      "label": "Dome 2 Lower UPS",
+      "display_order": 4
     }
   ]
 }
