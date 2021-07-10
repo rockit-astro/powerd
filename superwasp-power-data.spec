@@ -1,5 +1,5 @@
 Name:      superwasp-power-data
-Version:   20210709
+Version:   20210710
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system configuration files.

@@ -1,6 +1,6 @@
 {
   "daemon": "superwasp_power",
-  "log_name": "wasp_powerd",
+  "log_name": "powerd@superwasp",
   "control_machines": ["GOTOServer", "SWASPTCS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["ilight", "clight"],
@@ -97,6 +97,24 @@
           "display_order": 24
         },
         {
+          "socket": 4,
+          "name": "monitor",
+          "label": "Monitor",
+          "display_order": 25
+        },
+        {
+          "socket": 5,
+          "name": "synology",
+          "label": "Synology",
+          "display_order": 26
+        },
+        {
+          "socket": 7,
+          "name": "tcsnuc",
+          "label": "TCS NUC",
+          "display_order": 28
+        },
+        {
           "socket": 8,
           "name": "3com",
           "label": "3COM Switch",
@@ -106,87 +124,32 @@
     },
     {
       "type": "APCPDU",
-      "ip": "10.2.6.114",
-      "query_timeout": 2,
-      "sockets": [
-        {
-          "socket": 1,
-          "name": "das1",
-          "label": "DAS 1",
-          "display_order": 30
-        },
-        {
-          "socket": 2,
-          "name": "das2",
-          "label": "DAS 2",
-          "display_order": 31
-        },
-        {
-          "socket": 4,
-          "name": "das4",
-          "label": "DAS 4",
-          "display_order": 33
-        },
-        {
-          "socket": 5,
-          "name": "das5",
-          "label": "DAS 5",
-          "display_order": 34
-        },
-        {
-          "socket": 6,
-          "name": "das6",
-          "label": "DAS 6",
-          "display_order": 35
-        },
-        {
-          "socket": 7,
-          "name": "das7",
-          "label": "DAS 7",
-          "display_order": 36
-        }
-      ]
-    },
-    {
-      "type": "APCPDU",
       "ip": "10.2.6.115",
       "query_timeout": 2,
       "sockets": [
         {
-          "socket": 1,
-          "name": "ccd1",
-          "label": "CCD 1",
-          "display_order": 38
-        },
-        {
-          "socket": 2,
-          "name": "ccd2",
-          "label": "CCD 2",
-          "display_order": 39
-        },
-        {
-          "socket": 4,
-          "name": "ccd4",
-          "label": "CCD 4",
-          "display_order": 40
-        },
-        {
           "socket": 5,
-          "name": "ccd5",
-          "label": "CCD 5",
-          "display_order": 41
+          "name": "cam4",
+          "label": "Cam 4",
+          "display_order": 44
         },
         {
           "socket": 6,
-          "name": "ccd6",
-          "label": "CCD 6",
-          "display_order": 42
+          "name": "cam3",
+          "label": "Cam 3",
+          "display_order": 43
         },
         {
           "socket": 7,
-          "name": "ccd7",
-          "label": "CCD 7",
-          "display_order": 43
+          "name": "cam2",
+          "label": "Cam 2",
+          "display_order": 42
+        },
+        {
+          "socket": 8,
+          "name": "cam1",
+          "label": "Cam 1",
+          "display_order": 41
         }
       ]
     }
