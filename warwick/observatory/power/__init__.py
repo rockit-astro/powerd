@@ -27,6 +27,7 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCUPSSocketGroupParameter)
+from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .eth002_device import ETH002Device, ETH002SwitchParameter
 from .battery_voltmeter import BatteryVoltmeterDevice
 from .domealert_device import DomeAlertRelayParameter, DomeAlertDevice

@@ -32,7 +32,7 @@ sys.excepthook = Pyro4.util.excepthook
 class PowerDaemon:
     """Wraps a web request to the PDUs and UPSes"""
     def __init__(self, config):
-        self._devices = config.get_devices()
+        self._devices = config.get_devices(self)
         self._control_ips = config.control_ips
         self._log_name = config.log_name
         self._labels = config.get_labels()

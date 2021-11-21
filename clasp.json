@@ -53,6 +53,13 @@
           "display_order": 8
         }
       ]
+    },
+    {
+      "type": "ArduinoRelay",
+      "name": "dehumidifier",
+      "label": "Dehumidifier",
+      "device": "/dev/dehumidifier",
+      "display_order": 9
     }
   ]
 }
