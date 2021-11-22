@@ -1,5 +1,5 @@
 Name:      clasp-power-data
-Version:   20211121
+Version:   20211122
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system configuration files.
