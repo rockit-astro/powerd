@@ -37,7 +37,7 @@ from .domealert_device import DomeAlertDevice
 from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
-from .battery_voltmeter import BatteryVoltmeterDevice, VoltageParameter
+from .battery_voltmeter import BatteryVoltmeterDevice, VoltageParameter, MeanVoltageParameter
 from .dummy_device import DummyDevice, DummyUPSDevice
 
 CONFIG_SCHEMA = {
@@ -425,7 +425,10 @@ class Config:
                 ))
 
             elif config['type'] == 'BatteryVoltmeter':
-                ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], VoltageParameter(config['name'])))
+                ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], [
+                    VoltageParameter(config['name']),
+                    MeanVoltageParameter(config['name'] + '_mean')
+                ]))
 
             elif config['type'] == 'Dummy':
                 parameters = [APCPDUSocketParameter(s['name'], s['socket']) for s in config['sockets']]
