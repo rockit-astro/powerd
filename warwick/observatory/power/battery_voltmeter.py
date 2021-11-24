@@ -36,7 +36,7 @@ class VoltageParameter(Parameter):
 
 class BatteryVoltmeterDevice:
     """Wrapper for querying an attached Arduino via RS232"""
-    def __init__(self, log_name, port_name, parameter):
+    def __init__(self, log_name, port_name, parameters):
         self._log_name = log_name
         self._port = None
         self._port_name = port_name
@@ -50,7 +50,11 @@ class BatteryVoltmeterDevice:
 
         self._regex = re.compile(DATA_REGEX, re.DOTALL)
         self._voltage = 0
-        self.parameters = [parameter]
+        self._voltage_sum = 0
+        self._voltage_history = []
+
+        self.parameters = parameters
+        self.parameters_by_name = {p.name: p for p in parameters}
 
     def run(self):
         """Main run loop"""
@@ -83,6 +87,10 @@ class BatteryVoltmeterDevice:
 
                     if match:
                         self._voltage = float(match.group('voltage'))
+                        self._voltage_sum += self._voltage
+                        self._voltage_history.append(self._voltage)
+                        if len(self._voltage_history) > 10:
+                            self._voltage_sum -= self._voltage_history.pop(0)
 
             except Exception as exception:
                 self._port.close()
@@ -98,21 +106,20 @@ class BatteryVoltmeterDevice:
     def status(self):
         """Return a dictionary of parameter values for this device"""
         if not self._port_connected:
-            return {self.parameters[0].name: self.parameters[0].error_value}
+            return {p.name: p.error_value for p in self.parameters}
 
         with self._updated_condition:
-            return {self.parameters[0].name: self._voltage}
+            return {
+                self.parameters[0].name: self._voltage,
+                self.parameters[1].name: round(self._voltage_sum / len(self._voltage_history), 2)
+            }
 
     def get_parameter(self, parameter_name):
         """Returns the value of a named parameter"""
-        if parameter_name != self.parameters[0].name:
+        if parameter_name not in self.parameters_by_name:
             return False
 
-        if not self._port_connected:
-            return self.parameters[0].error_value
-
-        with self._updated_condition:
-            return self._voltage
+        return self.status()[parameter_name]
 
     def set_parameter(self, *_):
         """Sets the value of a named parameter"""

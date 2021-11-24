@@ -1,5 +1,5 @@
 Name:           python3-warwick-observatory-power
-Version:        20211121
+Version:        20211124
 Release:        0
 License:        GPL3
 Summary:        Common backend code for the power daemon.

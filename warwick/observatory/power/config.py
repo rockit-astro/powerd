@@ -425,7 +425,10 @@ class Config:
                 ))
 
             elif config['type'] == 'BatteryVoltmeter':
-                ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], VoltageParameter(config['name'])))
+                ret.append(BatteryVoltmeterDevice(self.log_name, config['device'], [
+                    VoltageParameter(config['name']),
+                    VoltageParameter(config['name'] + '_mean')
+                ]))
 
             elif config['type'] == 'Dummy':
                 parameters = [APCPDUSocketParameter(s['name'], s['socket']) for s in config['sockets']]
