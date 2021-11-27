@@ -28,8 +28,14 @@
           "label": "Tel. Motors",
           "display_order": 4
         },
-        {
+	{
           "socket": 4,
+          "name": "telescope_covers",
+          "label": "Tel. Covers",
+          "display_order": 5
+        },
+        {
+          "socket": 5,
           "name": "vaisala",
           "label": "Weather Station",
           "display_order": 16
@@ -94,38 +100,30 @@
       "display_order": 18
     },
     {
-      "type": "APCUPS",
-      "ip": "10.2.6.211",
-      "query_timeout": 2,
-      "name": "dome_ups",
-      "label": "NITES UPS",
-      "display_order": 19
-    },
-    {
       "type": "NetgearPOE",
       "ip": "10.2.6.214",
       "query_timeout": 2,
       "ports": [
         {
-          "port": 1,
+          "port": 7,
           "name": "telescope_network",
           "label": "Tel. Network",
           "display_order": 2
         },
         {
-          "port": 3,
+          "port": 1,
           "name": "webcam",
           "label": "Dome Webcam",
           "display_order": 11
         },
         {
-          "port": 7,
+          "port": 6,
           "name": "rainsensors",
           "label": "Rain Sensors",
           "display_order": 10
         },
         {
-          "port": 18,
+          "port": 2,
           "name": "extcam",
           "label": "East Ext Webcam",
           "display_order": 12
