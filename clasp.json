@@ -70,8 +70,8 @@
       "display_order": 10
     },
     {
-      "type": "APCAccessUPS",
-      "device": "/etc/apcupsd/apcupsd.conf",
+      "type": "APCUPS",
+      "ip": "10.2.6.192",
       "query_timeout": 2,
       "name": "ups2",
       "label": "UPS 2",
