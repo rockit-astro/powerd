@@ -16,7 +16,7 @@
     {
       "type": "APCAccessUPS",
       "device": "/etc/apcupsd/apcupsd.conf",
-      "query_timeout": 2,
+      "query_timeout": 5,
       "name": "ups2",
       "label": "UPS 2",
       "display_order": 3
