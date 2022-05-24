@@ -47,8 +47,8 @@
         },
         {
           "socket": 3,
-          "name": "poe_network",
-          "label": "PoE Network",
+          "name": "webcams",
+          "label": "Webcams/Mic",
           "display_order": 16
         },
         {
@@ -119,6 +119,12 @@
       "ip": "10.2.6.115",
       "query_timeout": 2,
       "sockets": [
+        {
+          "socket": 4,
+          "name": "das",
+          "label": "DAS Pis",
+          "display_order": 45
+        },
         {
           "socket": 5,
           "name": "cam4",
