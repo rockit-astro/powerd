@@ -18,8 +18,8 @@
         },
         {
           "socket": 2,
-          "name": "monitor",
-          "label": "Monitor",
+          "name": "das1",
+          "label": "DAS1",
           "display_order": 2
         },
 	{
