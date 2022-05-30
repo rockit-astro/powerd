@@ -28,19 +28,19 @@
           "label": "Focuser",
           "display_order": 3
         },
-	{
+        {
           "socket": 4,
           "name": "cam1",
           "label": "Camera 1",
           "display_order": 4
         },
-	{
+        {
           "socket": 5,
           "name": "cam2",
           "label": "Camera 2",
           "display_order": 5
         },
-	{
+        {
           "socket": 7,
           "name": "mount",
           "label": "Mount",
@@ -76,6 +76,14 @@
       "name": "ups2",
       "label": "UPS 2",
       "display_order": 11
+    },
+    {
+      "type": "APCATS",
+      "ip": "10.2.6.190",
+      "query_timeout": 2,
+      "name": "ats",
+      "label": "ATS",
+      "display_order": 12
     }
   ]
 }

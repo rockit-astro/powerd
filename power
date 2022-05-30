@@ -74,7 +74,7 @@ def print_status(config, _):
             label = ' ' * label_padding + m['label'] + ': '
             if m['type'] == 'switch':
                 label += format_switch(latest[m['name']])
-            if m['type'] == 'voltage':
+            elif m['type'] == 'voltage':
                 label += format_voltage(latest[m['name']])
             elif m['type'] == 'ups':
                 label += format_ups(
@@ -83,6 +83,9 @@ def print_status(config, _):
                     latest[m['name'] + '_battery_healthy'],
                     latest[m['name'] + '_load']
                 )
+            elif m['type'] == 'ats':
+                label += format_ats(latest[m['name'] + '_source'])
+
             print(label)
         print()
     else:
@@ -118,6 +121,14 @@ def format_ups(status, battery_remaining, battery_healthy, load):
     if not battery_healthy:
         ret += TFmt.Bold + TFmt.Red + ' REPLACE BATTERY' + TFmt.Clear
     return ret
+
+
+def format_ats(source):
+    """Builds a formatted string reporting ATS status"""
+    if source > 0:
+        return TFmt.Bold + 'Source ' + str(source) + TFmt.Clear
+
+    return TFmt.Red + TFmt.Bold + 'UNKNOWN' + TFmt.Clear
 
 
 def print_json(config, _):

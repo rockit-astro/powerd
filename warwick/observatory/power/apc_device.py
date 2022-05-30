@@ -19,14 +19,14 @@
 # pylint: disable=no-self-use
 
 from .constants import SwitchStatus, APCUPSStatus, SwitchableParameter
-from .snmp_device import SNMPParameter
+from .snmp_device import SNMPParameter, IntegerSNMPParameter
 
 
-class APCPDUSocketParameter(SNMPParameter, SwitchableParameter):
+class APCPDUSocketParameter(IntegerSNMPParameter, SwitchableParameter):
     """Parameter representing a specific PDU socket"""
     def __init__(self, name, socket):
         oid = '.1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.' + str(socket)
-        SNMPParameter.__init__(self, name, oid, oid, SwitchStatus.Unknown)
+        IntegerSNMPParameter.__init__(self, name, oid, oid, SwitchStatus.Unknown)
 
     def format_set_value(self, value):
         """Format a python value to a string to send via SNMP"""
@@ -34,23 +34,14 @@ class APCPDUSocketParameter(SNMPParameter, SwitchableParameter):
 
     def parse_snmpget_output(self, output):
         """Convert a snmpget output string for this parameter into a python value"""
-        parts = output.split(' ')
-
-        if parts[-2] != 'INTEGER:':
-            raise Exception('Unabled to parse integer from SNMP output: ' + output)
-
-        return SwitchStatus.On if int(parts[-1]) == 1 else SwitchStatus.Off
-
-    def parse_snmpset_output(self, output):
-        """Convert a snmpset output string for this parameter into a python value"""
-        return self.parse_snmpget_output(output)
+        return SwitchStatus.On if IntegerSNMPParameter.parse_snmpget_output(self, output) == 1 else SwitchStatus.Off
 
 
-class APCUPSSocketGroupParameter(SNMPParameter, SwitchableParameter):
+class APCUPSSocketGroupParameter(IntegerSNMPParameter, SwitchableParameter):
     """Parameter representing a specific UPS socket group"""
     def __init__(self, name, socket):
         oid = '.1.3.6.1.4.1.318.1.1.1.12.3.2.1.3.' + str(socket)
-        SNMPParameter.__init__(self, name, oid, oid, SwitchStatus.Unknown)
+        IntegerSNMPParameter.__init__(self, name, oid, oid, SwitchStatus.Unknown)
 
     def format_set_value(self, value):
         """Format a python value to a string to send via SNMP"""
@@ -58,56 +49,30 @@ class APCUPSSocketGroupParameter(SNMPParameter, SwitchableParameter):
 
     def parse_snmpget_output(self, output):
         """Convert a snmpget output string for this parameter into a python value"""
-        parts = output.split(' ')
-
-        if parts[-2] != 'INTEGER:':
-            raise Exception('Unabled to parse integer from SNMP output: ' + output)
-
-        return SwitchStatus.On if int(parts[-1]) == 1 else SwitchStatus.Off
-
-    def parse_snmpset_output(self, output):
-        """Convert a snmpset output string for this parameter into a python value"""
-        return self.parse_snmpget_output(output)
+        return SwitchStatus.On if IntegerSNMPParameter.parse_snmpget_output(self, output) == 1 else SwitchStatus.Off
 
 
-class APCUPSStatusParameter(SNMPParameter):
+class APCUPSStatusParameter(IntegerSNMPParameter):
     """Parameter representing the read-only UPS status enum"""
     def __init__(self, name):
         oid = '.1.3.6.1.4.1.318.1.1.1.4.1.1.0'
-        SNMPParameter.__init__(self, name, oid, None, APCUPSStatus.Unknown)
-
-    def parse_snmpget_output(self, output):
-        """Convert a snmpget output string for this parameter into a python value"""
-        parts = output.split(' ')
-
-        if parts[-2] != 'INTEGER:':
-            raise Exception('Unabled to parse integer from SNMP output: ' + output)
-
-        return int(parts[-1])
-
-    def parse_snmpset_output(self, output):
-        """Convert a snmpset output string for this parameter into a python value"""
-        return self.parse_snmpget_output(output)
+        IntegerSNMPParameter.__init__(self, name, oid, None, APCUPSStatus.Unknown)
 
 
-class APCUPSBatteryHealthyParameter(SNMPParameter):
+class APCUPSBatteryHealthyParameter(IntegerSNMPParameter):
     """Parameter representing the read-only UPS battery health flag"""
     def __init__(self, name):
-        oid = '.1.3.6.1.4.1.318.1.1.1.2.2.4.0'
-        SNMPParameter.__init__(self, name, oid, None, False)
+        IntegerSNMPParameter.__init__(self, name, '.1.3.6.1.4.1.318.1.1.1.2.2.4.0', None, False)
 
     def parse_snmpget_output(self, output):
         """Convert a snmpget output string for this parameter into a python value"""
-        parts = output.split(' ')
+        return IntegerSNMPParameter.parse_snmpget_output(self, output) == 1
 
-        if parts[-2] != 'INTEGER:':
-            raise Exception('Unabled to parse integer from SNMP output: ' + output)
 
-        return int(parts[-1]) == 1
-
-    def parse_snmpset_output(self, output):
-        """Convert a snmpset output string for this parameter into a python value"""
-        return self.parse_snmpget_output(output)
+class APCATSInputSourceParameter(IntegerSNMPParameter):
+    """Parameter representing the read-only ATS source scalar"""
+    def __init__(self, name):
+        IntegerSNMPParameter.__init__(self, name, '.1.3.6.1.4.1.318.1.1.8.5.1.2.0', None, 0)
 
 
 class APCGaugeParameter(SNMPParameter):

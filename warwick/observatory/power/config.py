@@ -25,7 +25,8 @@ from .apc_device import (
     APCUPSStatusParameter,
     APCUPSBatteryRemainingParameter,
     APCUPSBatteryHealthyParameter,
-    APCUPSOutputLoadParameter)
+    APCUPSOutputLoadParameter,
+    APCATSInputSourceParameter)
 from .apcaccess_device import (
     APCAccessDevice,
     APCAccessUPSStatusParameter,
@@ -80,7 +81,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
-                            'APCPDU', 'APCUPS', 'APCAccessUPS',
+                            'APCPDU', 'APCUPS', 'APCAccessUPS', 'APCATS',
                             'DomeAlert', 'NetgearPOE', 'ETH002',
                             'BatteryVoltmeter',
                             'Dummy', 'DummyUPS',
@@ -88,12 +89,12 @@ CONFIG_SCHEMA = {
                         ]
                     },
 
-                    # Used by APCPDU, APCUPS, NetgearPOE, ETH002
+                    # Used by APCPDU, APCUPS, APCATS, NetgearPOE, ETH002
                     'ip': {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCAccessUPS, DommeAlert, NetgearPOE, ETH002
+                    # Used by APCPDU, APCUPS, APCAccessUPS, APCATS, DomeAlert, NetgearPOE, ETH002
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -152,7 +153,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, ArduinoRelay, DummyUPS, DomeAlert
+                    # Used by APCUPS, APCATS, ArduinoRelay, DummyUPS, DomeAlert
                     'name': {
                         'type': 'string',
                     },
@@ -238,7 +239,7 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['APCUPS']
+                                'enum': ['APCUPS', 'APCATS']
                             }
                         },
                         'required': ['ip', 'query_timeout', 'name', 'label']
@@ -351,6 +352,9 @@ class Config:
             elif config['type'] == 'APCAccessUPS':
                 labels.append([config['name'], config['label'], 'ups', config['display_order']])
 
+            elif config['type'] == 'APCATS':
+                labels.append([config['name'], config['label'], 'ats', config['display_order']])
+
             elif config['type'] == 'NetgearPOE':
                 labels.extend([[p['name'], p['label'], 'switch', p['display_order']] for p in config['ports']])
 
@@ -406,6 +410,13 @@ class Config:
 
                 ret.append(APCAccessDevice(self.log_name, config['device'], config['query_timeout'], parameters))
 
+            elif config['type'] == 'APCATS':
+                parameters = [
+                    APCATSInputSourceParameter(config['name'] + '_source')
+                ]
+
+                ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
+
             elif config['type'] == 'NetgearPOE':
                 parameters = [NetgearPoESocketParameter(p['name'], p['port']) for p in config['ports']]
                 ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
@@ -443,6 +454,5 @@ class Config:
                 ]
 
                 ret.append(DummyUPSDevice(parameters))
-
 
         return ret

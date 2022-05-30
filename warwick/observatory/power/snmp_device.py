@@ -32,6 +32,27 @@ class SNMPParameter(Parameter):
         self.set_oid = set_oid
 
 
+class IntegerSNMPParameter(Parameter):
+    """Data structure encapsulating a parameter fetched/set via SNMP"""
+    def __init__(self, name, get_oid, set_oid, error_value):
+        Parameter.__init__(self, name, error_value)
+        self.get_oid = get_oid
+        self.set_oid = set_oid
+
+    def parse_snmpget_output(self, output):
+        """Convert a snmpget output string for this parameter into a python value"""
+        parts = output.split(' ')
+
+        if parts[-2] != 'INTEGER:':
+            raise Exception('Unabled to parse integer from SNMP output: ' + output)
+
+        return int(parts[-1])
+
+    def parse_snmpset_output(self, output):
+        """Convert a snmpset output string for this parameter into a python value"""
+        return self.parse_snmpget_output(output)
+
+
 class SNMPDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""
     def __init__(self, log_name, ip, parameters, query_timeout):
