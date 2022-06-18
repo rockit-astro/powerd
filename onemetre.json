@@ -28,12 +28,6 @@
           "label": "Tel. Motors",
           "display_order": 4
         },
-	{
-          "socket": 4,
-          "name": "telescope_covers",
-          "label": "Tel. Covers",
-          "display_order": 5
-        },
         {
           "socket": 5,
           "name": "vaisala",
@@ -71,11 +65,17 @@
           "label": "Blue Camera",
           "display_order": 5
         },
+	{
+          "socket": 4,
+          "name": "telescope_covers",
+          "label": "Tel. Covers",
+          "display_order": 5
+        },
         {
-          "socket": 8,
-          "name": "telescope_nuc",
-          "label": "Tel. Computer",
-          "display_order": 1
+          "socket": 6,
+          "name": "red_focus_controller",
+          "label": "Red Foc. Ctrler",
+          "display_order": 8
         },
         {
           "socket": 7,
@@ -84,20 +84,36 @@
           "display_order": 7
         },
         {
-          "socket": 6,
-          "name": "red_focus_controller",
-          "label": "Red Foc. Ctrler",
-          "display_order": 8
+          "socket": 8,
+          "name": "telescope_nuc",
+          "label": "Tel. Computer",
+          "display_order": 1
         }
       ]
+    },
+    {
+      "type": "APCATS",
+      "ip": "10.2.6.209",
+      "query_timeout": 2,
+      "name": "ats",
+      "label": "ATS",
+      "display_order": 20
     },
     {
       "type": "APCUPS",
       "ip": "10.2.6.210",
       "query_timeout": 2,
-      "name": "main_ups",
-      "label": "Main UPS",
+      "name": "ups1",
+      "label": "UPS 1",
       "display_order": 18
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.211",
+      "query_timeout": 2,
+      "name": "ups2",
+      "label": "UPS 2",
+      "display_order": 19
     },
     {
       "type": "NetgearPOE",
