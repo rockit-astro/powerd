@@ -66,7 +66,7 @@
           "display_order": 5
         },
 	{
-          "socket": 4,
+          "socket": 5,
           "name": "telescope_covers",
           "label": "Tel. Covers",
           "display_order": 5
@@ -121,28 +121,28 @@
       "query_timeout": 2,
       "ports": [
         {
-          "port": 7,
-          "name": "telescope_network",
-          "label": "Tel. Network",
-          "display_order": 2
+          "port": 3,
+          "name": "extcam",
+          "label": "East Ext Webcam",
+          "display_order": 12
         },
         {
-          "port": 1,
+          "port": 4,
           "name": "webcam",
           "label": "Dome Webcam",
           "display_order": 11
+        },
+        {
+          "port": 5,
+          "name": "telescope_network",
+          "label": "Tel. Network",
+          "display_order": 2
         },
         {
           "port": 6,
           "name": "rainsensors",
           "label": "Rain Sensors",
           "display_order": 10
-        },
-        {
-          "port": 2,
-          "name": "extcam",
-          "label": "East Ext Webcam",
-          "display_order": 12
         }
       ]
     },
