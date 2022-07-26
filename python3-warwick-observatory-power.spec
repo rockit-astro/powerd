@@ -5,7 +5,7 @@ License:        GPL3
 Summary:        Common backend code for the power daemon.
 Url:            https://github.com/warwick-one-metre/powerd
 BuildArch:      noarch
-Requires:       python3-pyserial, python3-jsonschema
+Requires:       python3-pyserial python3-jsonschema
 
 %description
 

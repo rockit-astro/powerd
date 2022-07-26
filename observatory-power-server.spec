@@ -1,13 +1,12 @@
 Name:      observatory-power-server
-Version:   20220530
+Version:   20220726
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system daemon.
 License:   GPL-3.0
 Group:     Unspecified
 BuildArch: noarch
-Requires:  python3, python3-Pyro4, python3-warwick-observatory-common, python3-warwick-observatory-power
-Requires:  observatory-log-client, net-snmp-utils, %{?systemd_requires}
+Requires:  python3 python3-Pyro4 python3-warwick-observatory-common python3-warwick-observatory-power net-snmp-utils
 
 %description
 
