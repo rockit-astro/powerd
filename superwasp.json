@@ -14,19 +14,20 @@
       "display_order": 1
     },
     {
-      "type": "APCAccessUPS",
-      "device": "/etc/apcupsd/apcupsd.conf",
-      "query_timeout": 5,
+      "type": "APCUPS",
+      "ip": "10.2.6.111",
+      "query_timeout": 2,
       "name": "ups2",
       "label": "UPS 2",
-      "display_order": 3
+      "display_order": 2
     },
     {
-      "type": "BatteryVoltmeter",
-      "name": "roofbattery",
-      "label": "Roof Battery",
-      "device": "/dev/roofbattery",
-      "display_order": 4
+      "type": "APCATS",
+      "ip": "10.2.6.128",
+      "query_timeout": 2,
+      "name": "ats",
+      "label": "ATS",
+      "display_order": 3
     },
     {
       "type": "APCPDU",
@@ -35,32 +36,50 @@
       "sockets": [
         {
           "socket": 1,
-          "name": "roof_interface",
-          "label": "CSIMC Roof Interface",
+          "name": "cam1",
+          "label": "Cam1",
           "display_order": 14
         },
         {
           "socket": 2,
-          "name": "mount",
-          "label": "Mount",
+          "name": "cam2",
+          "label": "Cam2",
           "display_order": 15
         },
         {
           "socket": 3,
-          "name": "webcams",
-          "label": "Webcams/Mic",
+          "name": "cam3",
+          "label": "Cam3",
           "display_order": 16
         },
         {
-          "socket": 7,
+          "socket": 4,
+          "name": "cam4",
+          "label": "Cam4",
+          "display_order": 17
+        },
+        {
+          "socket": 5,
           "name": "lensheaters",
           "label": "Lens Heaters",
+          "display_order": 18
+        },
+        {
+          "socket": 6,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 19
+        },
+        {
+          "socket": 7,
+          "name": "roofcontrol",
+          "label": "Roof Controller",
           "display_order": 20
         },
         {
           "socket": 8,
-          "name": "ilight",
-          "label": "Instr. Room Light",
+          "name": "roofcharger",
+          "label": "Roof Charger",
           "display_order": 21
         }
       ]
@@ -90,64 +109,27 @@
         },
         {
           "socket": 4,
-          "name": "monitor",
-          "label": "Monitor",
+          "name": "ilight",
+          "label": "Instr. Room Light",
           "display_order": 25
         },
         {
           "socket": 5,
-          "name": "synology",
-          "label": "Synology",
+          "name": "goto_vaisala",
+          "label": "GOTO Vaisala",
           "display_order": 26
         },
         {
-          "socket": 7,
-          "name": "tcsnuc",
-          "label": "TCS NUC",
-          "display_order": 28
-        },
-        {
-          "socket": 8,
-          "name": "3com",
-          "label": "3COM Switch",
-          "display_order": 29
-        }
-      ]
-    },
-    {
-      "type": "APCPDU",
-      "ip": "10.2.6.115",
-      "query_timeout": 2,
-      "sockets": [
-        {
-          "socket": 4,
-          "name": "das",
-          "label": "DAS Pis",
-          "display_order": 45
-        },
-        {
-          "socket": 5,
-          "name": "cam4",
-          "label": "Cam 4",
-          "display_order": 44
-        },
-        {
           "socket": 6,
-          "name": "cam3",
-          "label": "Cam 3",
-          "display_order": 43
+          "name": "tcs",
+          "label": "TCS",
+          "display_order": 27
         },
         {
           "socket": 7,
-          "name": "cam2",
-          "label": "Cam 2",
-          "display_order": 42
-        },
-        {
-          "socket": 8,
-          "name": "cam1",
-          "label": "Cam 1",
-          "display_order": 41
+          "name": "backdoor_fibre",
+          "label": "Backdoor Fibre",
+          "display_order": 28
         }
       ]
     }
