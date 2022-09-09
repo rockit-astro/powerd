@@ -41,6 +41,12 @@
           "display_order": 5
         },
         {
+          "socket": 6,
+          "name": "domealert",
+          "label": "DomeAlert",
+          "display_order": 7
+        },
+        {
           "socket": 7,
           "name": "mount",
           "label": "Mount",
@@ -55,10 +61,11 @@
       ]
     },
     {
-      "type": "ArduinoRelay",
+      "type": "DomeAlert",
       "name": "dehumidifier",
       "label": "Dehumidifier",
-      "device": "/dev/dehumidifier",
+      "daemon": "clasp_domealert",
+      "query_timeout": 5,
       "display_order": 9
     },
     {
