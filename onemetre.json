@@ -150,7 +150,7 @@
       "type": "DomeAlert",
       "name": "dehumidifier",
       "label": "Dehumidifier",
-      "daemon": "onemetre_roomalert",
+      "daemon": "onemetre_domealert",
       "query_timeout": 5,
       "display_order": 17
     }
