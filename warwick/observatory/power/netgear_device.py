@@ -16,8 +16,6 @@
 
 """Netgear-specific parameters for SNMPDevice"""
 
-# pylint: disable=no-self-use
-
 from .constants import SwitchStatus, SwitchableParameter
 from .snmp_device import SNMPParameter
 

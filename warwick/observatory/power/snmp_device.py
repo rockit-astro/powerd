@@ -16,8 +16,6 @@
 
 """Wrapper for accessing a device via SNMP"""
 
-# pylint: disable=no-self-use
-
 import datetime
 import subprocess
 from warwick.observatory.common import log
@@ -80,8 +78,7 @@ class SNMPDevice:
             # Return a dictionary of values keyed by parameter name
             return {k.name: k.parse_snmpget_output(v) for k, v in zip(self.parameters, lines)}
         except Exception as exception:
-            print('{} ERROR: failed to query {}: {}' \
-                  .format(datetime.datetime.utcnow(), self._ip, str(exception)))
+            print(f'{datetime.datetime.utcnow()} ERROR: failed to query {self._ip}: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -97,12 +94,10 @@ class SNMPDevice:
         parameter = self.parameters_by_name[parameter_name]
         try:
             args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.get_oid]
-            output = subprocess.check_output(args, universal_newlines=True,
-                                             timeout=self._query_timeout)
+            output = subprocess.check_output(args, universal_newlines=True, timeout=self._query_timeout)
             return parameter.parse_snmpget_output(output)
         except Exception as exception:
-            print('{} ERROR: failed to query {}: {}' \
-                  .format(datetime.datetime.utcnow(), self._ip, str(exception)))
+            print(f'{datetime.datetime.utcnow()} ERROR: failed to query {self._ip}: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -131,8 +126,7 @@ class SNMPDevice:
                 log.info(self._log_name, 'Restored contact with ' + self._ip)
                 self._last_command_failed = False
         except Exception as exception:
-            print('{} ERROR: failed to send SNMP command: {}' \
-                  .format(datetime.datetime.utcnow(), str(exception)))
+            print(f'{datetime.datetime.utcnow()} ERROR: failed to send SNMP command: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -143,11 +137,9 @@ class SNMPDevice:
         try:
             return parameter.parse_snmpset_output(output) == value
         except Exception as exception:
-            print('{} ERROR: failed to parse SNMP response: {}' \
-                  .format(datetime.datetime.utcnow(), str(exception)))
+            print(f'{datetime.datetime.utcnow()} ERROR: failed to parse SNMP response: {exception}')
 
             if not self._last_command_failed:
-                log.error(self._log_name, 'Invalid response from ' + self._ip + ': '
-                          + str(exception))
+                log.error(self._log_name, f'Invalid response from {self._ip}: {exception}')
 
             return False

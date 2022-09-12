@@ -16,9 +16,6 @@
 
 """Dummy device for testing"""
 
-# pylint: disable=unused-argument
-# pylint: disable=no-self-use
-
 import time
 from .apc_device import (
     APCUPSStatusParameter,

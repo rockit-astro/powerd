@@ -16,8 +16,6 @@
 
 """APC-specific parameters for SNMPDevice"""
 
-# pylint: disable=no-self-use
-
 from .constants import SwitchStatus, APCUPSStatus, SwitchableParameter
 from .snmp_device import SNMPParameter, IntegerSNMPParameter
 

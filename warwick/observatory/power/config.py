@@ -245,7 +245,7 @@ class Config:
     """Daemon configuration parsed from a json file"""
     def __init__(self, config_filename):
         # Will throw on file not found or invalid json
-        with open(config_filename, 'r') as config_file:
+        with open(config_filename, 'r', encoding='utf-8') as config_file:
             config_json = json.load(config_file)
 
         # Will throw on schema violations
@@ -293,7 +293,7 @@ class Config:
         labels.sort(key=lambda x: x[3])
         return [{'name': l[0], 'label': l[1], 'type': l[2]} for l in labels]
 
-    def get_devices(self, power_daemon):
+    def get_devices(self):
         """Returns a list of devices wrapped by the power daemon"""
         ret = []
         for config in self._device_config:

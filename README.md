@@ -58,8 +58,7 @@ The automated packaging scripts will push 6 RPM packages to the observatory pack
 After installing packages, the systemd service should be enabled:
 
 ```
-sudo systemctl enable powerd@<config>
-sudo systemctl start powerd@<config>
+sudo systemctl enable --now powerd@<config>
 ```
 
 where `config` is the name of the json file for the appropriate telescope (`onemetre` for `onemetre-dome`, `superwasp` *and* `goto` for `gotoserver`).
@@ -82,8 +81,7 @@ sudo yum update
 
 The daemon should then be restarted to use the newly installed code:
 ```
-sudo systemctl stop powerd@<config>
-sudo systemctl start powerd@<config>
+sudo systemctl restart powerd@<config>
 ```
 
 ### Testing Locally
