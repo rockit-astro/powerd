@@ -28,9 +28,10 @@ from .apc_device import (
     APCUPSOutputLoadParameter,
     APCATSInputSourceParameter)
 from .domealert_device import DomeAlertDevice
+from .dummy_device import DummyDevice, DummyUPSDevice
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
-from .dummy_device import DummyDevice, DummyUPSDevice
+from .swasp_roof_device import SWASPRoofDevice
 
 CONFIG_SCHEMA = {
     'type': 'object',
@@ -73,7 +74,7 @@ CONFIG_SCHEMA = {
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCATS',
-                            'DomeAlert', 'NetgearPOE',
+                            'DomeAlert', 'NetgearPOE', 'SWASPRoof',
                             'Dummy', 'DummyUPS'
                         ]
                     },
@@ -83,7 +84,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE
+                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE, SWASPRoof
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -142,7 +143,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, DummyUPS, DomeAlert
+                    # Used by APCUPS, APCATS, DummyUPS, DomeAlert, SWASPRoof
                     'name': {
                         'type': 'string',
                     },
@@ -153,7 +154,7 @@ CONFIG_SCHEMA = {
                         'type': 'number'
                     },
 
-                    # Used by DomeAlert
+                    # Used by DomeAlert, SWASPRoof
                     'daemon': {
                         'type': 'string',
                         'daemon_name': True
@@ -213,7 +214,7 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['DomeAlert']
+                                'enum': ['DomeAlert', 'SWASPRoof']
                             }
                         },
                         'required': ['daemon', 'name', 'label', 'query_timeout']
@@ -284,6 +285,9 @@ class Config:
             elif config['type'] == 'DomeAlert':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
+            elif config['type'] == 'SWASPRoof':
+                labels.append([config['name'], config['label'], 'voltage', config['display_order']])
+
             if config['type'] == 'Dummy':
                 labels.extend([[s['name'], s['label'], 'switch', s['display_order']] for s in config['sockets']])
 
@@ -327,6 +331,11 @@ class Config:
 
             elif config['type'] == 'DomeAlert':
                 ret.append(DomeAlertDevice(
+                    self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
+                ))
+
+            elif config['type'] == 'SWASPRoof':
+                ret.append(SWASPRoofDevice(
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 
