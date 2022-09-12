@@ -27,7 +27,7 @@ class DomeAlertRelayParameter(Parameter, SwitchableParameter):
 
 
 class DomeAlertDevice:
-    """Wrapper for querying a DomAlert unit via Pyro"""
+    """Wrapper for querying a DomeAlert unit via Pyro"""
     def __init__(self, log_name, daemon, parameter_name, query_timeout):
         self._log_name = log_name
         self._parameter_name = parameter_name
