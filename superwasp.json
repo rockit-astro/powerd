@@ -30,6 +30,14 @@
       "display_order": 3
     },
     {
+      "type": "SWASPRoof",
+      "name": "battery_voltage_mean",
+      "label": "Roof Battery",
+      "daemon": "superwasp_roof",
+      "query_timeout": 5,
+      "display_order": 4
+    },
+    {
       "type": "APCPDU",
       "ip": "10.2.6.112",
       "query_timeout": 2,
