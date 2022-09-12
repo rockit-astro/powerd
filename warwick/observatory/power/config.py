@@ -27,15 +27,7 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCATSInputSourceParameter)
-from .apcaccess_device import (
-    APCAccessDevice,
-    APCAccessUPSStatusParameter,
-    APCAccessUPSBatteryRemainingParameter,
-    APCAccessUPSBatteryHealthyParameter,
-    APCAccessUPSOutputLoadParameter)
-from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
 from .domealert_device import DomeAlertDevice
-from .eth002_device import ETH002SwitchParameter, ETH002Device
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
 from .dummy_device import DummyDevice, DummyUPSDevice
@@ -80,19 +72,18 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
-                            'APCPDU', 'APCUPS', 'APCAccessUPS', 'APCATS',
-                            'DomeAlert', 'NetgearPOE', 'ETH002',
-                            'Dummy', 'DummyUPS',
-                            'ArduinoRelay'
+                            'APCPDU', 'APCUPS', 'APCATS',
+                            'DomeAlert', 'NetgearPOE',
+                            'Dummy', 'DummyUPS'
                         ]
                     },
 
-                    # Used by APCPDU, APCUPS, APCATS, NetgearPOE, ETH002
+                    # Used by APCPDU, APCUPS, APCATS, NetgearPOE
                     'ip': {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCAccessUPS, APCATS, DomeAlert, NetgearPOE, ETH002
+                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -151,7 +142,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, ArduinoRelay, DummyUPS, DomeAlert
+                    # Used by APCUPS, APCATS, DummyUPS, DomeAlert
                     'name': {
                         'type': 'string',
                     },
@@ -192,37 +183,6 @@ CONFIG_SCHEMA = {
                                 }
                             }
                         }
-                    },
-
-                    # Used by ETH002
-                    'relays': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'object',
-                            'additionalProperties': False,
-                            'required': ['label', 'name', 'relay', 'display_order'],
-                            'properties': {
-                                'label': {
-                                    'type': 'string',
-                                },
-                                'name': {
-                                    'type': 'string',
-                                },
-                                'relay': {
-                                    'type': 'number',
-                                    'min': 0,
-                                    'max': 1
-                                },
-                                'display_order': {
-                                    'type': 'number'
-                                }
-                            }
-                        }
-                    },
-
-                    # Used by ArduinoRelay, APCAccessUPS
-                    'device': {
-                        'type': 'string',
                     }
                 },
                 'anyOf': [
@@ -245,34 +205,10 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['APCAccessUPS']
-                            }
-                        },
-                        'required': ['device', 'query_timeout', 'name', 'label']
-                    },
-                    {
-                        'properties': {
-                            'type': {
                                 'enum': ['NetgearPOE']
                             }
                         },
                         'required': ['ip', 'query_timeout', 'ports']
-                    },
-                    {
-                        'properties': {
-                            'type': {
-                                'enum': ['ETH002']
-                            }
-                        },
-                        'required': ['ip', 'query_timeout', 'relays']
-                    },
-                    {
-                        'properties': {
-                            'type': {
-                                'enum': ['ArduinoRelay']
-                            }
-                        },
-                        'required': ['device', 'name', 'label']
                     },
                     {
                         'properties': {
@@ -339,20 +275,11 @@ class Config:
                 for g in config.get('groups', []):
                     labels.append([g['name'], g['label'], 'switch', g['display_order']])
 
-            elif config['type'] == 'APCAccessUPS':
-                labels.append([config['name'], config['label'], 'ups', config['display_order']])
-
             elif config['type'] == 'APCATS':
                 labels.append([config['name'], config['label'], 'ats', config['display_order']])
 
             elif config['type'] == 'NetgearPOE':
                 labels.extend([[p['name'], p['label'], 'switch', p['display_order']] for p in config['ports']])
-
-            elif config['type'] == 'ETH002':
-                labels.extend([[r['name'], r['label'], 'switch', r['display_order']] for r in config['relays']])
-
-            elif config['type'] == 'ArduinoRelay':
-                labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
             elif config['type'] == 'DomeAlert':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
@@ -387,16 +314,6 @@ class Config:
 
                 ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
 
-            elif config['type'] == 'APCAccessUPS':
-                parameters = [
-                    APCAccessUPSStatusParameter(config['name'] + '_status'),
-                    APCAccessUPSBatteryRemainingParameter(config['name'] + '_battery_remaining'),
-                    APCAccessUPSBatteryHealthyParameter(config['name'] + '_battery_healthy'),
-                    APCAccessUPSOutputLoadParameter(config['name'] + '_load'),
-                ]
-
-                ret.append(APCAccessDevice(self.log_name, config['device'], config['query_timeout'], parameters))
-
             elif config['type'] == 'APCATS':
                 parameters = [
                     APCATSInputSourceParameter(config['name'] + '_source')
@@ -407,15 +324,6 @@ class Config:
             elif config['type'] == 'NetgearPOE':
                 parameters = [NetgearPoESocketParameter(p['name'], p['port']) for p in config['ports']]
                 ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
-
-            elif config['type'] == 'ETH002':
-                parameters = [ETH002SwitchParameter(p['name'], p['relay']) for p in config['relays']]
-                ret.append(ETH002Device(self.log_name, config['ip'], parameters, config['query_timeout']))
-
-            elif config['type'] == 'ArduinoRelay':
-                ret.append(DehumidifierSwitchDevice(
-                    self.log_name, config['device'],
-                    DehumidifierParameter(config['name']), power_daemon))
 
             elif config['type'] == 'DomeAlert':
                 ret.append(DomeAlertDevice(

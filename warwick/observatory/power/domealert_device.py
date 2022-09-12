@@ -21,7 +21,7 @@ from .constants import Parameter, SwitchableParameter, SwitchStatus
 
 
 class DomeAlertRelayParameter(Parameter, SwitchableParameter):
-    """Data structure encapsulating the dehumidifier switch"""
+    """Data structure encapsulating the DomeAlert relay"""
     def __init__(self, name):
         Parameter.__init__(self, name, SwitchStatus.Unknown)
 

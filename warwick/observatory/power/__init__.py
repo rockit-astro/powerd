@@ -18,16 +18,3 @@
 
 from .config import Config
 from .constants import Parameter, SwitchableParameter, SwitchStatus, APCUPSStatus
-from .snmp_device import SNMPDevice, SNMPParameter
-from .netgear_device import NetgearPoESocketParameter
-from .apc_device import (
-    APCPDUSocketParameter,
-    APCUPSStatusParameter,
-    APCUPSBatteryRemainingParameter,
-    APCUPSBatteryHealthyParameter,
-    APCUPSOutputLoadParameter,
-    APCUPSSocketGroupParameter)
-from .dehumidifier_switch_device import DehumidifierParameter, DehumidifierSwitchDevice
-from .eth002_device import ETH002Device, ETH002SwitchParameter
-from .domealert_device import DomeAlertRelayParameter, DomeAlertDevice
-from .dummy_device import DummyUPSDevice, DummyDevice
