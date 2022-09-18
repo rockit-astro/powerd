@@ -184,6 +184,11 @@ CONFIG_SCHEMA = {
                                 }
                             }
                         }
+                    },
+
+                    # NetgearPOE (optional)
+                    'community': {
+                        'type': 'string'
                     }
                 },
                 'anyOf': [
@@ -327,7 +332,9 @@ class Config:
 
             elif config['type'] == 'NetgearPOE':
                 parameters = [NetgearPoESocketParameter(p['name'], p['port']) for p in config['ports']]
-                ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout']))
+                ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout'],
+                                      get_community=config.get('community', 'public'),
+                                      set_community=config.get('community', 'private')))
 
             elif config['type'] == 'DomeAlert':
                 ret.append(DomeAlertDevice(

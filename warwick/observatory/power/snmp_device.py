@@ -53,11 +53,13 @@ class IntegerSNMPParameter(Parameter):
 
 class SNMPDevice:
     """Wrapper for querying an APC PDU or UPS via SNMP"""
-    def __init__(self, log_name, ip, parameters, query_timeout):
+    def __init__(self, log_name, ip, parameters, query_timeout, get_community='public', set_community='private'):
         self._log_name = log_name
         self._ip = ip
         self._query_timeout = query_timeout
         self._last_command_failed = False
+        self._get_community = get_community
+        self._set_community = set_community
         self.parameters = parameters
         self.parameters_by_name = {p.name: p for p in parameters}
 
@@ -65,7 +67,7 @@ class SNMPDevice:
         """Return a dictionary of parameter values for this device"""
         # Query all OIDs at once for efficiency
         oids = [p.get_oid for p in self.parameters]
-        args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip] + oids
+        args = ['/usr/bin/snmpget', '-v', '1', '-c', self._get_community, self._ip] + oids
         try:
             output = subprocess.check_output(args, universal_newlines=True,
                                              timeout=self._query_timeout)
@@ -93,7 +95,7 @@ class SNMPDevice:
 
         parameter = self.parameters_by_name[parameter_name]
         try:
-            args = ['/usr/bin/snmpget', '-v', '1', '-c', 'public', self._ip, parameter.get_oid]
+            args = ['/usr/bin/snmpget', '-v', '1', '-c', self._get_community, self._ip, parameter.get_oid]
             output = subprocess.check_output(args, universal_newlines=True, timeout=self._query_timeout)
             return parameter.parse_snmpget_output(output)
         except Exception as exception:
@@ -117,7 +119,7 @@ class SNMPDevice:
             return False
 
         try:
-            args = ['/usr/bin/snmpset', '-v', '1', '-c', 'private', self._ip, parameter.set_oid,
+            args = ['/usr/bin/snmpset', '-v', '1', '-c', self._set_community, self._ip, parameter.set_oid,
                     'i', parameter.format_set_value(value)]
 
             output = subprocess.check_output(args, universal_newlines=True,
