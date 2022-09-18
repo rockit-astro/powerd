@@ -94,7 +94,7 @@
     {
       "type": "APCATS",
       "ip": "10.2.6.209",
-      "query_timeout": 2,
+      "query_timeout": 5,
       "name": "ats",
       "label": "ATS",
       "display_order": 20

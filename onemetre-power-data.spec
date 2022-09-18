@@ -1,5 +1,5 @@
 Name:      onemetre-power-data
-Version:   20220909
+Version:   20220918
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system configuration files.
