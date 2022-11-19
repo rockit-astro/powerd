@@ -1,45 +1,50 @@
 {
   "daemon": "superwasp_power",
   "log_name": "powerd@superwasp",
-  "control_machines": ["GOTOServer", "SWASPTCS"],
+  "control_machines": ["SWASPTCS"],
   "dashboard_machine": "GOTOServer",
-  "dashboard_toggleable_channels": ["ilight", "clight"],
+  "dashboard_toggleable_channels": ["light"],
   "devices": [
     {
-      "type": "APCUPS",
-      "ip": "10.2.6.110",
+      "type": "APCPDU",
+      "ip": "10.2.6.170",
       "query_timeout": 2,
-      "name": "ups1",
-      "label": "UPS 1",
-      "display_order": 1
-    },
-    {
-      "type": "APCUPS",
-      "ip": "10.2.6.111",
-      "query_timeout": 2,
-      "name": "ups2",
-      "label": "UPS 2",
-      "display_order": 2
-    },
-    {
-      "type": "APCATS",
-      "ip": "10.2.6.128",
-      "query_timeout": 5,
-      "name": "ats",
-      "label": "ATS",
-      "display_order": 3
-    },
-    {
-      "type": "SWASPRoof",
-      "name": "battery_voltage_mean",
-      "label": "Roof Battery",
-      "daemon": "superwasp_roof",
-      "query_timeout": 5,
-      "display_order": 4
+      "sockets": [
+        {
+          "socket": 2,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 2
+        },
+        {
+          "socket": 3,
+          "name": "dome",
+          "label": "Dome",
+          "display_order": 3
+        },
+        {
+          "socket": 4,
+          "name": "heartbeat",
+          "label": "Dome Heartbeat",
+          "display_order": 4
+        },
+        {
+          "socket": 5,
+          "name": "tcs",
+          "label": "TCS",
+          "display_order": 5
+        },
+        {
+          "socket": 8,
+          "name": "light",
+          "label": "Light",
+          "display_order": 8
+        }
+      ]
     },
     {
       "type": "APCPDU",
-      "ip": "10.2.6.112",
+      "ip": "10.2.6.171",
       "query_timeout": 2,
       "sockets": [
         {
@@ -71,125 +76,75 @@
           "name": "lensheaters",
           "label": "Lens Heaters",
           "display_order": 13
-        },
-        {
-          "socket": 6,
-          "name": "mount",
-          "label": "Mount",
-          "display_order": 14
-        },
-        {
-          "socket": 7,
-          "name": "roofcontrol",
-          "label": "Roof Controller",
-          "display_order": 15
-        },
-        {
-          "socket": 8,
-          "name": "roofcharger",
-          "label": "Roof Charger",
-          "display_order": 16
-        }
-      ]
-    },
-    {
-      "type": "APCPDU",
-      "ip": "10.2.6.113",
-      "query_timeout": 2,
-      "sockets": [
-        {
-          "socket": 1,
-          "name": "roomalert",
-          "label": "RoomAlert",
-          "display_order": 17
-        },
-        {
-          "socket": 2,
-          "name": "aag",
-          "label": "AAG Cloud Mon.",
-          "display_order": 18
-        },
-        {
-          "socket": 3,
-          "name": "clight",
-          "label": "Comp. Room Light",
-          "display_order": 19
-        },
-        {
-          "socket": 4,
-          "name": "ilight",
-          "label": "Instr. Room Light",
-          "display_order": 20
-        },
-        {
-          "socket": 5,
-          "name": "goto_vaisala",
-          "label": "GOTO Vaisala",
-          "display_order": 21
-        },
-        {
-          "socket": 6,
-          "name": "tcs",
-          "label": "TCS",
-          "display_order": 22
-        },
-        {
-          "socket": 7,
-          "name": "backdoor_fibre",
-          "label": "Backdoor Fibre",
-          "display_order": 23
         }
       ]
     },
     {
       "type": "NetgearPOE",
-      "ip": "10.2.6.127",
+      "ip": "10.2.6.189",
       "query_timeout": 2,
-      "community": "netgear",
       "ports": [
-        {
-          "port": 2,
-          "name": "icam",
-          "label": "Instr. Room Webcam",
-          "display_order": 24
-        },
-        {
-          "port": 3,
-          "name": "westcam",
-          "label": "East Ext Webcam",
-          "display_order": 26
-        },
-        {
-          "port": 5,
-          "name": "ccam",
-          "label": "Comp. Room Webcam",
-          "display_order": 25
-        },
         {
           "port": 13,
           "name": "das1",
           "label": "DAS1",
-          "display_order": 5
-        },
-        {
-          "port": 15,
-          "name": "das2",
-          "label": "DAS2",
-          "display_order": 6
+          "display_order": 10
         },
         {
           "port": 14,
+          "name": "das2",
+          "label": "DAS2",
+          "display_order": 16
+        },
+        {
+          "port": 15,
           "name": "das3",
           "label": "DAS3",
-          "display_order": 7
+          "display_order": 17
         },
         {
           "port": 16,
           "name": "das4",
           "label": "DAS4",
-          "display_order": 8
+          "display_order": 18
+        },
+        {
+          "port": 17,
+          "name": "webcam",
+          "label": "Webcam",
+          "display_order": 19
+        },
+        {
+          "port": 18,
+          "name": "microphone",
+          "label": "Microphone",
+          "display_order": 20
         }
       ]
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.191",
+      "query_timeout": 2,
+      "name": "ups1",
+      "label": "UPS 1",
+      "display_order": 25
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.192",
+      "query_timeout": 2,
+      "name": "ups2",
+      "label": "UPS 2",
+      "display_order": 26
+    },
+    {
+      "type": "APCATS",
+      "ip": "10.2.6.190",
+      "query_timeout": 5,
+      "name": "ats",
+      "label": "ATS",
+      "display_order": 27
     }
   ]
 }
