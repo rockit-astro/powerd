@@ -1,5 +1,5 @@
 Name:      superwasp-power-data
-Version:   20221119
+Version:   20221122
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system configuration files.
@@ -13,10 +13,12 @@ BuildArch: noarch
 mkdir -p %{buildroot}%{_udevrulesdir}
 mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 
+%{__install} %{_sourcedir}/10-superwasp-power.rules %{buildroot}%{_udevrulesdir}
 %{__install} %{_sourcedir}/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
 
 %files
 %defattr(0644,root,root,-)
+%{_udevrulesdir}/10-superwasp-power.rules
 %{_sysconfdir}/powerd/superwasp.json
 
 %changelog

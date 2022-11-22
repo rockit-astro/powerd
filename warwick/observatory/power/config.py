@@ -27,6 +27,7 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCATSInputSourceParameter)
+from .arduino_relay_device import ArduinoRelayParameter, ArduinoRelayDevice
 from .domealert_device import DomeAlertDevice
 from .dummy_device import DummyDevice, DummyUPSDevice
 from .netgear_device import NetgearPoESocketParameter
@@ -74,7 +75,7 @@ CONFIG_SCHEMA = {
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCATS',
-                            'DomeAlert', 'NetgearPOE', 'SWASPRoof',
+                            'ArduinoRelay', 'DomeAlert', 'NetgearPOE', 'SWASPRoof',
                             'Dummy', 'DummyUPS'
                         ]
                     },
@@ -143,7 +144,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, DummyUPS, DomeAlert, SWASPRoof
+                    # Used by APCUPS, APCATS, DummyUPS, ArduinoRelay, DomeAlert, SWASPRoof
                     'name': {
                         'type': 'string',
                     },
@@ -189,6 +190,11 @@ CONFIG_SCHEMA = {
                     # NetgearPOE (optional)
                     'community': {
                         'type': 'string'
+                    },
+
+                    # Used by ArduinoRelay
+                    'device': {
+                        'type': 'string',
                     }
                 },
                 'anyOf': [
@@ -215,6 +221,22 @@ CONFIG_SCHEMA = {
                             }
                         },
                         'required': ['ip', 'query_timeout', 'ports']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['ETH002']
+                            }
+                        },
+                        'required': ['ip', 'query_timeout', 'relays']
+                    },
+                    {
+                        'properties': {
+                            'type': {
+                                'enum': ['ArduinoRelay']
+                            }
+                        },
+                        'required': ['device', 'name', 'label']
                     },
                     {
                         'properties': {
@@ -287,6 +309,9 @@ class Config:
             elif config['type'] == 'NetgearPOE':
                 labels.extend([[p['name'], p['label'], 'switch', p['display_order']] for p in config['ports']])
 
+            elif config['type'] == 'ArduinoRelay':
+                labels.append([config['name'], config['label'], 'switch', config['display_order']])
+
             elif config['type'] == 'DomeAlert':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
@@ -335,6 +360,9 @@ class Config:
                 ret.append(SNMPDevice(self.log_name, config['ip'], parameters, config['query_timeout'],
                                       get_community=config.get('community', 'public'),
                                       set_community=config.get('community', 'private')))
+
+            elif config['type'] == 'ArduinoRelay':
+                ret.append(ArduinoRelayDevice(self.log_name, config['name'], config['device']))
 
             elif config['type'] == 'DomeAlert':
                 ret.append(DomeAlertDevice(

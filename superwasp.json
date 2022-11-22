@@ -88,39 +88,46 @@
           "port": 13,
           "name": "das1",
           "label": "DAS1",
-          "display_order": 10
+          "display_order": 17
         },
         {
           "port": 14,
           "name": "das2",
           "label": "DAS2",
-          "display_order": 16
+          "display_order": 18
         },
         {
           "port": 15,
           "name": "das3",
           "label": "DAS3",
-          "display_order": 17
+          "display_order": 19
         },
         {
           "port": 16,
           "name": "das4",
           "label": "DAS4",
-          "display_order": 18
+          "display_order": 20
         },
         {
           "port": 17,
           "name": "webcam",
           "label": "Webcam",
-          "display_order": 19
+          "display_order": 21
         },
         {
           "port": 18,
           "name": "microphone",
           "label": "Microphone",
-          "display_order": 20
+          "display_order": 22
         }
       ]
+    },
+    {
+      "type": "ArduinoRelay",
+      "name": "dehumidifier",
+      "label": "Dehumidifier",
+      "device": "/dev/dehumidifier",
+      "display_order": 24
     },
     {
       "type": "APCUPS",
