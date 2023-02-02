@@ -40,20 +40,22 @@ A configuration file is specified when launching the power server, and the `powe
 
 The automated packaging scripts will push 6 RPM packages to the observatory package repository:
 
-| Package           | Description |
-| ----------------- | ------ |
-| observatory-power-server | Contains the `pipelined` server and systemd service file. |
-| observatory-power-client | Contains the `pipeline` commandline utility for controlling the power server. |
-| python3-warwick-observatory-power | Contains the python module with shared code. |
-| onemetre-power-data | Contains the json configuration and udev rules for the W1m. |
-| superwasp-power-data | Contains the json configuration and udev rules for SuperWASP. |
-| clasp-power-data | Contains the json configuration and udev rules for the CLASP telescope. |
-| goto-power-data | Contains the json configuration for the GOTO UPS monitoring. |
-
+| Package                           | Description                                                                   |
+|-----------------------------------|-------------------------------------------------------------------------------|
+| observatory-power-server          | Contains the `pipelined` server and systemd service file.                     |
+| observatory-power-client          | Contains the `pipeline` commandline utility for controlling the power server. |
+| python3-warwick-observatory-power | Contains the python module with shared code.                                  |
+| onemetre-power-data               | Contains the json configuration and udev rules for the W1m.                   |
+| superwasp-power-data              | Contains the json configuration and udev rules for SuperWASP.                 |
+| halfmetre-power-data              | Contains the json configuration for the half metre.                           |
+| clasp-power-data                  | Contains the json configuration and udev rules for the CLASP telescope.       |
+| goto-power-data                   | Contains the json configuration for the GOTO UPS monitoring.                  |
 
 `observatory-power-server` and `observatory-power-client` and `onemetre-power-data` packages should be installed on the `onemetre-dome` machine.
 `observatory-power-server` and `observatory-power-client` and `clasp-power-data` packages should be installed on the `clasp-tcs` machine.
-`observatory-power-server` and `observatory-power-client` and `superwasp-power-data` and `goto-power-data` packages should be installed on the `gotoserver` machine.
+`observatory-power-server` and `observatory-power-client` and `superwasp-power-data` packages should be installed on the `wasp-tcs` machine.
+`observatory-power-server` and `observatory-power-client` and `clasp-power-data` packages should be installed on the `clasp-tcs` machine.
+`observatory-power-client` and `observatory-power-client` and `halfmetre-power-data` packages should be installed on the `halfmetre-tcs` machine.
 
 After installing packages, the systemd service should be enabled:
 
@@ -61,7 +63,7 @@ After installing packages, the systemd service should be enabled:
 sudo systemctl enable --now powerd@<config>
 ```
 
-where `config` is the name of the json file for the appropriate telescope (`onemetre` for `onemetre-dome`, `superwasp` *and* `goto` for `gotoserver`).
+where `config` is the name of the json file for the appropriate telescope.
 
 Now open a port in the firewall:
 ```

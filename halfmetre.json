@@ -1,0 +1,67 @@
+{
+  "daemon": "halfmetre_power",
+  "log_name": "powerd@halfmetre",
+  "control_machines": ["HalfMetreTCS"],
+  "dashboard_machine": "GOTOServer",
+  "dashboard_toggleable_channels": ["ilight", "clight"],
+  "devices": [
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.110",
+      "query_timeout": 2,
+      "name": "ups1",
+      "label": "UPS 1",
+      "display_order": 1
+    },
+    {
+      "type": "APCUPS",
+      "ip": "10.2.6.111",
+      "query_timeout": 2,
+      "name": "ups2",
+      "label": "UPS 2",
+      "display_order": 2
+    },
+    {
+      "type": "APCATS",
+      "ip": "10.2.6.128",
+      "query_timeout": 5,
+      "name": "ats",
+      "label": "ATS",
+      "display_order": 3
+    },
+    {
+      "type": "SWASPRoof",
+      "name": "battery_voltage_mean",
+      "label": "Roof Battery",
+      "daemon": "halfmetre_roof",
+      "query_timeout": 5,
+      "display_order": 4
+    },
+    {
+      "type": "NetgearPOE",
+      "ip": "10.2.6.127",
+      "query_timeout": 2,
+      "community": "netgear",
+      "ports": [
+        {
+          "port": 2,
+          "name": "icam",
+          "label": "Instr. Room Webcam",
+          "display_order": 24
+        },
+        {
+          "port": 3,
+          "name": "westcam",
+          "label": "East Ext Webcam",
+          "display_order": 26
+        },
+        {
+          "port": 5,
+          "name": "ccam",
+          "label": "Comp. Room Webcam",
+          "display_order": 25
+        }
+      ]
+    }
+  ]
+}
