@@ -1,5 +1,5 @@
 Name:      halfmetre-power-data
-Version:   20230202
+Version:   20230207
 Release:   0
 Url:       https://github.com/warwick-one-metre/powerd
 Summary:   Power system configuration files.

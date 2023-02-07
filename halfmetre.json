@@ -38,6 +38,55 @@
       "display_order": 4
     },
     {
+      "type": "APCPDU",
+      "ip": "10.2.6.113",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "domealert",
+          "label": "DomeAlert",
+          "display_order": 17
+        },
+        {
+          "socket": 2,
+          "name": "tcs",
+          "label": "TCS.",
+          "display_order": 18
+        },
+        {
+          "socket": 3,
+          "name": "clight",
+          "label": "Comp. Room Light",
+          "display_order": 19
+        },
+        {
+          "socket": 4,
+          "name": "ilight",
+          "label": "Instr. Room Light",
+          "display_order": 20
+        },
+        {
+          "socket": 5,
+          "name": "goto_vaisala",
+          "label": "GOTO Vaisala",
+          "display_order": 21
+        },
+        {
+          "socket": 6,
+          "name": "roofcontrol",
+          "label": "Roof Controller",
+          "display_order": 22
+        },
+        {
+          "socket": 7,
+          "name": "roofcharger",
+          "label": "Roof Charger",
+          "display_order": 23
+        }
+      ]
+    },
+    {
       "type": "NetgearPOE",
       "ip": "10.2.6.127",
       "query_timeout": 2,
