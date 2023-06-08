@@ -16,3 +16,13 @@ all:
 	${RPMBUILD} -ba goto-power-data.spec
 	mv build/noarch/*.rpm .
 	rm -rf build
+
+install:
+	@python3 setup.py install
+	@cp powerd power /usr/bin/
+	@cp powerd@.service /etc/systemd/system/
+	@cp completion/power /etc/bash_completion.d/
+	@install -d /etc/powerd
+	@echo ""
+	@echo "Installation complete."
+	@echo "Now copy the relevant json config files to /etc/opsd/"

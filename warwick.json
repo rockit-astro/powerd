@@ -1,0 +1,46 @@
+{
+  "daemon": "warwick_power",
+  "log_name": "powerd@warwick",
+  "control_machines": ["WarwickTCS", "WarwickDome"],
+  "dashboard_machine": "WarwickDome",
+  "dashboard_toggleable_channels": [],
+  "devices": [
+    {
+      "type": "APCPDU",
+      "ip": "172.19.0.162",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "tcs",
+          "label": "TCS",
+          "display_order": 1
+        },
+        {
+          "socket": 2,
+          "name": "camera",
+          "label": "Camera",
+          "display_order": 2
+        },
+        {
+          "socket": 3,
+          "name": "focuser",
+          "label": "Focuser",
+          "display_order": 3
+        },
+        {
+          "socket": 4,
+          "name": "filterwheel",
+          "label": "Filter Wheel",
+          "display_order": 4
+        },
+        {
+          "socket": 6,
+          "name": "telescope",
+          "label": "Telescope",
+          "display_order": 5
+        }
+      ]
+    }
+  ]
+}
