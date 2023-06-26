@@ -1,7 +1,7 @@
 {
   "daemon": "clasp_power",
   "log_name": "powerd@clasp",
-  "control_machines": ["CLASPTCS", "CLASPDAS1"],
+  "control_machines": ["CLASPTCS", "CLASPDAS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
