@@ -87,6 +87,31 @@
       ]
     },
     {
+      "type": "APCPDU",
+      "ip": "10.2.6.112",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 6,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 24
+        },
+        {
+          "socket": 7,
+          "name": "focuser",
+          "label": "Focuser",
+          "display_order": 25
+        },
+        {
+          "socket": 8,
+          "name": "camera",
+          "label": "Camera",
+          "display_order": 26
+        }
+      ]
+    },
+    {
       "type": "NetgearPOE",
       "ip": "10.2.6.127",
       "query_timeout": 2,
@@ -96,19 +121,19 @@
           "port": 2,
           "name": "icam",
           "label": "Instr. Room Webcam",
-          "display_order": 24
+          "display_order": 32
         },
         {
           "port": 3,
           "name": "westcam",
           "label": "East Ext Webcam",
-          "display_order": 26
+          "display_order": 34
         },
         {
           "port": 5,
           "name": "ccam",
           "label": "Comp. Room Webcam",
-          "display_order": 25
+          "display_order": 33
         }
       ]
     }
