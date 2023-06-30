@@ -46,43 +46,37 @@
           "socket": 1,
           "name": "domealert",
           "label": "DomeAlert",
-          "display_order": 17
+          "display_order": 10
         },
         {
           "socket": 2,
           "name": "tcs",
           "label": "TCS.",
-          "display_order": 18
+          "display_order": 11
         },
         {
           "socket": 3,
           "name": "clight",
           "label": "Comp. Room Light",
-          "display_order": 19
+          "display_order": 12
         },
         {
           "socket": 4,
           "name": "ilight",
           "label": "Instr. Room Light",
-          "display_order": 20
-        },
-        {
-          "socket": 5,
-          "name": "goto_vaisala",
-          "label": "GOTO Vaisala",
-          "display_order": 21
+          "display_order": 13
         },
         {
           "socket": 6,
           "name": "roofcontrol",
           "label": "Roof Controller",
-          "display_order": 22
+          "display_order": 14
         },
         {
           "socket": 7,
           "name": "roofcharger",
           "label": "Roof Charger",
-          "display_order": 23
+          "display_order": 15
         }
       ]
     },
@@ -92,22 +86,40 @@
       "query_timeout": 2,
       "sockets": [
         {
+          "socket": 1,
+          "name": "halfmetre_vaisala",
+          "label": "Halfmetre Vaisala",
+          "display_order": 18
+        },
+        {
+          "socket": 2,
+          "name": "cloudwatcher",
+          "label": "Cloud Watcher",
+          "display_order": 19
+        },
+        {
+          "socket": 3,
+          "name": "goto_vaisala",
+          "label": "GOTO Vaisala",
+          "display_order": 20
+        },
+        {
           "socket": 6,
           "name": "mount",
           "label": "Mount",
-          "display_order": 24
+          "display_order": 21
         },
         {
           "socket": 7,
           "name": "focuser",
           "label": "Focuser",
-          "display_order": 25
+          "display_order": 22
         },
         {
           "socket": 8,
           "name": "camera",
           "label": "Camera",
-          "display_order": 26
+          "display_order": 23
         }
       ]
     },
