@@ -1,23 +1,23 @@
 #
-# This file is part of powerd.
+# This file is part of the Robotic Observatory Control Kit (rockit)
 #
-# powerd is free software: you can redistribute it and/or modify
+# rockit is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# powerd is distributed in the hope that it will be useful,
+# rockit is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with powerd.  If not, see <http://www.gnu.org/licenses/>.
+# along with rockit.  If not, see <http://www.gnu.org/licenses/>.
 
 """Helper function to validate and parse the json config file"""
 
 import json
-from warwick.observatory.common import daemons, IP, validation
+from rockit.common import daemons, IP, validation
 
 from .apc_device import (
     APCPDUSocketParameter,
@@ -32,7 +32,7 @@ from .domealert_device import DomeAlertDevice
 from .dummy_device import DummyDevice, DummyUPSDevice
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
-from .swasp_roof_device import SWASPRoofDevice
+from .roof_device import RoofDevice
 
 CONFIG_SCHEMA = {
     'type': 'object',
@@ -75,7 +75,7 @@ CONFIG_SCHEMA = {
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCATS',
-                            'ArduinoRelay', 'DomeAlert', 'NetgearPOE', 'SWASPRoof',
+                            'ArduinoRelay', 'DomeAlert', 'NetgearPOE', 'Roof',
                             'Dummy', 'DummyUPS'
                         ]
                     },
@@ -85,7 +85,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE, SWASPRoof
+                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE, Roof
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -144,7 +144,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, DummyUPS, ArduinoRelay, DomeAlert, SWASPRoof
+                    # Used by APCUPS, APCATS, DummyUPS, ArduinoRelay, DomeAlert, Roof
                     'name': {
                         'type': 'string',
                     },
@@ -155,7 +155,7 @@ CONFIG_SCHEMA = {
                         'type': 'number'
                     },
 
-                    # Used by DomeAlert, SWASPRoof
+                    # Used by DomeAlert, Roof
                     'daemon': {
                         'type': 'string',
                         'daemon_name': True
@@ -241,7 +241,7 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['DomeAlert', 'SWASPRoof']
+                                'enum': ['DomeAlert', 'Roof']
                             }
                         },
                         'required': ['daemon', 'name', 'label', 'query_timeout']
@@ -315,7 +315,7 @@ class Config:
             elif config['type'] == 'DomeAlert':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
-            elif config['type'] == 'SWASPRoof':
+            elif config['type'] == 'Roof':
                 labels.append([config['name'], config['label'], 'voltage', config['display_order']])
 
             if config['type'] == 'Dummy':
@@ -369,8 +369,8 @@ class Config:
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 
-            elif config['type'] == 'SWASPRoof':
-                ret.append(SWASPRoofDevice(
+            elif config['type'] == 'Roof':
+                ret.append(RoofDevice(
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 

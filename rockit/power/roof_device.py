@@ -1,22 +1,22 @@
 #
-# This file is part of powerd.
+# This file is part of the Robotic Observatory Control Kit (rockit)
 #
-# powerd is free software: you can redistribute it and/or modify
+# rockit is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# powerd is distributed in the hope that it will be useful,
+# rockit is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with powerd.  If not, see <http://www.gnu.org/licenses/>.
+# along with rockit.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Wrapper for querying the SuperWASP roof battery voltage via roofd"""
+"""Wrapper for querying the roofd battery voltage"""
 
-from warwick.observatory.common import log
+from rockit.common import log
 from .constants import Parameter
 
 
@@ -26,8 +26,8 @@ class VoltageParameter(Parameter):
         Parameter.__init__(self, name, None)
 
 
-class SWASPRoofDevice:
-    """Wrapper for querying the SuperWASP roof battery voltage via roofd"""
+class RoofDevice:
+    """Wrapper for querying the roofd battery voltage"""
     def __init__(self, log_name, daemon, parameter_name, query_timeout):
         self._log_name = log_name
         self._parameter_name = parameter_name

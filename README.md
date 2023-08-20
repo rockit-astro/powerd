@@ -4,9 +4,7 @@
 
 `power` is a commandline utility that interfaces with the power system daemon.
 
-`light` is a commandline utility to switch the dome light on and off.
-
-See [Software Infrastructure](https://github.com/warwick-one-metre/docs/wiki/Software-Infrastructure) for an overview of the software architecture and instructions for developing and deploying the code.
+`light` is a commandline utility to switch the default dome/enclosure light on and off.
 
 ### Configuration
 
@@ -15,9 +13,9 @@ A configuration file is specified when launching the power server, and the `powe
 
 ```python
 {
-  "daemon": "localhost_test", # Run the server as this daemon. Daemon types are registered in `warwick.observatory.common.daemons`.
+  "daemon": "localhost_test", # Run the server as this daemon. Daemon types are registered in `rockit.common.daemons`.
   "log_name": "powerd", # The name to use when writing messages to the observatory log.
-  "control_machines": ["LocalHost"], # Machine names that are allowed to control (rather than just query) state. Machine names are registered in `warwick.observatory.common.IP`.
+  "control_machines": ["LocalHost"], # Machine names that are allowed to control (rather than just query) state. Machine names are registered in `rockit.common.IP`.
   "dashboard_machine": "GOTOServer", # Machine name that is allowed to call the `dashboard_switch` method to control lights from the web UI.
   "dashboard_toggleable_channels": ["light"], # Switch names that are allowed to be toggled by `dasboard_switch`.
   "devices": [
@@ -40,22 +38,16 @@ A configuration file is specified when launching the power server, and the `powe
 
 The automated packaging scripts will push 6 RPM packages to the observatory package repository:
 
-| Package                           | Description                                                                   |
-|-----------------------------------|-------------------------------------------------------------------------------|
-| observatory-power-server          | Contains the `pipelined` server and systemd service file.                     |
-| observatory-power-client          | Contains the `pipeline` commandline utility for controlling the power server. |
-| python3-warwick-observatory-power | Contains the python module with shared code.                                  |
-| onemetre-power-data               | Contains the json configuration and udev rules for the W1m.                   |
-| superwasp-power-data              | Contains the json configuration and udev rules for SuperWASP.                 |
-| halfmetre-power-data              | Contains the json configuration for the half metre.                           |
-| clasp-power-data                  | Contains the json configuration and udev rules for the CLASP telescope.       |
-| goto-power-data                   | Contains the json configuration for the GOTO UPS monitoring.                  |
-
-`observatory-power-server` and `observatory-power-client` and `onemetre-power-data` packages should be installed on the `onemetre-dome` machine.
-`observatory-power-server` and `observatory-power-client` and `clasp-power-data` packages should be installed on the `clasp-tcs` machine.
-`observatory-power-server` and `observatory-power-client` and `superwasp-power-data` packages should be installed on the `wasp-tcs` machine.
-`observatory-power-server` and `observatory-power-client` and `clasp-power-data` packages should be installed on the `clasp-tcs` machine.
-`observatory-power-client` and `observatory-power-client` and `halfmetre-power-data` packages should be installed on the `halfmetre-tcs` machine.
+| Package                     | Description                                                                              |
+|-----------------------------|------------------------------------------------------------------------------------------|
+| rockit-power-server         | Contains the `powerd` server and systemd service file.                                   |
+| rockit-power-client         | Contains the `power` and `light` commandline utilities for controlling the power server. |
+| python3-rockit-power        | Contains the python module with shared code.                                             |
+| rockit-power-data-onemetre  | Contains the json configuration and udev rules for the W1m telescope.                    |
+| rockit-power-data-superwasp | Contains the json configuration and udev rules for SuperWASP.                            |
+| rockit-power-data-halfmetre | Contains the json configuration for the 0.5 metre telescope.                             |
+| rockit-power-data-clasp     | Contains the json configuration and udev rules for the CLASP telescope.                  |
+| rockit-power-data-gotoups   | Contains the json configuration for the GOTO UPS monitoring.                             |
 
 After installing packages, the systemd service should be enabled:
 
@@ -70,7 +62,7 @@ Now open a port in the firewall:
 sudo firewall-cmd --zone=public --add-port=<port>/tcp --permanent
 sudo firewall-cmd --reload
 ```
-where `port` is the port defined in `warwick.observatory.common.daemons` for the daemon specified in the power config.
+where `port` is the port defined in `rockit.common.daemons` for the daemon specified in the power config.
 
 ### Upgrading Installation
 

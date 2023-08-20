@@ -1,18 +1,18 @@
 #
-# This file is part of powerd.
+# This file is part of the Robotic Observatory Control Kit (rockit)
 #
-# powerd is free software: you can redistribute it and/or modify
+# rockit is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# powerd is distributed in the hope that it will be useful,
+# rockit is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with powerd.  If not, see <http://www.gnu.org/licenses/>.
+# along with rockit.  If not, see <http://www.gnu.org/licenses/>.
 
 """Wrapper for accessing the custom Arduino board via USB"""
 
@@ -20,7 +20,7 @@ import datetime
 import threading
 import time
 import serial
-from warwick.observatory.common import log
+from rockit.common import log
 from .constants import Parameter, SwitchableParameter, SwitchStatus
 
 

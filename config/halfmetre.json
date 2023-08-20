@@ -30,7 +30,7 @@
       "display_order": 3
     },
     {
-      "type": "SWASPRoof",
+      "type": "Roof",
       "name": "battery_voltage_mean",
       "label": "Roof Battery",
       "daemon": "halfmetre_roof",

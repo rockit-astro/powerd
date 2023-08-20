@@ -6,23 +6,23 @@ RPMBUILD = rpmbuild --define "_topdir %(pwd)/build" \
 
 all:
 	mkdir -p build
-	${RPMBUILD} -ba observatory-power-server.spec
-	${RPMBUILD} -ba observatory-power-client.spec
-	${RPMBUILD} -ba python3-warwick-observatory-power.spec
-	${RPMBUILD} -ba onemetre-power-data.spec
-	${RPMBUILD} -ba superwasp-power-data.spec
-	${RPMBUILD} -ba halfmetre-power-data.spec
-	${RPMBUILD} -ba clasp-power-data.spec
-	${RPMBUILD} -ba goto-power-data.spec
+	date --utc +%Y%m%d%H%M%S > VERSION
+	${RPMBUILD} --define "_version %(cat VERSION)" -ba rockit-power.spec
+	${RPMBUILD} --define "_version %(cat VERSION)" -ba python3-rockit-power.spec
+
 	mv build/noarch/*.rpm .
-	rm -rf build
+	rm -rf build VERSION
 
 install:
-	@python3 setup.py install
-	@cp powerd power /usr/bin/
-	@cp powerd@.service /etc/systemd/system/
+	@date --utc +%Y%m%d%H%M%S > VERSION
+	@python3 -m build --outdir .
+	@sudo pip3 install rockit.power-$$(cat VERSION)-py3-none-any.whl
+	@rm VERSION
+	@cp powerd power /bin/
+	@cp powerd@.service /usr/lib/systemd/system/
 	@cp completion/power /etc/bash_completion.d/
 	@install -d /etc/powerd
 	@echo ""
-	@echo "Installation complete."
-	@echo "Now copy the relevant json config files to /etc/opsd/"
+	@echo "Installed server, client, and service files."
+	@echo "Now copy the relevant json config files to /etc/powerd/"
+	@echo "and udev rules to /usr/lib/udev/rules.d/"
