@@ -123,10 +123,11 @@
       ]
     },
     {
-      "type": "ArduinoRelay",
+      "type": "PyroSwitch",
       "name": "dehumidifier",
       "label": "Dehumidifier",
-      "device": "/dev/dehumidifier",
+      "daemon": "superwasp_power_relay",
+      "query_timeout": 5,
       "display_order": 24
     },
     {

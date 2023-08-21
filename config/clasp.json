@@ -55,7 +55,7 @@
       ]
     },
     {
-      "type": "DomeAlert",
+      "type": "PyroSwitch",
       "name": "dehumidifier",
       "label": "Dehumidifier",
       "daemon": "clasp_domealert",

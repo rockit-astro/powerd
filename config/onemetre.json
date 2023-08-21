@@ -147,7 +147,7 @@
       ]
     },
     {
-      "type": "DomeAlert",
+      "type": "PyroSwitch",
       "name": "dehumidifier",
       "label": "Dehumidifier",
       "daemon": "onemetre_domealert",

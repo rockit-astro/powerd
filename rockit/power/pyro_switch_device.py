@@ -14,27 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with rockit.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Wrapper for accessing a DomeAlert relay via Pyro"""
+"""Wrapper for accessing a relay device (Domealert/PowerRelay) via Pyro"""
 
 from rockit.common import log
 from .constants import Parameter, SwitchableParameter, SwitchStatus
 
 
-class DomeAlertRelayParameter(Parameter, SwitchableParameter):
-    """Data structure encapsulating the DomeAlert relay"""
+class PyroSwitchParameter(Parameter, SwitchableParameter):
+    """Data structure encapsulating the relay"""
     def __init__(self, name):
         Parameter.__init__(self, name, SwitchStatus.Unknown)
 
 
-class DomeAlertDevice:
-    """Wrapper for querying a DomeAlert unit via Pyro"""
+class PyroSwitchDevice:
+    """Wrapper for querying a switchable relay via Pyro"""
     def __init__(self, log_name, daemon, parameter_name, query_timeout):
         self._log_name = log_name
         self._parameter_name = parameter_name
         self._daemon = daemon
         self._query_timeout = query_timeout
         self._last_command_failed = False
-        self.parameters = [DomeAlertRelayParameter(parameter_name)]
+        self.parameters = [PyroSwitchParameter(parameter_name)]
         self.parameters_by_name = {p.name: p for p in self.parameters}
 
     def status(self):

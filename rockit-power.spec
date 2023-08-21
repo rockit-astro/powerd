@@ -14,7 +14,6 @@ mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}/etc/bash_completion.d
 mkdir -p %{buildroot}%{_sysconfdir}/powerd/
-mkdir -p %{buildroot}%{_udevrulesdir}
 
 %{__install} %{_sourcedir}/power %{buildroot}%{_bindir}
 %{__install} %{_sourcedir}/light %{buildroot}%{_bindir}
@@ -28,7 +27,6 @@ mkdir -p %{buildroot}%{_udevrulesdir}
 %{__install} %{_sourcedir}/config/halfmetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
-%{__install} %{_sourcedir}/config/10-superwasp-power.rules %{buildroot}%{_udevrulesdir}
 
 %package server
 Summary:  Power control server
@@ -98,7 +96,6 @@ Group:   Unspecified
 
 %files data-superwasp
 %defattr(0644,root,root,-)
-%{_udevrulesdir}/10-superwasp-power.rules
 %{_sysconfdir}/powerd/superwasp.json
 
 %changelog

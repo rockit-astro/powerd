@@ -20,7 +20,7 @@ A configuration file is specified when launching the power server, and the `powe
   "dashboard_toggleable_channels": ["light"], # Switch names that are allowed to be toggled by `dasboard_switch`.
   "devices": [
     {
-      "type": "Dummy", # APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE, Dummy, DummyUPS
+      "type": "Dummy", # APCPDU, APCUPS, APCATS, PyroSwitch, NetgearPOE, Dummy, DummyUPS
       "sockets": [ # Type-specific configuration. See existing config definitions and config.py for details
         {
           "socket": 1,

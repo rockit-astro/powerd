@@ -27,8 +27,7 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCATSInputSourceParameter)
-from .arduino_relay_device import ArduinoRelayParameter, ArduinoRelayDevice
-from .domealert_device import DomeAlertDevice
+from .pyro_switch_device import PyroSwitchDevice
 from .dummy_device import DummyDevice, DummyUPSDevice
 from .netgear_device import NetgearPoESocketParameter
 from .snmp_device import SNMPDevice
@@ -75,7 +74,7 @@ CONFIG_SCHEMA = {
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCATS',
-                            'ArduinoRelay', 'DomeAlert', 'NetgearPOE', 'Roof',
+                            'PyroSwitch', 'NetgearPOE', 'Roof',
                             'Dummy', 'DummyUPS'
                         ]
                     },
@@ -85,7 +84,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCATS, DomeAlert, NetgearPOE, Roof
+                    # Used by APCPDU, APCUPS, APCATS, PyroSwitch, NetgearPOE, Roof
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -144,7 +143,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, DummyUPS, ArduinoRelay, DomeAlert, Roof
+                    # Used by APCUPS, APCATS, DummyUPS, PyroSwitch, Roof
                     'name': {
                         'type': 'string',
                     },
@@ -155,7 +154,7 @@ CONFIG_SCHEMA = {
                         'type': 'number'
                     },
 
-                    # Used by DomeAlert, Roof
+                    # Used by PyroSwitch, Roof
                     'daemon': {
                         'type': 'string',
                         'daemon_name': True
@@ -190,11 +189,6 @@ CONFIG_SCHEMA = {
                     # NetgearPOE (optional)
                     'community': {
                         'type': 'string'
-                    },
-
-                    # Used by ArduinoRelay
-                    'device': {
-                        'type': 'string',
                     }
                 },
                 'anyOf': [
@@ -233,15 +227,7 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['ArduinoRelay']
-                            }
-                        },
-                        'required': ['device', 'name', 'label']
-                    },
-                    {
-                        'properties': {
-                            'type': {
-                                'enum': ['DomeAlert', 'Roof']
+                                'enum': ['PyroSwitch', 'Roof']
                             }
                         },
                         'required': ['daemon', 'name', 'label', 'query_timeout']
@@ -309,10 +295,7 @@ class Config:
             elif config['type'] == 'NetgearPOE':
                 labels.extend([[p['name'], p['label'], 'switch', p['display_order']] for p in config['ports']])
 
-            elif config['type'] == 'ArduinoRelay':
-                labels.append([config['name'], config['label'], 'switch', config['display_order']])
-
-            elif config['type'] == 'DomeAlert':
+            elif config['type'] == 'PyroSwitch':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
             elif config['type'] == 'Roof':
@@ -361,11 +344,8 @@ class Config:
                                       get_community=config.get('community', 'public'),
                                       set_community=config.get('community', 'private')))
 
-            elif config['type'] == 'ArduinoRelay':
-                ret.append(ArduinoRelayDevice(self.log_name, config['name'], config['device']))
-
-            elif config['type'] == 'DomeAlert':
-                ret.append(DomeAlertDevice(
+            elif config['type'] == 'PyroSwitch':
+                ret.append(PyroSwitchDevice(
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 
