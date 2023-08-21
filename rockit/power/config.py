@@ -27,11 +27,11 @@ from .apc_device import (
     APCUPSBatteryHealthyParameter,
     APCUPSOutputLoadParameter,
     APCATSInputSourceParameter)
-from .pyro_switch_device import PyroSwitchDevice
 from .dummy_device import DummyDevice, DummyUPSDevice
 from .netgear_device import NetgearPoESocketParameter
+from .pyro_switch_device import PyroSwitchDevice
+from .pyro_voltmeter_device import PyroVoltmeterDevice
 from .snmp_device import SNMPDevice
-from .roof_device import RoofDevice
 
 CONFIG_SCHEMA = {
     'type': 'object',
@@ -74,7 +74,7 @@ CONFIG_SCHEMA = {
                         # These must also be defined in the 'anyOf' cases below
                         'enum': [
                             'APCPDU', 'APCUPS', 'APCATS',
-                            'PyroSwitch', 'NetgearPOE', 'Roof',
+                            'NetgearPOE', 'PyroSwitch', 'PyroVoltmeter',
                             'Dummy', 'DummyUPS'
                         ]
                     },
@@ -84,7 +84,7 @@ CONFIG_SCHEMA = {
                         'type': 'string',
                     },
 
-                    # Used by APCPDU, APCUPS, APCATS, PyroSwitch, NetgearPOE, Roof
+                    # Used by APCPDU, APCUPS, APCATS, NetgearPOE, PyroSwitch, PyroVoltmeter
                     'query_timeout': {
                         'type': 'number',
                         'min': 0,
@@ -143,7 +143,7 @@ CONFIG_SCHEMA = {
                         }
                     },
 
-                    # Used by APCUPS, APCATS, DummyUPS, PyroSwitch, Roof
+                    # Used by APCUPS, APCATS, DummyUPS, PyroSwitch, PyroVoltmeter
                     'name': {
                         'type': 'string',
                     },
@@ -154,7 +154,7 @@ CONFIG_SCHEMA = {
                         'type': 'number'
                     },
 
-                    # Used by PyroSwitch, Roof
+                    # Used by PyroSwitch, PyroVoltmeter
                     'daemon': {
                         'type': 'string',
                         'daemon_name': True
@@ -227,7 +227,7 @@ CONFIG_SCHEMA = {
                     {
                         'properties': {
                             'type': {
-                                'enum': ['PyroSwitch', 'Roof']
+                                'enum': ['PyroSwitch', 'PyroVoltmeter']
                             }
                         },
                         'required': ['daemon', 'name', 'label', 'query_timeout']
@@ -298,7 +298,7 @@ class Config:
             elif config['type'] == 'PyroSwitch':
                 labels.append([config['name'], config['label'], 'switch', config['display_order']])
 
-            elif config['type'] == 'Roof':
+            elif config['type'] == 'PyroVoltmeter':
                 labels.append([config['name'], config['label'], 'voltage', config['display_order']])
 
             if config['type'] == 'Dummy':
@@ -349,8 +349,8 @@ class Config:
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 
-            elif config['type'] == 'Roof':
-                ret.append(RoofDevice(
+            elif config['type'] == 'PyroVoltmeter':
+                ret.append(PyroVoltmeterDevice(
                     self.log_name, getattr(daemons, config['daemon']), config['name'], config['query_timeout']
                 ))
 

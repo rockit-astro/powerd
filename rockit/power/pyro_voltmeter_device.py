@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with rockit.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Wrapper for querying the roofd battery voltage"""
+"""Wrapper for querying a battery voltage over pyro"""
 
 from rockit.common import log
 from .constants import Parameter
@@ -26,8 +26,8 @@ class VoltageParameter(Parameter):
         Parameter.__init__(self, name, None)
 
 
-class RoofDevice:
-    """Wrapper for querying the roofd battery voltage"""
+class PyroVoltmeterDevice:
+    """Wrapper for querying a battery voltage over pyro"""
     def __init__(self, log_name, daemon, parameter_name, query_timeout):
         self._log_name = log_name
         self._parameter_name = parameter_name
