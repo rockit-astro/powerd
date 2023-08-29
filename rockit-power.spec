@@ -27,6 +27,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/halfmetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
+%{__install} %{_sourcedir}/config/warwick.json %{buildroot}%{_sysconfdir}/powerd/
 
 %package server
 Summary:  Power control server
@@ -97,5 +98,14 @@ Group:   Unspecified
 %files data-superwasp
 %defattr(0644,root,root,-)
 %{_sysconfdir}/powerd/superwasp.json
+
+%package data-warwick
+Summary: Power control data for the Windmill Hill Observatory telescope
+Group:   Unspecified
+%description data-warwick
+
+%files data-warwick
+%defattr(0644,root,root,-)
+%{_sysconfdir}/powerd/warwick.json
 
 %changelog

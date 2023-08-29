@@ -36,7 +36,7 @@ A configuration file is specified when launching the power server, and the `powe
 
 ### Initial Installation
 
-The automated packaging scripts will push 6 RPM packages to the observatory package repository:
+The automated packaging scripts will push 9 RPM packages to the observatory package repository:
 
 | Package                     | Description                                                                              |
 |-----------------------------|------------------------------------------------------------------------------------------|
@@ -48,6 +48,7 @@ The automated packaging scripts will push 6 RPM packages to the observatory pack
 | rockit-power-data-halfmetre | Contains the json configuration for the 0.5 metre telescope.                             |
 | rockit-power-data-clasp     | Contains the json configuration and udev rules for the CLASP telescope.                  |
 | rockit-power-data-gotoups   | Contains the json configuration for the GOTO UPS monitoring.                             |
+| rockit-power-data-warwick   | Contains the json configuration for the Windmill Hill observatory.                       |
 
 After installing packages, the systemd service should be enabled:
 
