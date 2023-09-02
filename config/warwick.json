@@ -18,25 +18,25 @@
         },
         {
           "socket": 2,
-          "name": "camera",
+          "name": "cam",
           "label": "Camera",
           "display_order": 2
         },
         {
           "socket": 3,
-          "name": "focuser",
+          "name": "focus",
           "label": "Focuser",
           "display_order": 3
         },
         {
           "socket": 4,
-          "name": "filterwheel",
+          "name": "filter",
           "label": "Filter Wheel",
           "display_order": 4
         },
         {
           "socket": 6,
-          "name": "telescope",
+          "name": "tel",
           "label": "Telescope",
           "display_order": 5
         }
