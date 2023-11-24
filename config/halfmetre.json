@@ -39,49 +39,6 @@
     },
     {
       "type": "APCPDU",
-      "ip": "10.2.6.113",
-      "query_timeout": 2,
-      "sockets": [
-        {
-          "socket": 1,
-          "name": "domealert",
-          "label": "DomeAlert",
-          "display_order": 10
-        },
-        {
-          "socket": 2,
-          "name": "tcs",
-          "label": "TCS.",
-          "display_order": 11
-        },
-        {
-          "socket": 3,
-          "name": "clight",
-          "label": "Comp. Room Light",
-          "display_order": 12
-        },
-        {
-          "socket": 4,
-          "name": "ilight",
-          "label": "Instr. Room Light",
-          "display_order": 13
-        },
-        {
-          "socket": 6,
-          "name": "roofcontrol",
-          "label": "Roof Controller",
-          "display_order": 14
-        },
-        {
-          "socket": 7,
-          "name": "roofcharger",
-          "label": "Roof Charger",
-          "display_order": 15
-        }
-      ]
-    },
-    {
-      "type": "APCPDU",
       "ip": "10.2.6.112",
       "query_timeout": 2,
       "sockets": [
@@ -89,37 +46,105 @@
           "socket": 1,
           "name": "halfmetre_vaisala",
           "label": "Halfmetre Vaisala",
-          "display_order": 18
+          "display_order": 11
         },
         {
           "socket": 2,
-          "name": "cloudwatcher",
-          "label": "Cloud Watcher",
-          "display_order": 19
+          "name": "goto_vaisala",
+          "label": "GOTO Vaisala",
+          "display_order": 12
         },
         {
           "socket": 3,
-          "name": "goto_vaisala",
-          "label": "GOTO Vaisala",
-          "display_order": 20
+          "name": "cloudwatcher",
+          "label": "Cloud Watcher",
+          "display_order": 13
         },
         {
-          "socket": 6,
-          "name": "mount",
-          "label": "Mount",
+          "socket": 4,
+          "name": "skynuc",
+          "label": "Skycam NUC",
+          "display_order": 14
+        },
+        {
+          "socket": 5,
+          "name": "skycam",
+          "label": "Skycam",
+          "display_order": 15
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.113",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "domealert",
+          "label": "DomeAlert",
           "display_order": 21
         },
         {
           "socket": 7,
-          "name": "focuser",
-          "label": "Focuser",
-          "display_order": 22
+          "name": "clight",
+          "label": "Comp. Room Light",
+          "display_order": 27
         },
         {
           "socket": 8,
+          "name": "roofcharger",
+          "label": "Roof Charger",
+          "display_order": 28
+        }
+      ]
+    },
+    {
+      "type": "APCPDU",
+      "ip": "10.2.6.114",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 1,
+          "name": "mount",
+          "label": "Mount",
+          "display_order": 31
+        },
+        {
+          "socket": 2,
           "name": "camera",
           "label": "Camera",
-          "display_order": 23
+          "display_order": 32
+        },
+        {
+          "socket": 3,
+          "name": "focuser",
+          "label": "Focuser",
+          "display_order": 33
+        },
+        {
+          "socket": 4,
+          "name": "tcs",
+          "label": "TCS.",
+          "display_order": 34
+        },
+        {
+          "socket": 5,
+          "name": "hdd",
+          "label": "Hard Drive",
+          "display_order": 35
+        },
+        {
+          "socket": 7,
+          "name": "roofcontrol",
+          "label": "Roof Controller",
+          "display_order": 37
+        },
+        {
+          "socket": 8,
+          "name": "ilight",
+          "label": "Instr. Room Light",
+          "display_order": 38
         }
       ]
     },
