@@ -86,26 +86,26 @@
       "ports": [
         {
           "port": 13,
-          "name": "das1",
-          "label": "DAS1",
+          "name": "pi1",
+          "label": "CamPi1",
           "display_order": 17
         },
         {
           "port": 14,
-          "name": "das2",
-          "label": "DAS2",
+          "name": "pi2",
+          "label": "CamPi2",
           "display_order": 18
         },
         {
           "port": 15,
-          "name": "das3",
-          "label": "DAS3",
+          "name": "pi3",
+          "label": "CamPi3",
           "display_order": 19
         },
         {
           "port": 16,
-          "name": "das4",
-          "label": "DAS4",
+          "name": "pi4",
+          "label": "CamPi4",
           "display_order": 20
         },
         {
