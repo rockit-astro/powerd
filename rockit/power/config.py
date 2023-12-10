@@ -271,8 +271,11 @@ class Config:
         self.daemon = getattr(daemons, config_json['daemon'])
         self.log_name = config_json['log_name']
         self.control_ips = [getattr(IP, machine) for machine in config_json['control_machines']]
-        self.dashboard_ip = getattr(IP, config_json['dashboard_machine'])
-        self.dashboard_toggleable_parameters = config_json['dashboard_toggleable_channels']
+
+        self.dashboard_ip = None
+        self.dashboard_toggleable_parameters = config_json.get('dashboard_toggleable_channels', [])
+        if 'dashboard_machine' in config_json:
+            self.dashboard_ip = getattr(IP, config_json['dashboard_machine'])
 
         self._device_config = config_json['devices']
 
