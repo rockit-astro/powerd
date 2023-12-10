@@ -28,6 +28,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/warwick.json %{buildroot}%{_sysconfdir}/powerd/
+%{__install} %{_sourcedir}/config/ngts_m06.json %{buildroot}%{_sysconfdir}/powerd/
 
 %package server
 Summary:  Power control server
@@ -107,5 +108,14 @@ Group:   Unspecified
 %files data-warwick
 %defattr(0644,root,root,-)
 %{_sysconfdir}/powerd/warwick.json
+
+%package data-ngts-m06
+Summary: Power control data for NGTS M06
+Group:   Unspecified
+%description data-ngts-m06
+
+%files data-ngts-m06
+%defattr(0644,root,root,-)
+%{_sysconfdir}/powerd/ngts_m06.json
 
 %changelog

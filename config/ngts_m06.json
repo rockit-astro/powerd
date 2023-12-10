@@ -1,0 +1,38 @@
+{
+  "daemon": "ngts_m06_power",
+  "log_name": "powerd@ngts-m06",
+  "control_machines": ["NGTSDASNUC"],
+  "devices": [
+    {
+      "type": "APCPDU",
+      "ip": "10.2.5.70",
+      "query_timeout": 2,
+      "sockets": [
+        {
+          "socket": 2,
+          "name": "focuser",
+          "label": "Focuser",
+          "display_order": 2
+        },
+        {
+          "socket": 4,
+          "name": "camera",
+          "label": "Camera",
+          "display_order": 4
+        },
+        {
+          "socket": 5,
+          "name": "telescope_12v",
+          "label": "Telescope 12V",
+          "display_order": 5
+        },
+        {
+          "socket": 6,
+          "name": "telescope_80v",
+          "label": "Telescope 80V",
+          "display_order": 5
+        }
+      ]
+    }
+  ]
+}
