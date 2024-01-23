@@ -19,13 +19,13 @@
         {
           "socket": 2,
           "name": "telescope_12v",
-          "label": "Tel. Controllers",
+          "label": "Tel. 12V",
           "display_order": 3
         },
         {
           "socket": 3,
           "name": "telescope_80v",
-          "label": "Tel. Motors",
+          "label": "Tel. 80V",
           "display_order": 4
         },
         {
@@ -55,39 +55,39 @@
       "sockets": [
         {
           "socket": 1,
-          "name": "red_camera",
-          "label": "Red Camera",
-          "display_order": 6
+          "name": "telescope_nuc",
+          "label": "Tel. Computer",
+          "display_order": 1
         },
         {
-          "socket": 2,
-          "name": "blue_camera",
-          "label": "Blue Camera",
-          "display_order": 5
-        },
-	{
-          "socket": 5,
+          "socket": 4,
           "name": "telescope_covers",
           "label": "Tel. Covers",
           "display_order": 5
         },
         {
-          "socket": 6,
+          "socket": 5,
           "name": "red_focus_controller",
           "label": "Red Foc. Ctrler",
           "display_order": 8
         },
         {
-          "socket": 7,
+          "socket": 6,
           "name": "red_focus_motor",
           "label": "Red Foc. Motor",
           "display_order": 7
         },
         {
+          "socket": 7,
+          "name": "blue_camera",
+          "label": "Blue Camera",
+          "display_order": 5
+        },
+        {
           "socket": 8,
-          "name": "telescope_nuc",
-          "label": "Tel. Computer",
-          "display_order": 1
+          "name": "red_camera",
+          "label": "Red Camera",
+          "display_order": 6
         }
       ]
     },
@@ -137,12 +137,6 @@
           "name": "telescope_network",
           "label": "Tel. Network",
           "display_order": 2
-        },
-        {
-          "port": 6,
-          "name": "rainsensors",
-          "label": "Rain Sensors",
-          "display_order": 10
         }
       ]
     },
