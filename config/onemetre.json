@@ -60,34 +60,34 @@
           "display_order": 1
         },
         {
-          "socket": 4,
-          "name": "telescope_covers",
-          "label": "Tel. Covers",
-          "display_order": 5
-        },
-        {
-          "socket": 5,
-          "name": "red_focus_controller",
-          "label": "Red Foc. Ctrler",
-          "display_order": 8
-        },
-        {
-          "socket": 6,
-          "name": "red_focus_motor",
-          "label": "Red Foc. Motor",
-          "display_order": 7
-        },
-        {
-          "socket": 7,
+          "socket": 2,
           "name": "blue_camera",
           "label": "Blue Camera",
           "display_order": 5
         },
         {
-          "socket": 8,
+          "socket": 3,
           "name": "red_camera",
           "label": "Red Camera",
           "display_order": 6
+        },
+        {
+          "socket": 4,
+          "name": "red_focus_controller",
+          "label": "Red Foc. Ctrler",
+          "display_order": 7
+        },
+        {
+          "socket": 5,
+          "name": "red_focus_motor",
+          "label": "Red Foc. Motor",
+          "display_order": 8
+        },
+        {
+          "socket": 6,
+          "name": "telescope_covers",
+          "label": "Tel. Covers",
+          "display_order": 5
         }
       ]
     },
