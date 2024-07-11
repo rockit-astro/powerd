@@ -1,7 +1,7 @@
 {
   "daemon": "onemetre_power",
   "log_name": "powerd",
-  "control_machines": ["OneMetreDome", "OneMetreTCS"],
+  "control_machines": ["OneMetreDome", "OneMetreTCS", "OneMetreDAS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
