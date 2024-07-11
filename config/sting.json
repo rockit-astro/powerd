@@ -1,7 +1,7 @@
 {
-  "daemon": "superwasp_power",
-  "log_name": "powerd@superwasp",
-  "control_machines": ["SWASPTCS"],
+  "daemon": "sting_power",
+  "log_name": "powerd@sting",
+  "control_machines": ["STINGTCS"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
@@ -126,7 +126,7 @@
       "type": "PyroSwitch",
       "name": "dehumidifier",
       "label": "Dehumidifier",
-      "daemon": "superwasp_power_relay",
+      "daemon": "sting_power_relay",
       "query_timeout": 5,
       "display_order": 24
     },

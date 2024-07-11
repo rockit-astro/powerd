@@ -44,7 +44,7 @@ The automated packaging scripts will push 9 RPM packages to the observatory pack
 | rockit-power-client         | Contains the `power` and `light` commandline utilities for controlling the power server. |
 | python3-rockit-power        | Contains the python module with shared code.                                             |
 | rockit-power-data-onemetre  | Contains the json configuration and udev rules for the W1m telescope.                    |
-| rockit-power-data-superwasp | Contains the json configuration and udev rules for SuperWASP.                            |
+| rockit-power-data-sting     | Contains the json configuration and udev rules for the STING telescope.                  |
 | rockit-power-data-halfmetre | Contains the json configuration for the 0.5 metre telescope.                             |
 | rockit-power-data-clasp     | Contains the json configuration and udev rules for the CLASP telescope.                  |
 | rockit-power-data-gotoups   | Contains the json configuration for the GOTO UPS monitoring.                             |

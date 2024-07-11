@@ -26,7 +26,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/gotoupsmon.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/halfmetre.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/onemetre.json %{buildroot}%{_sysconfdir}/powerd/
-%{__install} %{_sourcedir}/config/superwasp.json %{buildroot}%{_sysconfdir}/powerd/
+%{__install} %{_sourcedir}/config/sting.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/warwick.json %{buildroot}%{_sysconfdir}/powerd/
 %{__install} %{_sourcedir}/config/ngts_m06.json %{buildroot}%{_sysconfdir}/powerd/
 
@@ -91,14 +91,14 @@ Group:   Unspecified
 %defattr(0644,root,root,-)
 %{_sysconfdir}/powerd/onemetre.json
 
-%package data-superwasp
-Summary: Power control data for the SuperWASP telescope
+%package data-sting
+Summary: Power control data for the STING telescope
 Group:   Unspecified
-%description data-superwasp
+%description data-sting
 
-%files data-superwasp
+%files data-sting
 %defattr(0644,root,root,-)
-%{_sysconfdir}/powerd/superwasp.json
+%{_sysconfdir}/powerd/sting.json
 
 %package data-warwick
 Summary: Power control data for the Windmill Hill Observatory telescope
