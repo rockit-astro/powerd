@@ -16,8 +16,6 @@
 
 """Constants and status codes used by powerd"""
 
-from rockit.common import TFmt
-
 
 class Parameter:
     """Data structure encapsulating a switchable port/device"""
@@ -50,24 +48,47 @@ class APCUPSStatus:
     SleepingUntilPowerReturns = 11
     OnSmartTrim = 12
 
-    _messages = {
-        1: TFmt.Bold + TFmt.Red + 'UNKNOWN' + TFmt.Clear,
-        2: TFmt.Bold + TFmt.Green + 'ONLINE' + TFmt.Clear,
-        3: TFmt.Bold + TFmt.Yellow + 'ON BATTERY' + TFmt.Clear,
-        4: TFmt.Bold + TFmt.Red + 'SMART BOOST' + TFmt.Clear,
-        5: TFmt.Bold + TFmt.Red + 'TIMED SLEEPING' + TFmt.Clear,
-        6: TFmt.Bold + TFmt.Red + 'SOFTWARE BYPASS' + TFmt.Clear,
-        7: TFmt.Bold + TFmt.Red + 'OFF' + TFmt.Clear,
-        8: TFmt.Bold + TFmt.Red + 'REBOOTING' + TFmt.Clear,
-        9: TFmt.Bold + TFmt.Red + 'SWITCHED BYPASS' + TFmt.Clear,
-        10: TFmt.Bold + TFmt.Red + 'HARDWARE FAILURE BYPASS' + TFmt.Clear,
-        11: TFmt.Bold + TFmt.Red + 'SLEEPING UNTIL POWER RETURNS' + TFmt.Clear,
-        12: TFmt.Bold + TFmt.Red + 'ON SMART TRIM' + TFmt.Clear,
+    _labels = {
+        1: 'UNKNOWN',
+        2: 'ONLINE',
+        3: 'ON BATTERY',
+        4: 'SMART BOOST',
+        5: 'TIMED SLEEPING',
+        6: 'SOFTWARE BYPASS',
+        7: 'OFF',
+        8: 'REBOOTING',
+        9: 'SWITCHED BYPASS',
+        10: 'HARDWARE FAILURE BYPASS',
+        11: 'SLEEPING UNTIL POWER RETURNS',
+        12: 'ON SMART TRIM',
+    }
+
+    _colors = {
+        1: 'red',
+        2: 'green',
+        3: 'yellow',
+        4: 'red',
+        5: 'red',
+        6: 'red',
+        7: 'red',
+        8: 'red',
+        9: 'red',
+        10: 'red',
+        11: 'red',
+        12: 'red'
     }
 
     @classmethod
-    def message(cls, error_code):
-        """Returns a human readable string describing a status type"""
-        if error_code in cls._messages:
-            return cls._messages[error_code]
-        return cls._messages[1]
+    def label(cls, status, formatting=False):
+        """
+        Returns a human readable string describing a status
+        Set formatting=true to enable terminal formatting characters
+        """
+        if formatting:
+            if status in cls._labels and status in cls._colors:
+                return f'[b][{cls._colors[status]}]{cls._labels[status]}[/{cls._colors[status]}][/b]'
+            return '[b][red]UNKNOWN[/red][/b]'
+
+        if status in cls._labels:
+            return cls._labels[status]
+        return 'UNKNOWN'

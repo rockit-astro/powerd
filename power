@@ -23,7 +23,7 @@ import json
 import os
 import sys
 import Pyro4
-from rockit.common import TFmt
+from rockit.common import print
 from rockit.power import Config, SwitchStatus, APCUPSStatus
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
@@ -97,38 +97,38 @@ def print_status(config, _):
 def format_switch(status):
     """Builds a formatted string indicating whether a switch is enabled"""
     if status == SwitchStatus.On:
-        return TFmt.Green + TFmt.Bold + 'ENABLED' + TFmt.Clear
+        return '[b][green]ENABLED[/green][/b]'
     if status == SwitchStatus.Off:
-        return TFmt.Red + TFmt.Bold + 'DISABLED' + TFmt.Clear
-    return TFmt.Red + TFmt.Bold + 'UNKNOWN' + TFmt.Clear
+        return '[b][red]DISABLED[/red][/b]'
+    return '[b][red]UNKNOWN[/red][/b]'
 
 
 def format_voltage(voltage):
     """Builds a formatted string reporting a voltage measurement"""
     if voltage is None:
-        return TFmt.Red + TFmt.Bold + 'ERROR' + TFmt.Clear
+        return '[b][red]ERROR[/red][/b]'
 
-    return f'{voltage:.2f}{TFmt.Bold} V{TFmt.Clear}'
+    return f'{voltage:.2f}[b] V[/b]'
 
 
 def format_ups(status, battery_remaining, battery_healthy, load):
     """Builds a formatted string reporting UPS status"""
-    ret = APCUPSStatus.message(status)
+    ret = APCUPSStatus.label(status, formatting=True)
     if status == APCUPSStatus.Unknown:
         return ret
 
-    ret += f' ({TFmt.Bold}{battery_remaining}%{TFmt.Clear} battery; {TFmt.Bold}{load}%{TFmt.Clear} load)'
+    ret += f' ([b]{battery_remaining}%[/b] battery; [b]{load}%[/b] load)'
     if not battery_healthy:
-        ret += TFmt.Bold + TFmt.Red + ' REPLACE BATTERY' + TFmt.Clear
+        ret += ' [b][red]REPLACE BATTERY[/red][/b]'
     return ret
 
 
 def format_ats(source):
     """Builds a formatted string reporting ATS status"""
     if source > 0:
-        return TFmt.Bold + 'Source ' + str(source) + TFmt.Clear
+        return f'[b]Source {source}[/b]'
 
-    return TFmt.Red + TFmt.Bold + 'UNKNOWN' + TFmt.Clear
+    return '[b][red]UNKNOWN[/red][/b]'
 
 
 def print_json(config, _):
@@ -162,7 +162,7 @@ def switch_power(config, args):
                     print(f'error: failed to switch {args[0]} {args[1]}')
                     return -1
                 return 0
-    print(f'usage: {SCRIPT_NAME} switch <port> (on|off)')
+    print(f'usage: {SCRIPT_NAME} switch <port> <on|off>')
     return -1
 
 
