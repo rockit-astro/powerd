@@ -1,7 +1,7 @@
 {
   "daemon": "sting_power",
   "log_name": "powerd@sting",
-  "control_machines": ["STINGTCS"],
+  "control_machines": ["STINGTCS", "STINGDAS1", "STINGDAS2"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
