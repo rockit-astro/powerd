@@ -1,7 +1,7 @@
 {
   "daemon": "clasp_power",
   "log_name": "powerd@clasp",
-  "control_machines": ["CLASPTCS", "CLASPDAS"],
+  "control_machines": ["CLASPTCS", "CLASPCMOS", "CLASPSWIR"],
   "dashboard_machine": "GOTOServer",
   "dashboard_toggleable_channels": ["light"],
   "devices": [
@@ -24,14 +24,14 @@
         },
         {
           "socket": 4,
-          "name": "cam1",
-          "label": "Camera 1",
+          "name": "cmos",
+          "label": "CMOS Camera",
           "display_order": 4
         },
         {
           "socket": 5,
-          "name": "cam2",
-          "label": "Camera 2",
+          "name": "swir",
+          "label": "SWIR Camera",
           "display_order": 5
         },
         {
@@ -68,21 +68,7 @@
       "query_timeout": 2,
       "name": "ups1",
       "label": "UPS 1",
-      "display_order": 14,
-      "groups": [
-        {
-          "group": 2,
-          "name": "das11",
-          "label": "DAS1 (1)",
-          "display_order": 10
-        },
-        {
-          "group": 3,
-          "name": "das21",
-          "label": "DAS2 (1)",
-          "display_order": 12
-        }
-      ]
+      "display_order": 14
     },
     {
       "type": "APCUPS",
@@ -90,21 +76,7 @@
       "query_timeout": 2,
       "name": "ups2",
       "label": "UPS 2",
-      "display_order": 15,
-      "groups": [
-        {
-          "group": 2,
-          "name": "das12",
-          "label": "DAS1 (2)",
-          "display_order": 11
-        },
-        {
-          "group": 3,
-          "name": "das22",
-          "label": "DAS2 (2)",
-          "display_order": 13
-        }
-      ]
+      "display_order": 15
     },
     {
       "type": "APCATS",
