@@ -71,6 +71,12 @@
           "name": "skycam",
           "label": "Skycam",
           "display_order": 15
+        },
+        {
+          "socket": 6,
+          "name": "schednuc",
+          "label": "Scheduler Nuc",
+          "display_order": 16
         }
       ]
     },
