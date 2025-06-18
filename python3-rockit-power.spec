@@ -1,6 +1,6 @@
 Name:           python3-rockit-power
 Version:        %{_version}
-Release:        1
+Release:        1%{dist}
 License:        GPL3
 Summary:        Common backend code for the power daemons.
 Url:            https://github.com/rockit-astro/powerd
