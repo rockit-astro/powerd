@@ -1,8 +1,8 @@
 {
   "daemon": "warwick_power",
   "log_name": "powerd@warwick",
-  "control_machines": ["WarwickTCS", "WarwickDome"],
-  "dashboard_machine": "WarwickDome",
+  "control_machines": ["WarwickTCS"],
+  "dashboard_machine": "WarwickTCS",
   "dashboard_toggleable_channels": [],
   "devices": [
     {
