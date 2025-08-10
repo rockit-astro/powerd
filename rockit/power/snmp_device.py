@@ -80,7 +80,7 @@ class SNMPDevice:
             # Return a dictionary of values keyed by parameter name
             return {k.name: k.parse_snmpget_output(v) for k, v in zip(self.parameters, lines)}
         except Exception as exception:
-            print(f'{datetime.datetime.utcnow()} ERROR: failed to query {self._ip}: {exception}')
+            print(f'error: failed to query {self._ip}: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -99,7 +99,7 @@ class SNMPDevice:
             output = subprocess.check_output(args, universal_newlines=True, timeout=self._query_timeout)
             return parameter.parse_snmpget_output(output)
         except Exception as exception:
-            print(f'{datetime.datetime.utcnow()} ERROR: failed to query {self._ip}: {exception}')
+            print(f'error: failed to query {self._ip}: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -128,7 +128,7 @@ class SNMPDevice:
                 log.info(self._log_name, 'Restored contact with ' + self._ip)
                 self._last_command_failed = False
         except Exception as exception:
-            print(f'{datetime.datetime.utcnow()} ERROR: failed to send SNMP command: {exception}')
+            print(f'error: failed to send SNMP command: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, 'Lost contact with ' + self._ip)
@@ -139,7 +139,7 @@ class SNMPDevice:
         try:
             return parameter.parse_snmpset_output(output) == value
         except Exception as exception:
-            print(f'{datetime.datetime.utcnow()} ERROR: failed to parse SNMP response: {exception}')
+            print(f'error: failed to parse SNMP response: {exception}')
 
             if not self._last_command_failed:
                 log.error(self._log_name, f'Invalid response from {self._ip}: {exception}')

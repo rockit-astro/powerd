@@ -51,7 +51,7 @@ class PowerDaemon:
     @Pyro4.expose
     def last_measurement(self):
         """Query the latest valid measurement"""
-        data = {'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')}
+        data = {'date': datetime.datetime.now(tz=datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
         for device in self._devices:
             data.update(device.status())
         return data

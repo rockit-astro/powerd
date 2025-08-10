@@ -61,14 +61,12 @@ def print_status(config, _):
         metadata = power.measurement_labels()
 
     if latest is not None:
-        date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
-
         # Find the longest label to set the parameter indent
         max_label_length = 0
         for m in metadata:
             max_label_length = max(max_label_length, len(m['label']))
 
-        print(f'Data received \033[1m{date}\033[0m:')
+        print(f'Data received [b]{latest["date"]}[/b]:')
         for m in metadata:
             label_padding = max_label_length - len(m['label'])
             label = ' ' * label_padding + m['label'] + ': '
