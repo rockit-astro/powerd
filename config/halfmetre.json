@@ -62,31 +62,12 @@
         },
         {
           "socket": 4,
-          "name": "skynuc",
-          "label": "Skycam NUC",
-          "display_order": 14
-        },
-        {
-          "socket": 5,
           "name": "skycam",
           "label": "Skycam",
           "display_order": 15
         },
         {
-          "socket": 6,
-          "name": "schednuc",
-          "label": "Scheduler Nuc",
-          "display_order": 16
-        }
-      ]
-    },
-    {
-      "type": "APCPDU",
-      "ip": "10.2.6.113",
-      "query_timeout": 2,
-      "sockets": [
-        {
-          "socket": 1,
+          "socket": 5,
           "name": "domealert",
           "label": "DomeAlert",
           "display_order": 21
