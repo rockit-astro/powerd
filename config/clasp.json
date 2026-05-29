@@ -16,6 +16,12 @@
           "label": "TCS",
           "display_order": 1
         },
+        {
+          "socket": 2,
+          "name": "chiller",
+          "label": "Chiller",
+          "display_order": 2
+        },
 	    {
           "socket": 3,
           "name": "focuser",
